@@ -148,53 +148,6 @@ public interface ISensorsDataAPI{
     void setFlushBulkSize(int flushBulkSize);
 
     /**
-     * 打开 SDK 自动追踪
-     * 该功能自动追踪 App 的一些行为，指定哪些 AutoTrack 事件被追踪，具体信息请参考文档:
-     * https://sensorsdata.cn/manual/android_sdk.html
-     * 该功能仅在 API 14 及以上版本中生效，默认关闭
-     *
-     * @param eventTypeList 开启 AutoTrack 的事件列表
-     */
-    void enableAutoTrack(List<SensorsDataAPI.AutoTrackEventType> eventTypeList);
-
-    /**
-     * 关闭 AutoTrack 中的部分事件
-     *
-     * @param eventTypeList AutoTrackEventType 类型 List
-     */
-    void disableAutoTrack(List<SensorsDataAPI.AutoTrackEventType> eventTypeList);
-
-    /**
-     * 关闭 AutoTrack 中的某个事件
-     *
-     * @param autoTrackEventType AutoTrackEventType 类型
-     */
-    void disableAutoTrack(SensorsDataAPI.AutoTrackEventType autoTrackEventType);
-
-    /**
-     * 是否开启 AutoTrack
-     *
-     * @return true: 开启 AutoTrack; false：没有开启 AutoTrack
-     */
-    boolean isAutoTrackEnabled();
-
-    /**
-     * 判断某个 AutoTrackEventType 是否被忽略
-     *
-     * @param eventType AutoTrackEventType
-     * @return true 被忽略; false 没有被忽略
-     */
-    boolean isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType eventType);
-
-    /**
-     * 判断某个 AutoTrackEventType 是否被忽略
-     *
-     * @param autoTrackEventType SensorsAnalyticsAutoTrackEventType 中的事件类型，可通过 '|' 进行连接传递
-     * @return true 被忽略; false 没有被忽略
-     */
-    boolean isAutoTrackEventTypeIgnored(int autoTrackEventType);
-
-    /**
      * 调用 track 接口，追踪一个带有属性的事件
      *
      * @param eventName 事件的名称

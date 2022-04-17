@@ -99,31 +99,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void enableAutoTrack(List<AutoTrackEventType> eventTypeList) {
-
-    }
-
-    @Override
-    public void disableAutoTrack(List<AutoTrackEventType> eventTypeList) {
-
-    }
-
-    @Override
-    public void disableAutoTrack(SensorsDataAPI.AutoTrackEventType autoTrackEventType) {
-
-    }
-
-    @Override
-    public boolean isAutoTrackEnabled() {
-        return false;
-    }
-
-    @Override
-    public boolean isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType eventType) {
-        return true;
-    }
-
-    @Override
     public void track(String eventName, JSONObject properties) {
 
     }
@@ -259,17 +234,7 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public boolean isAutoTrackEventTypeIgnored(int autoTrackEventType) {
-        return true;
-    }
-
-    @Override
     public void setDebugMode(DebugMode debugMode) {
-
-    }
-
-    @Override
-    void enableAutoTrack(int autoTrackEventType) {
 
     }
 

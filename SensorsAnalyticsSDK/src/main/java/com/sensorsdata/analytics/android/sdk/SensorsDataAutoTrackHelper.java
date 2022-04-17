@@ -62,10 +62,6 @@ public class SensorsDataAutoTrackHelper {
             if (view == null) {
                 return;
             }
-            //关闭 AutoTrack
-            if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
-                return;
-            }
 
             //获取所在的 Context
             Context context = view.getContext();

@@ -181,10 +181,6 @@ public class FragmentViewScreenCallbacks implements SAFragmentLifecycleCallbacks
             return false;
         }
 
-        if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
-            SALog.d(TAG, "AutoTrackEventTypeIgnored,return");
-            return false;
-        }
         if ("com.bumptech.glide.manager.SupportRequestManagerFragment".equals(fragment.getClass().getCanonicalName())) {
             SALog.d(TAG, "fragment is SupportRequestManagerFragment,return");
             return false;

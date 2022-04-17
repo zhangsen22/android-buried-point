@@ -102,8 +102,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected boolean mSDKConfigInit;
     /* Debug 模式选项 */
     protected SensorsDataAPI.DebugMode mDebugMode = SensorsDataAPI.DebugMode.DEBUG_OFF;
-    /* SDK 自动采集事件 */
-    protected boolean mAutoTrack;
     /* 上个页面的 Url */
     protected String mLastScreenUrl;
     /* 上个页面的 Title */
@@ -315,18 +313,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             enableLog(true);
             SALog.setDebug(true);
             setServerUrl(mOriginServerUrl);
-        }
-    }
-
-    void enableAutoTrack(int autoTrackEventType) {
-        try {
-            if (autoTrackEventType <= 0 || autoTrackEventType > 15) {
-                return;
-            }
-            this.mAutoTrack = true;
-            mSAConfigOptions.setAutoTrackEventType(mSAConfigOptions.mAutoTrackEventType | autoTrackEventType);
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
         }
     }
 
@@ -609,13 +595,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             mSAConfigOptions.setMaxCacheSize(32 * 1024 * 1024L);
         }
 
-        this.mAutoTrack = configBundle.getBoolean("com.sensorsdata.analytics.android.AutoTrack",
-                false);
-        if (mSAConfigOptions.mAutoTrackEventType != 0) {
-            enableAutoTrack(mSAConfigOptions.mAutoTrackEventType);
-            this.mAutoTrack = true;
-        }
-
         if (mSAConfigOptions.isDisableSDK) {
             mEnableNetworkRequest = false;
             isChangeEnableNetworkFlag = true;
@@ -638,10 +617,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected void applySAConfigOptions() {
         if (mSAConfigOptions.mEnableTrackAppCrash) {
             SensorsDataExceptionHandler.enableAppCrash();
-        }
-
-        if (mSAConfigOptions.mAutoTrackEventType != 0) {
-            this.mAutoTrack = true;
         }
 
         if (mSAConfigOptions.mInvokeLog) {
@@ -844,25 +819,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             sendProperties.put("$is_first_day", isFirstDay(eventTime));
         } else if (eventType == EventType.TRACK_SIGNUP) {
             dataObj.put("event", eventName);
-        }
-
-        if (mAutoTrack && properties != null) {
-            if (SensorsDataAPI.AutoTrackEventType.isAutoTrackType(eventName)) {
-                SensorsDataAPI.AutoTrackEventType trackEventType = SensorsDataAPI.AutoTrackEventType.autoTrackEventTypeFromEventName(eventName);
-                if (trackEventType != null) {
-                    if (!isAutoTrackEventTypeIgnored(trackEventType)) {
-                        if (properties.has("$screen_name")) {
-                            String screenName = properties.getString("$screen_name");
-                            if (!TextUtils.isEmpty(screenName)) {
-                                String[] screenNameArray = screenName.split("\\|");
-                                if (screenNameArray.length > 0) {
-                                    libDetail = String.format("%s##%s##%s##%s", screenNameArray[0], "", "", "");
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         if (TextUtils.isEmpty(libDetail)) {

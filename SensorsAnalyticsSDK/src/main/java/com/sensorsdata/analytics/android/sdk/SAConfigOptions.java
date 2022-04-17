@@ -73,17 +73,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 设置 AutoTrackEvent 的类型，可通过 '|' 进行连接
-     *
-     * @param autoTrackEventType 开启的 AutoTrack 类型
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setAutoTrackEventType(int autoTrackEventType) {
-        this.mAutoTrackEventType = autoTrackEventType;
-        return this;
-    }
-
-    /**
      * 设置是否开启 AppCrash 采集，默认是关闭的
      *
      * @return SAOptionsConfig

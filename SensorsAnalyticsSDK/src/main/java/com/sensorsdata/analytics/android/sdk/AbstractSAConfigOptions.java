@@ -61,11 +61,6 @@ abstract class AbstractSAConfigOptions {
     String mServerUrl;
 
     /**
-     * AutoTrack 类型
-     */
-    int mAutoTrackEventType;
-
-    /**
      * 是否开启 TrackAppCrash
      */
     boolean mEnableTrackAppCrash;

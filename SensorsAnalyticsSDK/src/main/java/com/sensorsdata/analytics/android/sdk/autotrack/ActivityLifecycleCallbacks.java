@@ -112,7 +112,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
     public void onActivityResumed(Activity activity) {
         try {
             buildScreenProperties(activity);
-            if (mSensorsDataInstance.isAutoTrackEnabled() ) {
                 JSONObject properties = new JSONObject();
                 SensorsDataUtils.mergeJSONObject(activityProperty, properties);
                 if (activity instanceof ScreenAutoTracker) {
@@ -124,7 +123,7 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
                 }
                 JSONObject eventProperties = SADataHelper.appendLibMethodAutoTrack(properties);
                 mSensorsDataInstance.trackViewScreen(SensorsDataUtils.getScreenUrl(activity), eventProperties);
-            }
+
         } catch (Throwable e) {
             SALog.i(TAG, e);
         }
