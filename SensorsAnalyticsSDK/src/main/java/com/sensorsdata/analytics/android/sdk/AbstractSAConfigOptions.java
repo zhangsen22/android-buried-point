@@ -46,11 +46,6 @@ abstract class AbstractSAConfigOptions {
     public int mMaxRequestInterval = 48;
 
     /**
-     * 禁用随机时间请求远程配置
-     */
-    public boolean mDisableRandomTimeRequestRemoteConfig;
-
-    /**
      * 设置 SSLSocketFactory
      */
     public SSLSocketFactory mSSLSocketFactory;

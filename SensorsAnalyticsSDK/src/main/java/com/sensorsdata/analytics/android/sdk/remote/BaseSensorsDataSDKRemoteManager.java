@@ -59,9 +59,6 @@ public abstract class BaseSensorsDataSDKRemoteManager {
         this.mDisableDefaultRemoteConfig = sensorsDataAPI.isDisableDefaultRemoteConfig();
     }
 
-
-    public abstract void pullSDKConfigFromServer();
-
     public abstract void requestRemoteConfig(RandomTimeType randomTimeType, final boolean enableConfigV);
 
     public abstract void resetPullSDKConfigTimer();
@@ -180,46 +177,11 @@ public abstract class BaseSensorsDataSDKRemoteManager {
         }
     }
 
-    /**
-     * 全埋点类型是否被在线控制忽略
-     *
-     * @param autoTrackEventType 全埋点类型
-     * @return true 表示该类型被忽略，false 表示不被忽略，null 表示使用本地代码配置
-     */
-    public Boolean isAutoTrackEventTypeIgnored(int autoTrackEventType) {
-        if (mSDKRemoteConfig != null) {
-            if (mSDKRemoteConfig.getAutoTrackMode() != SensorsDataSDKRemoteConfig.REMOTE_EVENT_TYPE_NO_USE) {
-                if (mSDKRemoteConfig.getAutoTrackMode() == 0) {
-                    return true;
-                }
-                return mSDKRemoteConfig.isAutoTrackEventTypeIgnored(autoTrackEventType);
-            }
-        }
-        return null;
-    }
-
     public static boolean isSDKDisabledByRemote() {
         if (mSDKRemoteConfig == null) {
             return false;
         }
         return mSDKRemoteConfig.isDisableSDK();
-    }
-
-    /**
-     * 全埋点是否被在线控制禁止
-     *
-     * @return false 表示全部全埋点被禁止，true 表示部分未被禁止，null 表示使用本地代码配置
-     */
-    public Boolean isAutoTrackEnabled() {
-        if (mSDKRemoteConfig != null) {
-            if (mSDKRemoteConfig.getAutoTrackMode() == 0) {
-                SALog.i(TAG, "remote config: AutoTrackMode is closing by remote config");
-                return false;
-            } else if (mSDKRemoteConfig.getAutoTrackMode() > 0) {
-                return true;
-            }
-        }
-        return null;
     }
 
     /**

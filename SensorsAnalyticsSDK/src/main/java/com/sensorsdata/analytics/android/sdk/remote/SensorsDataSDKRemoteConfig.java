@@ -17,7 +17,6 @@
 
 package com.sensorsdata.analytics.android.sdk.remote;
 
-import com.sensorsdata.analytics.android.sdk.SensorsAnalyticsAutoTrackEventType;
 import com.sensorsdata.analytics.android.sdk.encrypt.SecreteKey;
 
 import org.json.JSONArray;
@@ -113,18 +112,6 @@ public class SensorsDataSDKRemoteConfig {
             mAutoTrackEventType = 0;
             return;
         }
-
-        if ((this.autoTrackMode & SensorsAnalyticsAutoTrackEventType.APP_START) == SensorsAnalyticsAutoTrackEventType.APP_START) {
-            this.mAutoTrackEventType |= SensorsAnalyticsAutoTrackEventType.APP_START;
-        }
-
-        if ((this.autoTrackMode & SensorsAnalyticsAutoTrackEventType.APP_END) == SensorsAnalyticsAutoTrackEventType.APP_END) {
-            this.mAutoTrackEventType |= SensorsAnalyticsAutoTrackEventType.APP_END;
-        }
-    }
-
-    int getAutoTrackEventType() {
-        return mAutoTrackEventType;
     }
 
     boolean isAutoTrackEventTypeIgnored(int eventType) {

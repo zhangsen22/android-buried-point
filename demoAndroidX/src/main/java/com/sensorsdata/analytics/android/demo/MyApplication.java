@@ -19,7 +19,6 @@ package com.sensorsdata.analytics.android.demo;
 import android.app.Application;
 
 import com.sensorsdata.analytics.android.sdk.SAConfigOptions;
-import com.sensorsdata.analytics.android.sdk.SensorsAnalyticsAutoTrackEventType;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 
 public class MyApplication extends Application {

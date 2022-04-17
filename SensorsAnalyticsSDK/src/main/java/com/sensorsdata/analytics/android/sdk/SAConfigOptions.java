@@ -144,16 +144,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 禁用分散请求远程配置
-     *
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions disableRandomTimeRequestRemoteConfig() {
-        this.mDisableRandomTimeRequestRemoteConfig = true;
-        return this;
-    }
-
-    /**
      * 是否打印日志
      *
      * @param enableLog 是否开启打印日志

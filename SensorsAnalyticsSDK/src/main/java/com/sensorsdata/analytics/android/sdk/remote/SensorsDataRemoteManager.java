@@ -101,34 +101,6 @@ public class SensorsDataRemoteManager extends BaseSensorsDataSDKRemoteManager {
     }
 
     @Override
-    public void pullSDKConfigFromServer() {
-        if (mSAConfigOptions == null) {
-            return;
-        }
-
-        // 关闭随机请求或者分散的最小时间大于最大时间时，清除本地时间，请求后端
-        if (mSAConfigOptions.mDisableRandomTimeRequestRemoteConfig ||
-                mSAConfigOptions.mMinRequestInterval > mSAConfigOptions.mMaxRequestInterval) {
-            requestRemoteConfig(RandomTimeType.RandomTimeTypeClean, true);
-            SALog.i(TAG, "remote config: Request remote config because disableRandomTimeRequestRemoteConfig or minHourInterval greater than maxHourInterval");
-            return;
-        }
-
-        //开启加密并且传入秘钥为空的，强制请求后端，此时请求中不带 v
-        if (mSensorsDataEncrypt != null && mSensorsDataEncrypt.isPublicSecretKeyNull()) {
-            requestRemoteConfig(RandomTimeType.RandomTimeTypeWrite, false);
-            SALog.i(TAG, "remote config: Request remote config because encrypt key is null");
-            return;
-        }
-
-        //满足分散请求逻辑时，请求后端
-        if (isRequestValid()) {
-            requestRemoteConfig(RandomTimeType.RandomTimeTypeWrite, true);
-            SALog.i(TAG, "remote config: Request remote config because satisfy the random request condition");
-        }
-    }
-
-    @Override
     public void requestRemoteConfig(RandomTimeType randomTimeType, final boolean enableConfigV) {
         if (mSensorsDataAPI != null && !mSensorsDataAPI.isNetworkRequestEnable()) {
             SALog.i(TAG, "Close network request");

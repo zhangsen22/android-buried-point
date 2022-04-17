@@ -186,44 +186,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     /**
-     * 开启 SDK
-     */
-    public static void enableSDK() {
-        SALog.i(TAG, "call static function enableSDK");
-        try {
-            SensorsDataAPI sensorsDataAPI = getSDKInstance();
-            if (sensorsDataAPI instanceof SensorsDataAPIEmptyImplementation ||
-                    getConfigOptions() == null ||
-                    !getConfigOptions().isDisableSDK) {
-                return;
-            }
-            getConfigOptions().disableSDK(false);
-            try {
-                //开启日志
-                SALog.setDisableSDK(false);
-                sensorsDataAPI.enableLog(SALog.isLogEnabled());
-                SALog.i(TAG, "enableSDK, enable log");
-                if (sensorsDataAPI.mFirstDay.get() == null) {
-                    sensorsDataAPI.mFirstDay.commit(TimeUtils.formatTime(System.currentTimeMillis(), TimeUtils.YYYY_MM_DD));
-                }
-                sensorsDataAPI.delayInitTask();
-                //开启网络请求
-                if (isChangeEnableNetworkFlag) {
-                    sensorsDataAPI.enableNetworkRequest(true);
-                    isChangeEnableNetworkFlag = false;
-                }
-
-                //重新请求采集控制
-                sensorsDataAPI.getRemoteManager().pullSDKConfigFromServer();
-            } catch (Exception e) {
-                SALog.printStackTrace(e);
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
      * 返回预置属性
      *
      * @return JSONObject 预置属性

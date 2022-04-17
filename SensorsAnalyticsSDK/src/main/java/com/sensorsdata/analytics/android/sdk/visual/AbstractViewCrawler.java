@@ -68,7 +68,6 @@ public abstract class AbstractViewCrawler implements VTrack {
     private final LifecycleCallbacks mLifecycleCallbacks;
     private final EditState mEditState;
     private final ViewCrawlerHandler mMessageThreadHandler;
-    private final Handler mMainThreadHandler;
     private String mFeatureCode;
     private String mPostUrl;
     private String mAppVersion;
@@ -105,7 +104,6 @@ public abstract class AbstractViewCrawler implements VTrack {
         thread.start();
 
         mMessageThreadHandler = new ViewCrawlerHandler(mActivity, thread.getLooper(), resourcePackageName);
-        mMainThreadHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
