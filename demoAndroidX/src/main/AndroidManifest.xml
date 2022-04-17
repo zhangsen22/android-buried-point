@@ -27,13 +27,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.BasePropertyActivity" />
         <activity android:name=".activity.TrackProfileSettingsActivity"/>
         <activity android:name=".activity.WidgetTestActivity" />
         <activity android:name=".activity.DataBindingLambdaActivity" />
         <activity android:name=".activity.ViewScreenActivity" />
-        <activity android:name=".activity.ViewScreenIgnoreActivity" />
-        <activity android:name=".activity.ListViewTestActivity" />
         <activity android:name=".activity.FragmentActivity" />
         <activity android:name=".activity.ClickActivity" />
         <activity android:name=".activity.HorizonFragmentsActivity"/>
@@ -45,7 +42,6 @@
         <activity android:name=".activity.VPFrgActivity" />
         <activity android:name=".activity.VPVPFrgActivity" />
         <activity android:name=".activity.DialogActivity" />
-        <activity android:name=".activity.MyTabHostActivity" />
         <activity android:name=".activity.TabVPFragActivity" />
         <activity android:name=".activity.NavigationViewActivity" />
         <activity android:name=".activity.CrashTestActivity" />

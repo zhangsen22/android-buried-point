@@ -20,8 +20,6 @@ import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
-import com.sensorsdata.analytics.android.sdk.SensorsDataIgnoreTrackAppViewScreen;
-import com.sensorsdata.analytics.android.sdk.SensorsDataIgnoreTrackAppViewScreenAndAppClick;
 
 import java.util.List;
 import java.util.Set;
@@ -106,14 +104,6 @@ public class FragmentAPI implements IFragmentAPI {
                 if (!TextUtils.isEmpty(canonicalName)) {
                     return mAutoTrackFragments.contains(canonicalName.hashCode());
                 }
-            }
-
-            if (fragment.getAnnotation(SensorsDataIgnoreTrackAppViewScreen.class) != null) {
-                return false;
-            }
-
-            if (fragment.getAnnotation(SensorsDataIgnoreTrackAppViewScreenAndAppClick.class) != null) {
-                return false;
             }
 
             if (mAutoTrackIgnoredFragments != null && mAutoTrackIgnoredFragments.size() > 0) {

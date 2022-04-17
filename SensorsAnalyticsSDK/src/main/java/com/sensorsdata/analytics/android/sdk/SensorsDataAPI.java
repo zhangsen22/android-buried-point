@@ -16,22 +16,17 @@
  */
 package com.sensorsdata.analytics.android.sdk;
 
-import static com.sensorsdata.analytics.android.sdk.util.Base64Coder.CHARSET_UTF8;
-
 import android.app.Activity;
 import android.content.Context;
 import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
-import android.webkit.WebView;
 
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
-import com.sensorsdata.analytics.android.sdk.internal.beans.EventTimer;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.remote.BaseSensorsDataSDKRemoteManager;
@@ -44,21 +39,15 @@ import com.sensorsdata.analytics.android.sdk.util.TimeUtils;
 import com.sensorsdata.analytics.android.sdk.visual.property.VisualPropertiesManager;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Sensors Analytics SDK
@@ -510,91 +499,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
         return mFragmentAPI.isTrackFragmentAppViewScreenEnabled();
     }
 
-    @Override
-    public void ignoreAutoTrackActivities(List<Class<?>> activitiesList) {
-        if (activitiesList == null || activitiesList.size() == 0) {
-            return;
-        }
-
-        if (mAutoTrackIgnoredActivities == null) {
-            mAutoTrackIgnoredActivities = new ArrayList<>();
-        }
-
-        int hashCode;
-        for (Class<?> activity : activitiesList) {
-            if (activity != null) {
-                hashCode = activity.hashCode();
-                if (!mAutoTrackIgnoredActivities.contains(hashCode)) {
-                    mAutoTrackIgnoredActivities.add(hashCode);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void resumeAutoTrackActivities(List<Class<?>> activitiesList) {
-        if (activitiesList == null || activitiesList.size() == 0) {
-            return;
-        }
-
-        if (mAutoTrackIgnoredActivities == null) {
-            mAutoTrackIgnoredActivities = new ArrayList<>();
-        }
-
-        try {
-            int hashCode;
-            for (Class activity : activitiesList) {
-                if (activity != null) {
-                    hashCode = activity.hashCode();
-                    if (mAutoTrackIgnoredActivities.contains(hashCode)) {
-                        mAutoTrackIgnoredActivities.remove(Integer.valueOf(hashCode));
-                    }
-                }
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void ignoreAutoTrackActivity(Class<?> activity) {
-        if (activity == null) {
-            return;
-        }
-
-        if (mAutoTrackIgnoredActivities == null) {
-            mAutoTrackIgnoredActivities = new ArrayList<>();
-        }
-
-        try {
-            int hashCode = activity.hashCode();
-            if (!mAutoTrackIgnoredActivities.contains(hashCode)) {
-                mAutoTrackIgnoredActivities.add(hashCode);
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void resumeAutoTrackActivity(Class<?> activity) {
-        if (activity == null) {
-            return;
-        }
-
-        if (mAutoTrackIgnoredActivities == null) {
-            mAutoTrackIgnoredActivities = new ArrayList<>();
-        }
-
-        try {
-            int hashCode = activity.hashCode();
-            if (mAutoTrackIgnoredActivities.contains(hashCode)) {
-                mAutoTrackIgnoredActivities.remove(Integer.valueOf(hashCode));
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
 
     @Override
     public void enableAutoTrackFragment(Class<?> fragment) {
@@ -604,23 +508,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     @Override
     public void enableAutoTrackFragments(List<Class<?>> fragmentsList) {
         mFragmentAPI.enableAutoTrackFragments(fragmentsList);
-    }
-
-    @Override
-    public boolean isActivityAutoTrackAppViewScreenIgnored(Class<?> activity) {
-        if (activity == null) {
-            return false;
-        }
-        if (mAutoTrackIgnoredActivities != null &&
-                mAutoTrackIgnoredActivities.contains(activity.hashCode())) {
-            return true;
-        }
-
-        if (activity.getAnnotation(SensorsDataIgnoreTrackAppViewScreenAndAppClick.class) != null) {
-            return true;
-        }
-
-        return activity.getAnnotation(SensorsDataIgnoreTrackAppViewScreen.class) != null;
     }
 
     @Override
@@ -646,24 +533,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     @Override
     public void resumeIgnoredAutoTrackFragment(Class<?> fragment) {
         mFragmentAPI.resumeIgnoredAutoTrackFragment(fragment);
-    }
-
-    @Override
-    public boolean isActivityAutoTrackAppClickIgnored(Class<?> activity) {
-        if (activity == null) {
-            return false;
-        }
-        if (mAutoTrackIgnoredActivities != null &&
-                mAutoTrackIgnoredActivities.contains(activity.hashCode())) {
-            return true;
-        }
-
-        if (activity.getAnnotation(SensorsDataIgnoreTrackAppViewScreenAndAppClick.class) != null) {
-            return true;
-        }
-
-        return activity.getAnnotation(SensorsDataIgnoreTrackAppClick.class) != null;
-
     }
 
     @Override

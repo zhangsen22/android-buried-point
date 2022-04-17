@@ -58,8 +58,6 @@ public class PersistentLoader {
                 return new PersistentFirstTrackInstallationWithCallback();
             case DbParams.PersistentName.FIRST_START:
                 return new PersistentFirstStart();
-            case DbParams.PersistentName.REQUEST_DEFERRER_DEEPLINK:
-                return new PersistentRequestDeferrerDeepLink();
             case DbParams.PersistentName.LOGIN_ID:
                 return new PersistentLoginId();
             case DbParams.PersistentName.REMOTE_CONFIG:

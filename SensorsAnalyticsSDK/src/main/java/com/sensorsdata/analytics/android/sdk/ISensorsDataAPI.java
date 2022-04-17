@@ -202,53 +202,6 @@ public interface ISensorsDataAPI extends IFragmentAPI {
     boolean isAutoTrackEnabled();
 
     /**
-     * 指定哪些 activity 不被 AutoTrack
-     * 指定 activity 的格式为：activity.getClass().getCanonicalName()
-     *
-     * @param activitiesList activity 列表
-     */
-    void ignoreAutoTrackActivities(List<Class<?>> activitiesList);
-
-    /**
-     * 恢复不被 AutoTrack 的 activity
-     *
-     * @param activitiesList List
-     */
-    void resumeAutoTrackActivities(List<Class<?>> activitiesList);
-
-    /**
-     * 指定某个 activity 不被 AutoTrack
-     *
-     * @param activity Activity
-     */
-    void ignoreAutoTrackActivity(Class<?> activity);
-
-    /**
-     * 恢复不被 AutoTrack 的 activity
-     *
-     * @param activity Class
-     */
-    void resumeAutoTrackActivity(Class<?> activity);
-
-    /**
-     * 判断 AutoTrack 时，某个 Activity 的 $AppViewScreen 是否被过滤
-     * 如果过滤的话，会过滤掉 Activity 的 $AppViewScreen 事件
-     *
-     * @param activity Activity
-     * @return Activity 是否被采集
-     */
-    boolean isActivityAutoTrackAppViewScreenIgnored(Class<?> activity);
-
-    /**
-     * 判断 AutoTrack 时，某个 Activity 的 $AppClick 是否被过滤
-     * 如果过滤的话，会过滤掉 Activity 的 $AppClick 事件
-     *
-     * @param activity Activity
-     * @return Activity 是否被过滤
-     */
-    boolean isActivityAutoTrackAppClickIgnored(Class<?> activity);
-
-    /**
      * 判断某个 AutoTrackEventType 是否被忽略
      *
      * @param eventType AutoTrackEventType

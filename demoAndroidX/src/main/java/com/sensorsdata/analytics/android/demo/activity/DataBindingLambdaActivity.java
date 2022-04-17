@@ -47,7 +47,6 @@ public class DataBindingLambdaActivity extends BaseActivity {
         testCompoundButton();
         testDialog();
         testListViewItemClick();
-        testTabHost();
         testNavigationViewItemClick();
         testExpandListView();
         testRatingBar();
@@ -123,13 +122,6 @@ public class DataBindingLambdaActivity extends BaseActivity {
         listView.setAdapter(adapter);
         listView.setOnItemClickListener((adapterView, view, i, l) -> {
 
-        });
-    }
-
-    private void testTabHost() {
-        findViewById(R.id.tabHost).setOnClickListener(view -> {
-            Intent intent = new Intent(this, MyTabHostActivity.class);
-            startActivity(intent);
         });
     }
 

@@ -101,22 +101,9 @@ public class SensorsDataAutoTrackHelper {
             //将 Context 转成 Activity
             Activity activity = AopUtil.getActivityFromContext(context, view);
 
-            //Activity 被忽略
-            if (activity != null) {
-                if (SensorsDataAPI.sharedInstance().isActivityAutoTrackAppClickIgnored(activity.getClass())) {
-                    return;
-                }
-            }
-
             // 获取 view 所在的 fragment
             Object fragment = AopUtil.getFragmentFromView(view, activity);
 
-            // fragment 忽略
-            if (fragment != null) {
-                if (SensorsDataAPI.sharedInstance().isActivityAutoTrackAppClickIgnored(fragment.getClass())) {
-                    return;
-                }
-            }
 
             //View 被忽略
             if (AopUtil.isViewIgnored(view)) {

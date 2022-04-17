@@ -25,8 +25,6 @@ import android.net.Uri;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import com.sensorsdata.analytics.android.sdk.internal.beans.EventTimer;
-
 import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;

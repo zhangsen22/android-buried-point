@@ -19,10 +19,6 @@ package com.sensorsdata.analytics.android.sdk;
 
 import android.app.Activity;
 import android.view.View;
-import android.webkit.WebView;
-
-import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
-import com.sensorsdata.analytics.android.sdk.listener.SAJSListener;
 
 import org.json.JSONObject;
 
@@ -30,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     SensorsDataAPIEmptyImplementation() {
@@ -173,36 +168,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     @Override
     public boolean isTrackFragmentAppViewScreenEnabled() {
         return false;
-    }
-
-    @Override
-    public void ignoreAutoTrackActivities(List<Class<?>> activitiesList) {
-
-    }
-
-    @Override
-    public void resumeAutoTrackActivities(List<Class<?>> activitiesList) {
-
-    }
-
-    @Override
-    public void ignoreAutoTrackActivity(Class<?> activity) {
-
-    }
-
-    @Override
-    public void resumeAutoTrackActivity(Class<?> activity) {
-
-    }
-
-    @Override
-    public boolean isActivityAutoTrackAppViewScreenIgnored(Class<?> activity) {
-        return true;
-    }
-
-    @Override
-    public boolean isActivityAutoTrackAppClickIgnored(Class<?> activity) {
-        return true;
     }
 
     @Override
@@ -431,16 +396,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void appEnterBackground() {
-
-    }
-
-    @Override
-    public void appBecomeActive() {
-
-    }
-
-    @Override
     public void setGPSLocation(double latitude, double longitude) {
 
     }
@@ -514,11 +469,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     @Override
     public void enableDataCollect() {
-
-    }
-
-    @Override
-    public void addSAJSListener(SAJSListener listener) {
 
     }
 

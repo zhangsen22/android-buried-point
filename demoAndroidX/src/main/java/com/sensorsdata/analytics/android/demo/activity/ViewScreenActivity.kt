@@ -31,11 +31,6 @@ class ViewScreenActivity : BaseActivity(), ScreenAutoTracker {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_screen)
 
-        btn.setOnClickListener {
-            val intent = Intent(this@ViewScreenActivity, ViewScreenIgnoreActivity::class.java)
-            startActivity(intent)
-        }
-
     }
 
     override fun getScreenUrl(): String = "testMainActivity screen url test"

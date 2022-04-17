@@ -26,10 +26,11 @@ import androidx.databinding.DataBindingUtil;
 import com.sensorsdata.analytics.android.demo.R;
 import com.sensorsdata.analytics.android.demo.databinding.ActivityClickBinding;
 import com.sensorsdata.analytics.android.demo.entity.BindingEntity;
+import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackAppViewScreenUrl;
 import com.sensorsdata.analytics.android.sdk.SensorsDataTrackEvent;
 import com.sensorsdata.analytics.android.sdk.SensorsDataTrackViewOnClick;
 
-
+@SensorsDataAutoTrackAppViewScreenUrl
 public class ClickActivity extends BaseActivity{
 
     private ActivityClickBinding activityClickBinding = null;

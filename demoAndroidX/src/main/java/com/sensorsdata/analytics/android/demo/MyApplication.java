@@ -41,8 +41,7 @@ public class MyApplication extends Application {
         SAConfigOptions configOptions = new SAConfigOptions(SA_SERVER_URL);
         // 打开自动采集, 并指定追踪哪些 AutoTrack 事件
         configOptions.setAutoTrackEventType(SensorsAnalyticsAutoTrackEventType.APP_START |
-                SensorsAnalyticsAutoTrackEventType.APP_END |
-                SensorsAnalyticsAutoTrackEventType.APP_VIEW_SCREEN)
+                SensorsAnalyticsAutoTrackEventType.APP_END)
                 .enableTrackAppCrash()
                 .enableVisualizedAutoTrack(true);
         SensorsDataAPI.startWithConfigOptions(this, configOptions);

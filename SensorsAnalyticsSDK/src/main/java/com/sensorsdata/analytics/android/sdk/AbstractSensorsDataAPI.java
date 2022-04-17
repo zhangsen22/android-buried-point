@@ -26,7 +26,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.view.View;
 
 import com.sensorsdata.analytics.android.sdk.autotrack.ActivityLifecycleCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.ActivityPageLeaveCallbacks;
@@ -36,7 +35,6 @@ import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentRequestDeferrerDeepLink;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstStart;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallation;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallationWithCallback;
@@ -48,11 +46,8 @@ import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
 import com.sensorsdata.analytics.android.sdk.internal.api.FragmentAPI;
 import com.sensorsdata.analytics.android.sdk.internal.api.IFragmentAPI;
-import com.sensorsdata.analytics.android.sdk.internal.beans.EventTimer;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.listener.SAEventListener;
-import com.sensorsdata.analytics.android.sdk.listener.SAFunctionListener;
-import com.sensorsdata.analytics.android.sdk.listener.SAJSListener;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPresetPropertyPlugin;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SensorsDataPropertyPluginManager;
 import com.sensorsdata.analytics.android.sdk.remote.BaseSensorsDataSDKRemoteManager;
@@ -72,7 +67,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,7 +76,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected static final String TAG = "SA.SensorsDataAPI";
@@ -104,9 +97,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected final PersistentFirstDay mFirstDay;
     protected final PersistentFirstTrackInstallation mFirstTrackInstallation;
     protected final PersistentFirstTrackInstallationWithCallback mFirstTrackInstallationWithCallback;
-    protected final PersistentRequestDeferrerDeepLink mRequestDeferrerDeepLink;
-    protected final Map<String, EventTimer> mTrackTimer;
-    protected final Object mLoginIdLock = new Object();
     protected List<Class> mIgnoredViewTypeList = new ArrayList<>();
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
@@ -132,7 +122,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected static boolean isChangeEnableNetworkFlag = false;
     // Session 时长
     protected int mSessionTime = 30 * 1000;
-    protected List<Integer> mAutoTrackIgnoredActivities;
     protected List<Integer> mHeatMapActivities;
     protected List<Integer> mVisualizedAutoTrackActivities;
     protected String mCookie;
@@ -141,7 +130,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected SensorsDataScreenOrientationDetector mOrientationDetector;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
-    private CopyOnWriteArrayList<SAJSListener> mSAJSListeners;
     protected IFragmentAPI mFragmentAPI;
     protected SAStoreManager mStoreManager;
     SensorsDataEncrypt mSensorsDataEncrypt;
@@ -155,7 +143,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mContext = context;
         setDebugMode(debugMode);
         final String packageName = context.getApplicationContext().getPackageName();
-        mAutoTrackIgnoredActivities = new ArrayList<>();
         mHeatMapActivities = new ArrayList<>();
         mVisualizedAutoTrackActivities = new ArrayList<>();
         PersistentLoader.initLoader(context);
@@ -164,8 +151,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mFirstTrackInstallation = (PersistentFirstTrackInstallation) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL);
         mFirstTrackInstallationWithCallback = (PersistentFirstTrackInstallationWithCallback) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL_CALLBACK);
         mFirstDay = (PersistentFirstDay) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_DAY);
-        mRequestDeferrerDeepLink = (PersistentRequestDeferrerDeepLink) PersistentLoader.loadPersistent(DbParams.PersistentName.REQUEST_DEFERRER_DEEPLINK);
-        mTrackTimer = new HashMap<>();
         mFragmentAPI = new FragmentAPI();
         try {
             mSAConfigOptions = configOptions.clone();
@@ -204,15 +189,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                         + " url '%s', flush interval %d ms, debugMode: %s", mServerUrl, mSAConfigOptions.mFlushInterval, debugMode));
             }
             SensorsDataUtils.initUniAppStatus();
-            if (mIsMainProcess && null != mRequestDeferrerDeepLink) {// 多进程影响数据，保证只有主进程操作
-                Boolean isFirstRun = mRequestDeferrerDeepLink.get();
-                if (isFirstRun != null && isFirstRun) {
-                    mRequestDeferrerDeepLink.commit(false);
-                }
-                if (mRequestDeferrerDeepLink.get() && null != mFirstDay && !TextUtils.isEmpty(mFirstDay.get())) { //升级场景，首次安装但 mFirstDay 已经有数据
-                    mRequestDeferrerDeepLink.commit(false);
-                }
-            }
         } catch (Throwable ex) {
             SALog.d(TAG, ex.getMessage());
         }
@@ -231,8 +207,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mFirstDay = null;
         mFirstTrackInstallation = null;
         mFirstTrackInstallationWithCallback = null;
-        mRequestDeferrerDeepLink = null;
-        mTrackTimer = null;
         mSensorsDataEncrypt = null;
     }
 
@@ -303,68 +277,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
      */
     public void removeEventListener(SAEventListener eventListener) {
         mSAContextManager.removeEventListener(eventListener);
-    }
-
-    /**
-     * 监听 JS 消息
-     *
-     * @param listener JS 监听
-     */
-    public void addSAJSListener(final SAJSListener listener) {
-        try {
-            if (mSAJSListeners == null) {
-                mSAJSListeners = new CopyOnWriteArrayList<>();
-            }
-            if (!mSAJSListeners.contains(listener)) {
-                mSAJSListeners.add(listener);
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 移除 JS 消息
-     *
-     * @param listener JS 监听
-     */
-    public void removeSAJSListener(final SAJSListener listener) {
-        try {
-            if (mSAJSListeners != null && mSAJSListeners.contains(listener)) {
-                this.mSAJSListeners.remove(listener);
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    void handleJsMessage(WeakReference<View> view, final String message) {
-        if (mSAJSListeners != null && mSAJSListeners.size() > 0) {
-            for (final SAJSListener listener : mSAJSListeners) {
-                try {
-                    if (listener != null) {
-                        listener.onReceiveJSMessage(view, message);
-                    }
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-        }
-    }
-
-    /**
-     * SDK 函数回调监听
-     *
-     * @param functionListener 事件监听
-     */
-    public void addFunctionListener(final SAFunctionListener functionListener) {
-        //在事件队列中操作了 mFunctionListenerList，此处也需要放在事件队列中
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                TrackMonitor.getInstance().addFunctionListener(functionListener);
-            }
-        });
     }
 
     public static SAConfigOptions getConfigOptions() {
@@ -452,55 +364,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
     public boolean isDisableDefaultRemoteConfig() {
         return mDisableDefaultRemoteConfig;
-    }
-
-    /**
-     * App 从后台恢复，遍历 mTrackTimer
-     * startTime = System.currentTimeMillis()
-     */
-    public void appBecomeActive() {
-        synchronized (mTrackTimer) {
-            try {
-                for (Map.Entry<String, EventTimer> entry : mTrackTimer.entrySet()) {
-                    if (entry != null) {
-                        EventTimer eventTimer = (EventTimer) entry.getValue();
-                        if (eventTimer != null) {
-                            eventTimer.setStartTime(SystemClock.elapsedRealtime());
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                SALog.i(TAG, "appBecomeActive error:" + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * App 进入后台，遍历 mTrackTimer
-     * eventAccumulatedDuration =
-     * eventAccumulatedDuration + System.currentTimeMillis() - startTime - SessionIntervalTime
-     */
-    public void appEnterBackground() {
-        synchronized (mTrackTimer) {
-            try {
-                for (Map.Entry<String, EventTimer> entry : mTrackTimer.entrySet()) {
-                    if (entry != null) {
-                        if ("$AppEnd".equals(entry.getKey())) {
-                            continue;
-                        }
-                        EventTimer eventTimer = (EventTimer) entry.getValue();
-                        if (eventTimer != null && !eventTimer.isPaused()) {
-                            long eventAccumulatedDuration =
-                                    eventTimer.getEventAccumulatedDuration() + SystemClock.elapsedRealtime() - eventTimer.getStartTime() - getSessionIntervalTime();
-                            eventTimer.setEventAccumulatedDuration(eventAccumulatedDuration);
-                            eventTimer.setStartTime(SystemClock.elapsedRealtime());
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                SALog.i(TAG, "appEnterBackground error:" + e.getMessage());
-            }
-        }
     }
 
     /**
@@ -637,13 +500,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
     protected void trackEvent(final EventType eventType, String eventName, final JSONObject properties) {
         try {
-            EventTimer eventTimer = null;
             if (!TextUtils.isEmpty(eventName)) {
-                synchronized (mTrackTimer) {
-                    eventTimer = mTrackTimer.get(eventName);
-                    mTrackTimer.remove(eventName);
-                }
-
                 if (eventName.endsWith("_SATimer") && eventName.length() > 45) {// Timer 计时交叉计算拼接的字符串长度 45
                     eventName = eventName.substring(0, eventName.length() - 45);
                 }
@@ -839,43 +696,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             SALog.i(TAG, "当前已开启可视化全埋点自定义属性（enableVisualizedProperties），可视化全埋点采集开关已失效！");
             mSAConfigOptions.enableVisualizedAutoTrack(true);
         }
-    }
-
-    /**
-     * 触发事件的暂停/恢复
-     *
-     * @param eventName 事件名称
-     * @param isPause 设置是否暂停
-     */
-    protected void trackTimerState(final String eventName, final boolean isPause) {
-        final long startTime = SystemClock.elapsedRealtime();
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    SADataHelper.assertEventName(eventName);
-                    synchronized (mTrackTimer) {
-                        EventTimer eventTimer = mTrackTimer.get(eventName);
-                        if (eventTimer != null && eventTimer.isPaused() != isPause) {
-                            eventTimer.setTimerState(isPause, startTime);
-                        }
-                    }
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    /**
-     * 合并、去重静态公共属性与动态公共属性
-     *
-     * @param eventProperty 保存合并后属性的 JSON
-     * @param dynamicProperty 动态公共属性
-     */
-    private void mergerDynamicAndSuperProperties(JSONObject eventProperty, JSONObject dynamicProperty) {
-        JSONObject removeDuplicateSuperProperties = SensorsDataUtils.mergeSuperJSONObject(dynamicProperty, null);
-        SensorsDataUtils.mergeJSONObject(removeDuplicateSuperProperties, eventProperty);
     }
 
     private void showDebugModeWarning() {
@@ -1285,27 +1105,4 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         });
     }
 
-    /**
-     * 重新读取运营商信息
-     *
-     * @param property Property
-     */
-    private void getCarrier(JSONObject property) {
-        try {
-            if (TextUtils.isEmpty(property.optString("$carrier")) && mSAConfigOptions.isDataCollectEnable) {
-                String carrier = SensorsDataUtils.getCarrier(mContext);
-                if (!TextUtils.isEmpty(carrier)) {
-                    property.put("$carrier", carrier);
-                }
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    public void setDeferredDeepLinkStateToFalse() {
-        if (null != mRequestDeferrerDeepLink && "true".equals(String.valueOf(mRequestDeferrerDeepLink.get()))) {
-            mRequestDeferrerDeepLink.commit(false);
-        }
-    }
 }

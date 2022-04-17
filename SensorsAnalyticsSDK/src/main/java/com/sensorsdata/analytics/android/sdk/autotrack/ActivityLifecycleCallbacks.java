@@ -115,8 +115,7 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
     public void onActivityResumed(Activity activity) {
         try {
             buildScreenProperties(activity);
-            if (mSensorsDataInstance.isAutoTrackEnabled() && !mSensorsDataInstance.isActivityAutoTrackAppViewScreenIgnored(activity.getClass())
-                    && !mSensorsDataInstance.isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
+            if (mSensorsDataInstance.isAutoTrackEnabled() ) {
                 JSONObject properties = new JSONObject();
                 SensorsDataUtils.mergeJSONObject(activityProperty, properties);
                 if (activity instanceof ScreenAutoTracker) {
@@ -202,7 +201,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
                             boolean resetState = bundle.getBoolean(APP_RESET_STATE);
                             // 如果是正常的退到后台，需要重置标记位
                             if (resetState) {
-                                mSensorsDataInstance.setDeferredDeepLinkStateToFalse();
                                 resetState();
                                 // 对于 Unity 多进程跳转的场景，需要在判断一下
                                 if (DbAdapter.getInstance().getActivityCount() <= 0) {
@@ -236,7 +234,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
                     // XXX: 注意内部执行顺序
                     boolean firstStart = mFirstStart.get();
                     try {
-                        mSensorsDataInstance.appBecomeActive();
 
                         //从后台恢复，从缓存中读取 SDK 控制配置信息
                         if (resumeFromBackground) {
@@ -481,7 +478,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
             mSensorsDataInstance.getRemoteManager().resetPullSDKConfigTimer();
             HeatMapService.getInstance().stop();
             VisualizedAutoTrackService.getInstance().stop();
-            mSensorsDataInstance.appEnterBackground();
             resumeFromBackground = true;
             mSensorsDataInstance.clearLastScreenUrl();
 //            mSensorsDataInstance.stopTrackTaskThread();
