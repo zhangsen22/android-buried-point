@@ -177,7 +177,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
             }
             //关闭网络监听
             sensorsDataAPI.unregisterNetworkListener();
-            DbAdapter.getInstance().commitAppStartTime(0);
             getConfigOptions().disableSDK(true);
             //关闭日志
             SALog.setDisableSDK(true);
@@ -213,10 +212,7 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                     sensorsDataAPI.enableNetworkRequest(true);
                     isChangeEnableNetworkFlag = false;
                 }
-                //重新请求可视化全埋点
-                if (SensorsDataAPI.getConfigOptions().isVisualizedPropertiesEnabled()) {
-                    VisualPropertiesManager.getInstance().requestVisualConfig();
-                }
+
                 //重新请求采集控制
                 sensorsDataAPI.getRemoteManager().pullSDKConfigFromServer();
             } catch (Exception e) {
@@ -292,28 +288,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public int getSessionIntervalTime() {
-        return mSessionTime;
-    }
-
-    @Override
-    public void setSessionIntervalTime(int sessionIntervalTime) {
-        if (DbAdapter.getInstance() == null) {
-            SALog.i(TAG, "The static method sharedInstance(context, serverURL, debugMode) should be called before calling sharedInstance()");
-            return;
-        }
-
-        if (sessionIntervalTime < 10 * 1000 || sessionIntervalTime > 5 * 60 * 1000) {
-            SALog.i(TAG, "SessionIntervalTime:" + sessionIntervalTime + " is invalid, session interval time is between 10s and 300s.");
-            return;
-        }
-        if (sessionIntervalTime != mSessionTime) {
-            mSessionTime = sessionIntervalTime;
-            DbAdapter.getInstance().commitSessionIntervalTime(sessionIntervalTime);
-        }
-    }
-
-    @Override
     public void setGPSLocation(final double latitude, final double longitude) {
         setGPSLocation(latitude, longitude, null);
     }
@@ -353,59 +327,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
-    }
-
-    @Override
-    public void enableTrackScreenOrientation(boolean enable) {
-        try {
-            if (enable) {
-                if (mOrientationDetector == null) {
-                    mOrientationDetector = new SensorsDataScreenOrientationDetector(mContext, SensorManager.SENSOR_DELAY_NORMAL);
-                }
-                mOrientationDetector.enable();
-            } else {
-                if (mOrientationDetector != null) {
-                    mOrientationDetector.disable();
-                    mOrientationDetector = null;
-                }
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void resumeTrackScreenOrientation() {
-        try {
-            if (mOrientationDetector != null) {
-                mOrientationDetector.enable();
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void stopTrackScreenOrientation() {
-        try {
-            if (mOrientationDetector != null) {
-                mOrientationDetector.disable();
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public String getScreenOrientation() {
-        try {
-            if (mOrientationDetector != null) {
-                return mOrientationDetector.getOrientation();
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-        return null;
     }
 
     @Override
@@ -490,52 +411,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void trackFragmentAppViewScreen() {
-        mFragmentAPI.trackFragmentAppViewScreen();
-    }
-
-    @Override
-    public boolean isTrackFragmentAppViewScreenEnabled() {
-        return mFragmentAPI.isTrackFragmentAppViewScreenEnabled();
-    }
-
-
-    @Override
-    public void enableAutoTrackFragment(Class<?> fragment) {
-        mFragmentAPI.enableAutoTrackFragment(fragment);
-    }
-
-    @Override
-    public void enableAutoTrackFragments(List<Class<?>> fragmentsList) {
-        mFragmentAPI.enableAutoTrackFragments(fragmentsList);
-    }
-
-    @Override
-    public boolean isFragmentAutoTrackAppViewScreen(Class<?> fragment) {
-        return mFragmentAPI.isFragmentAutoTrackAppViewScreen(fragment);
-    }
-
-    @Override
-    public void ignoreAutoTrackFragments(List<Class<?>> fragmentList) {
-        mFragmentAPI.ignoreAutoTrackFragments(fragmentList);
-    }
-
-    @Override
-    public void ignoreAutoTrackFragment(Class<?> fragment) {
-        mFragmentAPI.ignoreAutoTrackFragment(fragment);
-    }
-
-    @Override
-    public void resumeIgnoredAutoTrackFragments(List<Class<?>> fragmentList) {
-        mFragmentAPI.resumeIgnoredAutoTrackFragments(fragmentList);
-    }
-
-    @Override
-    public void resumeIgnoredAutoTrackFragment(Class<?> fragment) {
-        mFragmentAPI.resumeIgnoredAutoTrackFragment(fragment);
-    }
-
-    @Override
     public boolean isAutoTrackEventTypeIgnored(AutoTrackEventType eventType) {
         if (eventType == null) {
             return false;
@@ -556,261 +431,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
         }
 
         return (mSAConfigOptions.mAutoTrackEventType | autoTrackEventType) != mSAConfigOptions.mAutoTrackEventType;
-    }
-
-    @Override
-    public void setViewID(View view, String viewID) {
-        if (view != null && !TextUtils.isEmpty(viewID)) {
-            view.setTag(R.id.sensors_analytics_tag_view_id, viewID);
-        }
-    }
-
-    @Override
-    public void setViewID(android.app.Dialog view, String viewID) {
-        try {
-            if (view != null && !TextUtils.isEmpty(viewID)) {
-                if (view.getWindow() != null) {
-                    view.getWindow().getDecorView().setTag(R.id.sensors_analytics_tag_view_id, viewID);
-                }
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void setViewID(Object alertDialog, String viewID) {
-        try {
-            if (alertDialog == null) {
-                return;
-
-            }
-
-            Class<?> supportAlertDialogClass = null;
-            Class<?> androidXAlertDialogClass = null;
-            Class<?> currentAlertDialogClass;
-            try {
-                supportAlertDialogClass = Class.forName("android.support.v7.app.AlertDialog");
-            } catch (Exception e) {
-                //ignored
-            }
-
-            try {
-                androidXAlertDialogClass = Class.forName("androidx.appcompat.app.AlertDialog");
-            } catch (Exception e) {
-                //ignored
-            }
-
-            if (supportAlertDialogClass != null) {
-                currentAlertDialogClass = supportAlertDialogClass;
-            } else {
-                currentAlertDialogClass = androidXAlertDialogClass;
-            }
-
-            if (currentAlertDialogClass == null) {
-                return;
-            }
-
-            if (!currentAlertDialogClass.isInstance(alertDialog)) {
-                return;
-            }
-
-            if (!TextUtils.isEmpty(viewID)) {
-                Method getWindowMethod = alertDialog.getClass().getMethod("getWindow");
-                if (getWindowMethod == null) {
-                    return;
-                }
-
-                Window window = (Window) getWindowMethod.invoke(alertDialog);
-                if (window != null) {
-                    window.getDecorView().setTag(R.id.sensors_analytics_tag_view_id, viewID);
-                }
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void setViewActivity(View view, Activity activity) {
-        try {
-            if (view == null || activity == null) {
-                return;
-            }
-            view.setTag(R.id.sensors_analytics_tag_view_activity, activity);
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void setViewFragmentName(View view, String fragmentName) {
-        try {
-            if (view == null || TextUtils.isEmpty(fragmentName)) {
-                return;
-            }
-            view.setTag(R.id.sensors_analytics_tag_view_fragment_name2, fragmentName);
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void ignoreView(View view) {
-        if (view != null) {
-            view.setTag(R.id.sensors_analytics_tag_view_ignored, "1");
-        }
-    }
-
-    @Override
-    public void ignoreView(View view, boolean ignore) {
-        if (view != null) {
-            view.setTag(R.id.sensors_analytics_tag_view_ignored, ignore ? "1" : "0");
-        }
-    }
-
-    @Override
-    public void setViewProperties(View view, JSONObject properties) {
-        if (view == null || properties == null) {
-            return;
-        }
-
-        view.setTag(R.id.sensors_analytics_tag_view_properties, properties);
-    }
-
-    @Override
-    public List<Class> getIgnoredViewTypeList() {
-        if (mIgnoredViewTypeList == null) {
-            mIgnoredViewTypeList = new ArrayList<>();
-        }
-
-        return mIgnoredViewTypeList;
-    }
-
-    @Override
-    public void ignoreViewType(Class viewType) {
-        if (viewType == null) {
-            return;
-        }
-
-        if (mIgnoredViewTypeList == null) {
-            mIgnoredViewTypeList = new ArrayList<>();
-        }
-
-        if (!mIgnoredViewTypeList.contains(viewType)) {
-            mIgnoredViewTypeList.add(viewType);
-        }
-    }
-
-    @Override
-    public boolean isVisualizedAutoTrackActivity(Class<?> activity) {
-        try {
-            if (activity == null) {
-                return false;
-            }
-            if (mVisualizedAutoTrackActivities.size() == 0) {
-                return true;
-            }
-            if (mVisualizedAutoTrackActivities.contains(activity.hashCode())) {
-                return true;
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return false;
-    }
-
-    @Override
-    public void addVisualizedAutoTrackActivity(Class<?> activity) {
-        try {
-            if (activity == null) {
-                return;
-            }
-            mVisualizedAutoTrackActivities.add(activity.hashCode());
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void addVisualizedAutoTrackActivities(List<Class<?>> activitiesList) {
-        try {
-            if (activitiesList == null || activitiesList.size() == 0) {
-                return;
-            }
-
-            for (Class<?> activity : activitiesList) {
-                if (activity != null) {
-                    int hashCode = activity.hashCode();
-                    if (!mVisualizedAutoTrackActivities.contains(hashCode)) {
-                        mVisualizedAutoTrackActivities.add(hashCode);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public boolean isVisualizedAutoTrackEnabled() {
-        return mSAConfigOptions.mVisualizedEnabled || mSAConfigOptions.mVisualizedPropertiesEnabled;
-    }
-
-    @Override
-    public boolean isHeatMapActivity(Class<?> activity) {
-        try {
-            if (activity == null) {
-                return false;
-            }
-            if (mHeatMapActivities.size() == 0) {
-                return true;
-            }
-            if (mHeatMapActivities.contains(activity.hashCode())) {
-                return true;
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-        return false;
-    }
-
-    @Override
-    public void addHeatMapActivity(Class<?> activity) {
-        try {
-            if (activity == null) {
-                return;
-            }
-
-            mHeatMapActivities.add(activity.hashCode());
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void addHeatMapActivities(List<Class<?>> activitiesList) {
-        try {
-            if (activitiesList == null || activitiesList.size() == 0) {
-                return;
-            }
-
-            for (Class<?> activity : activitiesList) {
-                if (activity != null) {
-                    int hashCode = activity.hashCode();
-                    if (!mHeatMapActivities.contains(hashCode)) {
-                        mHeatMapActivities.add(hashCode);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public boolean isHeatMapEnabled() {
-        return mSAConfigOptions.mHeatMapEnabled;
     }
 
     @Override
@@ -1319,15 +939,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                     SALog.printStackTrace(e);
                 }
             }
-            //请求可视化全埋点自定义属性配置
-            if (!TextUtils.equals(serverUrl, mOriginServerUrl) && SensorsDataAPI.getConfigOptions().isVisualizedPropertiesEnabled()) {
-                try {
-                    VisualPropertiesManager.getInstance().requestVisualConfig();
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-
             mOriginServerUrl = serverUrl;
             if (TextUtils.isEmpty(serverUrl)) {
                 mServerUrl = serverUrl;

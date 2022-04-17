@@ -24,7 +24,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.SystemClock;
+
 import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.autotrack.ActivityLifecycleCallbacks;
@@ -44,8 +44,6 @@ import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
 import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
-import com.sensorsdata.analytics.android.sdk.internal.api.FragmentAPI;
-import com.sensorsdata.analytics.android.sdk.internal.api.IFragmentAPI;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.listener.SAEventListener;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPresetPropertyPlugin;
@@ -97,7 +95,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected final PersistentFirstDay mFirstDay;
     protected final PersistentFirstTrackInstallation mFirstTrackInstallation;
     protected final PersistentFirstTrackInstallationWithCallback mFirstTrackInstallationWithCallback;
-    protected List<Class> mIgnoredViewTypeList = new ArrayList<>();
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
     protected String mOriginServerUrl;
@@ -121,16 +118,10 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected boolean mDisableTrackDeviceId = false;
     protected static boolean isChangeEnableNetworkFlag = false;
     // Session 时长
-    protected int mSessionTime = 30 * 1000;
-    protected List<Integer> mHeatMapActivities;
-    protected List<Integer> mVisualizedAutoTrackActivities;
-    protected String mCookie;
     protected TrackTaskManager mTrackTaskManager;
     protected TrackTaskManagerThread mTrackTaskManagerThread;
-    protected SensorsDataScreenOrientationDetector mOrientationDetector;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
-    protected IFragmentAPI mFragmentAPI;
     protected SAStoreManager mStoreManager;
     SensorsDataEncrypt mSensorsDataEncrypt;
     BaseSensorsDataSDKRemoteManager mRemoteManager;
@@ -143,15 +134,12 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mContext = context;
         setDebugMode(debugMode);
         final String packageName = context.getApplicationContext().getPackageName();
-        mHeatMapActivities = new ArrayList<>();
-        mVisualizedAutoTrackActivities = new ArrayList<>();
         PersistentLoader.initLoader(context);
         mSuperProperties = (PersistentSuperProperties) PersistentLoader.loadPersistent(DbParams.PersistentName.SUPER_PROPERTIES);
         mFirstStart = (PersistentFirstStart) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_START);
         mFirstTrackInstallation = (PersistentFirstTrackInstallation) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL);
         mFirstTrackInstallationWithCallback = (PersistentFirstTrackInstallationWithCallback) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL_CALLBACK);
         mFirstDay = (PersistentFirstDay) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_DAY);
-        mFragmentAPI = new FragmentAPI();
         try {
             mSAConfigOptions = configOptions.clone();
             mStoreManager = SAStoreManager.getInstance();
@@ -167,10 +155,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             mRemoteManager = new SensorsDataRemoteManager((SensorsDataAPI) this);
             //先从缓存中读取 SDKConfig
             mRemoteManager.applySDKConfigFromCache();
-            // 可视化自定义属性拉取配置
-            if (mSAConfigOptions.isVisualizedPropertiesEnabled()) {
-                VisualPropertiesManager.getInstance().requestVisualConfig(mContext, (SensorsDataAPI) this);
-            }
             //打开 debug 模式，弹出提示
             if (mDebugMode != SensorsDataAPI.DebugMode.DEBUG_OFF && mIsMainProcess) {
                 if (SHOW_DEBUG_INFO_VIEW) {
@@ -218,7 +202,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected void delayExecution(Activity activity) {
         if (mActivityLifecycleCallbacks != null) {
             mActivityLifecycleCallbacks.onActivityCreated(activity, null);   //延迟初始化处理唤起逻辑
-            AppStateManager.getInstance().onActivityCreated(activity, null); //可视化获取页面信息
             mActivityLifecycleCallbacks.onActivityStarted(activity);                 //延迟初始化补发应用启动逻辑
         }
         if (SALog.isLogEnabled()) {
@@ -310,9 +293,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             @Override
             public void run() {
                 try {
-                    if (viewNode != null && SensorsDataAPI.getConfigOptions().isVisualizedPropertiesEnabled()) {
-                        VisualPropertiesManager.getInstance().mergeVisualProperties(VisualPropertiesManager.VisualEventType.APP_CLICK, properties, viewNode);
-                    }
                     trackEvent(EventType.TRACK, eventName, properties);
                 } catch (Exception e) {
                     SALog.printStackTrace(e);
@@ -542,15 +522,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                         SALog.printStackTrace(e);
                     }
 
-                    // 屏幕方向
-                    try {
-                        String screenOrientation = getScreenOrientation();
-                        if (!TextUtils.isEmpty(screenOrientation)) {
-                            sendProperties.put("$screen_orientation", screenOrientation);
-                        }
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
                 } else {
                     if (!eventType.isProfile()) {
                         return;
@@ -645,18 +616,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             this.mAutoTrack = true;
         }
 
-        if (!mSAConfigOptions.mInvokeHeatMapEnabled) {
-            mSAConfigOptions.mHeatMapEnabled = configBundle.getBoolean("com.sensorsdata.analytics.android.HeatMap",
-                    false);
-        }
-
-        if (!mSAConfigOptions.mInvokeVisualizedEnabled) {
-            mSAConfigOptions.mVisualizedEnabled = configBundle.getBoolean("com.sensorsdata.analytics.android.VisualizedAutoTrack",
-                    false);
-        }
-
-        enableTrackScreenOrientation(mSAConfigOptions.mTrackScreenOrientationEnabled);
-
         if (mSAConfigOptions.isDisableSDK) {
             mEnableNetworkRequest = false;
             isChangeEnableNetworkFlag = true;
@@ -687,14 +646,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         if (mSAConfigOptions.mInvokeLog) {
             enableLog(mSAConfigOptions.mLogEnabled);
-        }
-
-        enableTrackScreenOrientation(mSAConfigOptions.mTrackScreenOrientationEnabled);
-
-        //由于自定义属性依赖于可视化全埋点，所以只要开启自定义属性，默认打开可视化全埋点功能
-        if (!mSAConfigOptions.mVisualizedEnabled && mSAConfigOptions.mVisualizedPropertiesEnabled) {
-            SALog.i(TAG, "当前已开启可视化全埋点自定义属性（enableVisualizedProperties），可视化全埋点采集开关已失效！");
-            mSAConfigOptions.enableVisualizedAutoTrack(true);
         }
     }
 
@@ -1064,7 +1015,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 final Application app = (Application) mContext.getApplicationContext();
                 final SensorsDataActivityLifecycleCallbacks lifecycleCallbacks = new SensorsDataActivityLifecycleCallbacks();
-                app.registerActivityLifecycleCallbacks(AppStateManager.getInstance());
                 mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks((SensorsDataAPI) this, mFirstStart, mFirstDay, mContext);
                 lifecycleCallbacks.addActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
                 SensorsDataExceptionHandler.addExceptionListener(mActivityLifecycleCallbacks);

@@ -18,10 +18,7 @@
 package com.sensorsdata.analytics.android.sdk;
 
 public interface SensorsAnalyticsAutoTrackEventType {
-    /**
-     * 空类型
-     */
-    int TYPE_NONE = 0;
+
     /**
      * App 启动事件
      */
@@ -31,9 +28,4 @@ public interface SensorsAnalyticsAutoTrackEventType {
      * App 退出事件
      */
     int APP_END = 1 << 1;
-
-    /**
-     * 页面浏览事件
-     */
-    int APP_VIEW_SCREEN = 1 << 3;
 }

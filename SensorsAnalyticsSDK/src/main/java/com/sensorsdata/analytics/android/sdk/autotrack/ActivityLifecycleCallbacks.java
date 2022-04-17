@@ -78,7 +78,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
     private Handler mHandler;
     /* 兼容由于在魅族手机上退到后台后，线程会被休眠，导致 $AppEnd 无法触发，造成再次打开重复发送。*/
     private long messageReceiveTime = 0L;
-    private final int MESSAGE_CODE_APP_END = 0;
     private final int MESSAGE_CODE_START = 100;
     private final int MESSAGE_CODE_STOP = 200;
     private final int MESSAGE_CODE_TIMER = 300;
@@ -98,7 +97,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
         this.mDbAdapter = DbAdapter.getInstance();
         this.mContext = context;
         mDataCollectState = SensorsDataAPI.getConfigOptions().isDataCollectEnable();
-        initHandler();
     }
 
     @Override
@@ -170,271 +168,10 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
                 @Override
                 public void handleMessage(Message msg) {
                     int code = msg.what;
-                    switch (code) {
-                        case MESSAGE_CODE_START:
-                            handleStartedMessage(msg);
-                            break;
-                        case MESSAGE_CODE_STOP:
-                            handleStoppedMessage(msg);
-                            break;
-                        case MESSAGE_CODE_TIMER:
-                            if (mSensorsDataInstance.isAutoTrackEnabled() && isAutoTrackAppEnd()) {
-                                generateAppEndData(System.currentTimeMillis(), SystemClock.elapsedRealtime());
-                            } else if (!mSensorsDataInstance.isAutoTrackEnabled() && mStartTime > 0) {//调用 disableSDK 接口时重新更新 duration
-                                mStartTime = 0;
-                                DbAdapter.getInstance().commitAppStartTime(mStartTime);
-                                generateAppEndData(System.currentTimeMillis(), SystemClock.elapsedRealtime());
-                            }
-
-                            if (mStartTimerCount > 0) {
-                                mHandler.sendEmptyMessageDelayed(MESSAGE_CODE_TIMER, TIME_INTERVAL);
-                            }
-                            break;
-                        case MESSAGE_CODE_APP_END:
-                            if (messageReceiveTime != 0 && SystemClock.elapsedRealtime() - messageReceiveTime < mSensorsDataInstance.getSessionIntervalTime()) {
-                                SALog.i(TAG, "$AppEnd 事件已触发。");
-                                return;
-                            }
-                            messageReceiveTime = SystemClock.elapsedRealtime();
-                            Bundle bundle = msg.getData();
-                            String endData = bundle.getString(APP_END_DATA);
-                            boolean resetState = bundle.getBoolean(APP_RESET_STATE);
-                            // 如果是正常的退到后台，需要重置标记位
-                            if (resetState) {
-                                resetState();
-                                // 对于 Unity 多进程跳转的场景，需要在判断一下
-                                if (DbAdapter.getInstance().getActivityCount() <= 0) {
-                                    trackAppEnd(endData);
-                                }
-                            } else {
-                                trackAppEnd(endData);
-                            }
-                            break;
-                    }
                 }
             };
         } catch (Exception ex) {
             SALog.printStackTrace(ex);
-        }
-    }
-
-    private void handleStartedMessage(Message message) {
-        boolean isSessionTimeout;
-        try {
-            mStartActivityCount = mDbAdapter.getActivityCount();
-            mDbAdapter.commitActivityCount(++mStartActivityCount);
-            // 如果是第一个页面
-            if (mStartActivityCount == 1) {
-                mHandler.removeMessages(MESSAGE_CODE_APP_END);
-                isSessionTimeout = isSessionTimeOut();
-                if (isSessionTimeout) {
-                    // 超时尝试补发 $AppEnd
-                    mHandler.sendMessage(obtainAppEndMessage(false));
-                    checkFirstDay();
-                    // XXX: 注意内部执行顺序
-                    boolean firstStart = mFirstStart.get();
-                    try {
-
-                        //从后台恢复，从缓存中读取 SDK 控制配置信息
-                        if (resumeFromBackground) {
-                            //先从缓存中读取 SDKConfig
-                            mSensorsDataInstance.getRemoteManager().applySDKConfigFromCache();
-                            mSensorsDataInstance.resumeTrackScreenOrientation();
-//                    mSensorsDataInstance.resumeTrackTaskThread();
-                        }
-                        //每次启动 App，重新拉取最新的配置信息
-                        mSensorsDataInstance.getRemoteManager().pullSDKConfigFromServer();
-                    } catch (Exception ex) {
-                        SALog.printStackTrace(ex);
-                    }
-                    Bundle bundle = message.getData();
-                    try {
-                        if (mSensorsDataInstance.isAutoTrackEnabled() && !mSensorsDataInstance.isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_START)) {
-                            if (firstStart) {
-                                mFirstStart.commit(false);
-                            }
-                            JSONObject properties = new JSONObject();
-                            properties.put("$resume_from_background", resumeFromBackground);
-                            properties.put("$is_first_time", firstStart);
-                            SensorsDataUtils.mergeJSONObject(activityProperty, properties);
-                            // 合并渠道信息到 $AppStart 事件中
-                            if (mDeepLinkProperty != null) {
-                                SensorsDataUtils.mergeJSONObject(mDeepLinkProperty, properties);
-                                mDeepLinkProperty = null;
-                            }
-                            // 读取 Message 中的时间戳
-                            long eventTime = bundle.getLong(TIME);
-                            properties.put("event_time", eventTime > 0 ? eventTime : System.currentTimeMillis());
-                            mSensorsDataInstance.trackAutoEvent("$AppStart", properties);
-                            SensorsDataAPI.sharedInstance().flush();
-                        }
-                    } catch (Exception e) {
-                        SALog.i(TAG, e);
-                    }
-
-                    updateStartTime(bundle.getLong(ELAPSE_TIME));
-
-                    if (resumeFromBackground) {
-                        try {
-                            HeatMapService.getInstance().resume();
-                            VisualizedAutoTrackService.getInstance().resume();
-                        } catch (Exception e) {
-                            SALog.printStackTrace(e);
-                        }
-                    }
-
-                    // 下次启动时，从后台恢复
-                    resumeFromBackground = true;
-                }
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-            updateStartTime(SystemClock.elapsedRealtime());
-        }
-
-        try {
-            if (mStartTimerCount++ == 0) {
-                /*
-                 * 在启动的时候开启打点，退出时停止打点，在此处可以防止两点：
-                 *  1. App 在 onResume 之前 Crash，导致只有启动没有退出；
-                 *  2. 多进程的情况下只会开启一个打点器；
-                 */
-                mHandler.sendEmptyMessage(MESSAGE_CODE_TIMER);
-            }
-        } catch (Exception exception) {
-            SALog.printStackTrace(exception);
-        }
-    }
-
-    private void handleStoppedMessage(Message message) {
-        try {
-            // 停止计时器，针对跨进程的情况，要停止当前进程的打点器
-            mStartTimerCount--;
-            if (mStartTimerCount <= 0) {
-                mHandler.removeMessages(MESSAGE_CODE_TIMER);
-                mStartTimerCount = 0;
-                mStartTime = 0;
-            }
-
-            mStartActivityCount = mDbAdapter.getActivityCount();
-            mStartActivityCount = mStartActivityCount > 0 ? --mStartActivityCount : 0;
-            mDbAdapter.commitActivityCount(mStartActivityCount);
-
-            /*
-             * 为了处理跨进程之间跳转 Crash 的情况，由于在 ExceptionHandler 中进行重置，
-             * 所以会引起的计数器小于 0 的情况。
-             */
-            if (mStartActivityCount <= 0) {
-                // 主动 flush 数据
-                mSensorsDataInstance.flush();
-                Bundle bundle = message.getData();
-                generateAppEndData(bundle.getLong(TIME), bundle.getLong(ELAPSE_TIME));
-                mHandler.sendMessageDelayed(obtainAppEndMessage(true), mSensorsDataInstance.getSessionIntervalTime());
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-    }
-
-    /**
-     * 发送 $AppEnd 事件
-     *
-     * @param jsonEndData $AppEnd 事件属性
-     */
-    private void trackAppEnd(String jsonEndData) {
-        try {
-            if (mSensorsDataInstance.isAutoTrackEnabled() && isAutoTrackAppEnd() && !TextUtils.isEmpty(jsonEndData)) {
-                JSONObject property = new JSONObject(jsonEndData);
-                if (property.has("track_timer")) {
-                    property.put(EVENT_TIME, property.optLong("track_timer") + TIME_INTERVAL);
-                    property.remove("event_timer");     // 删除老版本冗余属性
-                    property.remove("track_timer");     // 删除老版本冗余属性
-                }
-                property.remove(APP_START_TIME);
-                mSensorsDataInstance.trackAutoEvent("$AppEnd", property);
-                mDbAdapter.commitAppExitData(""); // 保存的信息只使用一次就置空，防止后面状态错乱再次发送。
-                mSensorsDataInstance.flush();
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 存储当前的 AppEnd 事件关键信息
-     */
-    private void generateAppEndData(long eventTime, long endElapsedTime) {
-        try {
-            // 如果初始未非合规状态，则需要判断同意合规后才打点
-            if (!mDataCollectState && !mSensorsDataInstance.getSAContextManager().isAppStartSuccess()) {
-                return;
-            }
-            mDataCollectState = true;
-            // 同意合规时进行打点记录
-            if (SensorsDataAPI.getConfigOptions().isDataCollectEnable()) {
-                if (mStartTime == 0) {//多进程切换要重新读取
-                    mStartTime = DbAdapter.getInstance().getAppStartTime();
-                }
-                if (mStartTime != 0) {
-                    endDataProperty.put(EVENT_DURATION, TimeUtils.duration(mStartTime, endElapsedTime));
-                } else {
-                    endDataProperty.remove(EVENT_DURATION);
-                }
-                endDataProperty.put(APP_START_TIME, mStartTime);
-                endDataProperty.put(EVENT_TIME, eventTime + TIME_INTERVAL);
-                if (SensorsDataAPI.getConfigOptions().isEnableSession()) {
-                    SessionRelatedManager.getInstance().refreshSessionByTimer(eventTime + TIME_INTERVAL);
-                    endDataProperty.put(SessionRelatedManager.getInstance().EVENT_SESSION_ID, SessionRelatedManager.getInstance().getSessionID());
-                }
-                endDataProperty.put(APP_VERSION, AppInfoUtils.getAppVersionName(mContext));
-                endDataProperty.put(LIB_VERSION, SensorsDataAPI.sharedInstance().getSDKVersion());
-                mDbAdapter.commitAppExitData(endDataProperty.toString());
-            }
-        } catch (Throwable e) {
-            SALog.d(TAG, e.getMessage());
-        }
-    }
-
-    /**
-     * 判断是否超出 Session 时间间隔
-     *
-     * @return true 超时，false 未超时
-     */
-    private boolean isSessionTimeOut() {
-        long currentTime = Math.max(System.currentTimeMillis(), 946656000000L);
-        long endTrackTime = 0;
-        try {
-            String endData = DbAdapter.getInstance().getAppExitData();
-            if (!TextUtils.isEmpty(endData)) {
-                JSONObject endDataJsonObject = new JSONObject(endData);
-                endTrackTime = endDataJsonObject.optLong(EVENT_TIME) - TIME_INTERVAL; // 获取 $AppEnd 打点时间戳
-                if (mStartTime == 0) {// 如果二次打开，此时从本地更新启动时间戳
-                    updateStartTime(endDataJsonObject.optLong(APP_START_TIME));
-                }
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return Math.abs(currentTime - endTrackTime) > mSensorsDataInstance.getSessionIntervalTime();
-    }
-
-    /**
-     * 更新启动时间戳
-     *
-     * @param startElapsedTime 启动时间戳
-     */
-    private void updateStartTime(long startElapsedTime) {
-        try {
-            // 设置启动时间戳
-            mStartTime = startElapsedTime;
-            mDbAdapter.commitAppStartTime(startElapsedTime > 0 ? startElapsedTime : SystemClock.elapsedRealtime());   // 防止动态开启 $AppEnd 时，启动时间戳不对的问题。
-        } catch (Exception ex) {
-            try {
-                // 出现异常，在重新存储一次，防止使用原有的时间戳造成时长计算错误
-                mDbAdapter.commitAppStartTime(startElapsedTime > 0 ? startElapsedTime : SystemClock.elapsedRealtime());
-            } catch (Exception exception) {
-                // ignore
-            }
         }
     }
 
@@ -452,53 +189,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
         message.setData(bundle);
         mHandler.sendMessage(message);
     }
-
-    /**
-     * 构建 Message 对象
-     *
-     * @param resetState 是否重置状态
-     * @return Message
-     */
-    private Message obtainAppEndMessage(boolean resetState) {
-        Message message = Message.obtain(mHandler);
-        message.what = MESSAGE_CODE_APP_END;
-        Bundle bundle = new Bundle();
-        bundle.putString(APP_END_DATA, DbAdapter.getInstance().getAppExitData());
-        bundle.putBoolean(APP_RESET_STATE, resetState);
-        message.setData(bundle);
-        return message;
-    }
-
-    /**
-     * AppEnd 正常结束时，重置一些设置状态
-     */
-    private void resetState() {
-        try {
-            mSensorsDataInstance.stopTrackScreenOrientation();
-            mSensorsDataInstance.getRemoteManager().resetPullSDKConfigTimer();
-            HeatMapService.getInstance().stop();
-            VisualizedAutoTrackService.getInstance().stop();
-            resumeFromBackground = true;
-            mSensorsDataInstance.clearLastScreenUrl();
-//            mSensorsDataInstance.stopTrackTaskThread();
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 检查更新首日逻辑
-     */
-    private void checkFirstDay() {
-        if (mFirstDay.get() == null && SensorsDataAPI.getConfigOptions().isDataCollectEnable()) {
-            mFirstDay.commit(TimeUtils.formatTime(System.currentTimeMillis(), TimeUtils.YYYY_MM_DD));
-        }
-    }
-
-    private boolean isAutoTrackAppEnd() {
-        return !mSensorsDataInstance.isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_END);
-    }
-
     private void buildScreenProperties(Activity activity) {
         activityProperty = AopUtil.buildTitleNoAutoTrackerProperties(activity);
         SensorsDataUtils.mergeJSONObject(activityProperty, endDataProperty);
@@ -512,15 +202,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        /*
-         * 异常的情况会出现两种：
-         * 1. 未完成 $AppEnd 事件，触发的异常，此时需要记录下 AppEndTime
-         * 2. 完成了 $AppEnd 事件，下次启动时触发的异常。还未及时更新 $AppStart 的时间戳，导致计算时长偏大，所以需要重新更新启动时间戳
-         */
-        if (TextUtils.isEmpty(DbAdapter.getInstance().getAppExitData())) {
-            DbAdapter.getInstance().commitAppStartTime(SystemClock.elapsedRealtime());
-        }
-
         if (SensorsDataAPI.getConfigOptions().isMultiProcessFlush()) {
             DbAdapter.getInstance().commitSubProcessFlushState(false);
         }

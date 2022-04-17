@@ -19,7 +19,6 @@ package com.sensorsdata.analytics.android.sdk.autotrack;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -31,7 +30,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.sensorsdata.analytics.android.sdk.AopConstants;
-import com.sensorsdata.analytics.android.sdk.AppStateManager;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.ScreenAutoTracker;
@@ -45,7 +43,6 @@ import com.sensorsdata.analytics.android.sdk.util.WeakSet;
 
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.util.Set;
 
 /**
@@ -164,7 +161,6 @@ public class FragmentViewScreenCallbacks implements SAFragmentLifecycleCallbacks
         try {
             JSONObject properties = new JSONObject();
             AopUtil.getScreenNameAndTitleFromFragment(properties, fragment, null);
-            AppStateManager.getInstance().setFragmentScreenName(fragment, properties.optString(AopConstants.SCREEN_NAME));
             if (fragment instanceof ScreenAutoTracker) {
                 ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) fragment;
                 JSONObject otherProperties = screenAutoTracker.getTrackProperties();
@@ -189,22 +185,11 @@ public class FragmentViewScreenCallbacks implements SAFragmentLifecycleCallbacks
             SALog.d(TAG, "AutoTrackEventTypeIgnored,return");
             return false;
         }
-
-        if (!SensorsDataAPI.sharedInstance().isTrackFragmentAppViewScreenEnabled()) {
-            SALog.d(TAG, "TrackFragmentAppViewScreenEnabled is false,return");
-            return false;
-        }
-
         if ("com.bumptech.glide.manager.SupportRequestManagerFragment".equals(fragment.getClass().getCanonicalName())) {
             SALog.d(TAG, "fragment is SupportRequestManagerFragment,return");
             return false;
         }
 
-        boolean isAutoTrackFragment = SensorsDataAPI.sharedInstance().isFragmentAutoTrackAppViewScreen(fragment.getClass());
-        if (!isAutoTrackFragment) {
-            SALog.d(TAG, "fragment class ignored,return");
-            return false;
-        }
         //针对主动调用 fragment 生命周期，重复触发浏览
         if (mPageFragments.contains(fragment)) {
             SALog.d(TAG, "pageFragment contains,return");

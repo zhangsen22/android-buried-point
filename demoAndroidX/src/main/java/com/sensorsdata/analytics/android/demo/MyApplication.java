@@ -42,9 +42,7 @@ public class MyApplication extends Application {
         // 打开自动采集, 并指定追踪哪些 AutoTrack 事件
         configOptions.setAutoTrackEventType(SensorsAnalyticsAutoTrackEventType.APP_START |
                 SensorsAnalyticsAutoTrackEventType.APP_END)
-                .enableTrackAppCrash()
-                .enableVisualizedAutoTrack(true);
+                .enableTrackAppCrash();
         SensorsDataAPI.startWithConfigOptions(this, configOptions);
-        SensorsDataAPI.sharedInstance(this).trackFragmentAppViewScreen();
     }
 }

@@ -34,8 +34,6 @@ import android.os.Message;
 import android.os.Process;
 import android.text.TextUtils;
 
-import com.sensorsdata.analytics.android.sdk.AopConstants;
-import com.sensorsdata.analytics.android.sdk.AppStateManager;
 import com.sensorsdata.analytics.android.sdk.SAConfigOptions;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
@@ -192,7 +190,6 @@ public abstract class AbstractViewCrawler implements VTrack {
 
     private class ViewCrawlerHandler extends Handler {
 
-        private ViewSnapshot mSnapshot;
         private boolean mUseGzip;
         private StringBuilder mLastImageHash;
         private String mAppId;
@@ -200,7 +197,6 @@ public abstract class AbstractViewCrawler implements VTrack {
 
         private ViewCrawlerHandler(Context context, Looper looper, String resourcePackageName) {
             super(looper);
-            mSnapshot = null;
             mLastImageHash = new StringBuilder();
             mUseGzip = true;
             mAppId = AppInfoUtils.getProcessName(context);
@@ -240,7 +236,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                 writer.write(("\"os\": \"Android\",").getBytes());
                 writer.write(("\"lib\": \"Android\",").getBytes());
                 writer.write(("\"app_id\": \"" + mAppId + "\",").getBytes());
-                writer.write(("\"app_enablevisualizedproperties\": " + SensorsDataAPI.getConfigOptions().isVisualizedPropertiesEnabled() + ",").getBytes());
                 // 需要把全埋点的开关状态，透传给前端，前端进行错误提示
                 try {
                     JSONArray array = new JSONArray();
@@ -261,7 +256,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                     final OutputStream payload_writer = new BufferedOutputStream(payload_out);
                     payload_writer.write(("{\"activities\":").getBytes());
                     payload_writer.flush();
-                    info = mSnapshot.snapshots(payload_out, mLastImageHash);
                     final long snapshotTime = System.currentTimeMillis() - startSnapshot;
                     payload_writer.write((",\"snapshot_time_millis\": ").getBytes());
                     payload_writer.write(Long.toString(snapshotTime).getBytes());
@@ -297,7 +291,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                     {
                         writer.write(("\"activities\":").getBytes());
                         writer.flush();
-                        info = mSnapshot.snapshots(out, mLastImageHash);
                     }
 
                     final long snapshotTime = System.currentTimeMillis() - startSnapshot;
@@ -313,13 +306,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                     pageName = info.screenName;
                 }
 
-                // 页面浏览事件中，如果存在 fragment ，则优先取 fragment screenName
-                if (info.hasFragment) {
-                    String fragmentScreenName = AppStateManager.getInstance().getFragmentScreenName();
-                    if (!TextUtils.isEmpty(fragmentScreenName)) {
-                        pageName = fragmentScreenName;
-                    }
-                }
 
                 SALog.i(TAG, "page_name： " + pageName);
                 if (!TextUtils.isEmpty(pageName)) {
@@ -413,14 +399,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                     int delay = responseJson.getInt("delay");
                     if (delay < 0) {
                         rePostSnapshot = false;
-                    }
-                    String visualizedConfig = responseJson.optString("visualized_sdk_config");
-                    boolean visualizedConfigDisabled = responseJson.optBoolean("visualized_config_disabled");
-                    // 自定义属性配置被禁用时，需要覆盖本地缓存
-                    if (!TextUtils.isEmpty(visualizedConfig) || visualizedConfigDisabled) {
-                        if (SensorsDataAPI.getConfigOptions().isVisualizedPropertiesEnabled()) {
-                            VisualPropertiesManager.getInstance().save2Cache(visualizedConfig);
-                        }
                     }
                     // 是否处于 debug = 1 状态
                     VisualizedAutoTrackService.getInstance().setDebugModeEnabled(responseJson.optBoolean("visualized_debug_mode_enabled"));

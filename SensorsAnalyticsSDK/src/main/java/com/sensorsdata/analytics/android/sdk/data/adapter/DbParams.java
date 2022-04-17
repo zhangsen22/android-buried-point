@@ -31,9 +31,7 @@ public class DbParams {
     /* 数据库版本号 */
     public static final int DATABASE_VERSION = 5;
     public static final String TABLE_ACTIVITY_START_COUNT = "activity_started_count";
-    public static final String TABLE_APP_START_TIME = "app_start_time";
     public static final String TABLE_FIRST_PROCESS_START = "first_process_start";
-    public static final String TABLE_SESSION_INTERVAL_TIME = "session_interval_time";
     public static final String TABLE_DATA_COLLECT = "data_collect";
     public static final String TABLE_DATA_ENABLE_SDK = "enable_SDK";
     public static final String TABLE_DATA_DISABLE_SDK = "disable_SDK";
@@ -51,11 +49,8 @@ public class DbParams {
     /* 删除所有数据 */
     static final String DB_DELETE_ALL = "DB_DELETE_ALL";
     private static DbParams instance;
-    private final Uri mUri, mActivityStartCountUri, mAppStartTimeUri, mDataCollectUri,
-            mAppExitDataUri, mSessionTimeUri, mLoginIdUri, mChannelPersistentUri, mSubProcessUri,
+    private final Uri mUri, mActivityStartCountUri, mDataCollectUri, mChannelPersistentUri, mSubProcessUri,
             mEnableSDKUri, mDisableSDKUri, mRemoteConfigUri, mUserIdentities, mLoginIdKeyUri, mPushIdUri;
-    /* 替换 APP_END_DATA 数据，使用新的 SP 文件保存 */
-    public static final String APP_EXIT_DATA = "app_exit_data";
 
     public interface PersistentName {
         String APP_END_DATA = "app_end_data";
@@ -66,7 +61,6 @@ public class DbParams {
         String FIRST_INSTALL = "first_track_installation";
         String REQUEST_DEFERRER_DEEPLINK = "request_deferrer_deeplink";
         String FIRST_INSTALL_CALLBACK = "first_track_installation_with_callback";
-        String LOGIN_ID = "events_login_id";
         String REMOTE_CONFIG = "sensorsdata_sdk_configuration";
         String SUPER_PROPERTIES = "super_properties";
         String VISUAL_PROPERTIES = "visual_properties";
@@ -77,10 +71,6 @@ public class DbParams {
     private DbParams(String packageName) {
         mUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_EVENTS);
         mActivityStartCountUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_ACTIVITY_START_COUNT);
-        mAppStartTimeUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_APP_START_TIME);
-        mAppExitDataUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + APP_EXIT_DATA);
-        mSessionTimeUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_SESSION_INTERVAL_TIME);
-        mLoginIdUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + PersistentName.LOGIN_ID);
         mLoginIdKeyUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + PersistentName.PERSISTENT_LOGIN_ID_KEY);
         mChannelPersistentUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_CHANNEL_PERSISTENT);
         mSubProcessUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + PersistentName.SUB_PROCESS_FLUSH_DATA);
@@ -122,42 +112,6 @@ public class DbParams {
      */
     public Uri getActivityStartCountUri() {
         return mActivityStartCountUri;
-    }
-
-    /**
-     * 获取 AppStartTime Uri
-     *
-     * @return Uri
-     */
-    Uri getAppStartTimeUri() {
-        return mAppStartTimeUri;
-    }
-
-    /**
-     * 获取 AppEndData Uri
-     *
-     * @return Uri
-     */
-    Uri getAppExitDataUri() {
-        return mAppExitDataUri;
-    }
-
-    /**
-     * 获取 SessionTime Uri
-     *
-     * @return Uri
-     */
-    public Uri getSessionTimeUri() {
-        return mSessionTimeUri;
-    }
-
-    /**
-     * 获取 LoginId 的 Uri
-     *
-     * @return Uri
-     */
-    public Uri getLoginIdUri() {
-        return mLoginIdUri;
     }
 
     /**

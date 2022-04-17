@@ -18,46 +18,18 @@
 package com.sensorsdata.analytics.android.sdk;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Build;
 import android.os.SystemClock;
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.Adapter;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
-import android.widget.GridView;
-import android.widget.HeaderViewListAdapter;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TabHost;
 
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
 import com.sensorsdata.analytics.android.sdk.util.KeyboardViewUtil;
-import com.sensorsdata.analytics.android.sdk.util.ReflectUtil;
-import com.sensorsdata.analytics.android.sdk.util.SAFragmentUtils;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
-import com.sensorsdata.analytics.android.sdk.util.ThreadUtils;
-import com.sensorsdata.analytics.android.sdk.util.ViewUtil;
-import com.sensorsdata.analytics.android.sdk.util.WindowHelper;
-import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
-import com.sensorsdata.analytics.android.sdk.visual.util.VisualUtil;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 
 @SuppressWarnings("unused")
@@ -103,12 +75,6 @@ public class SensorsDataAutoTrackHelper {
 
             // 获取 view 所在的 fragment
             Object fragment = AopUtil.getFragmentFromView(view, activity);
-
-
-            //View 被忽略
-            if (AopUtil.isViewIgnored(view)) {
-                return;
-            }
 
             if (SensorsDataUtils.isDoubleClick(view)) {
                 return;

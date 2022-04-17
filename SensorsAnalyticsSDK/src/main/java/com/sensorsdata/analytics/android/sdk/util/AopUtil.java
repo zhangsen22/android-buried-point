@@ -39,7 +39,6 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.sensorsdata.analytics.android.sdk.AopConstants;
-import com.sensorsdata.analytics.android.sdk.AppStateManager;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.ScreenAutoTracker;
@@ -97,9 +96,6 @@ public class AopUtil {
                 if (child instanceof ViewGroup) {
                     traverseView(stringBuilder, (ViewGroup) child);
                 } else {
-                    if (isViewIgnored(child)) {
-                        continue;
-                    }
 
                     String viewText = getViewText(child);
                     if (!TextUtils.isEmpty(viewText)) {
@@ -217,14 +213,6 @@ public class AopUtil {
                     }
                 }
 
-                if (activity == null && view != null) {
-                    Object object = view.getTag(R.id.sensors_analytics_tag_view_activity);
-                    if (object != null) {
-                        if (object instanceof Activity) {
-                            activity = (Activity) object;
-                        }
-                    }
-                }
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
@@ -399,61 +387,6 @@ public class AopUtil {
         }
     }
 
-    public static String getViewId(View view) {
-        String idString = null;
-        try {
-            idString = (String) view.getTag(R.id.sensors_analytics_tag_view_id);
-            if (TextUtils.isEmpty(idString)) {
-                if (isValid(view.getId())) {
-                    idString = SnapCache.getInstance().getViewId(view);
-                    if (idString == null) {
-                        idString = view.getContext().getResources().getResourceEntryName(view.getId());
-                        SnapCache.getInstance().setViewId(view, idString);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            if (SALog.isLogEnabled()) {
-                exceptionCollect(view);
-            }
-        }
-        return idString;
-    }
-
-    private static void exceptionCollect(View view) {
-        try {
-            if (view != null) {
-                SALog.i(TAG, "viewClass:" + view.getClass());
-                SALog.i(TAG, "viewId:" + view.getId());
-                Activity activity = AppStateManager.getInstance().getForegroundActivity();
-                if (activity != null) {
-                    SALog.i(TAG, "currentName:" + activity.getClass().getCanonicalName());
-                }
-                ViewParent viewParent = view.getParent();
-                if (viewParent != null) {
-                    if (viewParent instanceof View) {
-                        View tmpParent = (View) viewParent;
-                        SALog.i(TAG, "viewParentClass->ID:" + tmpParent.getId());
-                    }
-                } else {
-                    if (view instanceof ViewGroup) {
-                        int count = ((ViewGroup) view).getChildCount();
-                        if (count > 0) {
-                            View childView = ((ViewGroup) view).getChildAt(0);
-                            SALog.i(TAG, "childView->ID:" + childView.getId());
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-
-        }
-    }
-
-    private static boolean isValid(int id) {
-        return id != -1 && (id & 0xff000000) != 0 && (id & 0x00ff0000) != 0;
-    }
-
     /**
      * 采集 View 的 $element_type 主要区分继承系统 View 和继承系统 View 的自定义 View
      *
@@ -526,64 +459,6 @@ public class AopUtil {
             return getViewType(viewType, "SwitchCompat");
         }
         return viewType;
-    }
-
-    /**
-     * ViewType 被忽略
-     *
-     * @param viewType Class
-     * @return 是否被忽略
-     */
-    public static boolean isViewIgnored(Class viewType) {
-        try {
-            if (viewType == null) {
-                return true;
-            }
-
-            List<Class> mIgnoredViewTypeList = SensorsDataAPI.sharedInstance().getIgnoredViewTypeList();
-            if (!mIgnoredViewTypeList.isEmpty()) {
-                for (Class<?> clazz : mIgnoredViewTypeList) {
-                    if (clazz.isAssignableFrom(viewType)) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        } catch (Exception e) {
-            return true;
-        }
-    }
-
-    /**
-     * 判断 View 是否被忽略
-     *
-     * @param view View
-     * @return 是否被忽略
-     */
-    public static boolean isViewIgnored(View view) {
-        try {
-            //基本校验
-            if (view == null) {
-                return true;
-            }
-
-            //ViewType 被忽略
-            List<Class> mIgnoredViewTypeList = SensorsDataAPI.sharedInstance().getIgnoredViewTypeList();
-            if (mIgnoredViewTypeList != null) {
-                for (Class<?> clazz : mIgnoredViewTypeList) {
-                    if (clazz.isAssignableFrom(view.getClass())) {
-                        return true;
-                    }
-                }
-            }
-
-            //View 被忽略
-            return "1".equals(view.getTag(R.id.sensors_analytics_tag_view_ignored));
-
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-            return true;
-        }
     }
 
     /**
@@ -675,7 +550,6 @@ public class AopUtil {
     /**
      * properties 注入点击事件信息
      * 属性的优先级为：预置属性低于 {@link ScreenAutoTracker#getTrackProperties()} 低于
-     * {@link SensorsDataAPI#setViewProperties(View, JSONObject)} 低于
      * {@link SensorsDataAPI#trackViewAppClick(View, JSONObject)}
      *
      * @param view 点击的 view
@@ -694,12 +568,6 @@ public class AopUtil {
             Context context = view.getContext();
             JSONObject eventJson = new JSONObject();
             Activity activity = AopUtil.getActivityFromContext(context, view);
-            //1.获取预置属性
-            //ViewId
-            String idString = AopUtil.getViewId(view);
-            if (!TextUtils.isEmpty(idString)) {
-                eventJson.put(AopConstants.ELEMENT_ID, idString);
-            }
 
             ViewNode viewNode = ViewUtil.getViewContentAndType(view);
             String viewText = viewNode.getViewContent();
@@ -719,11 +587,6 @@ public class AopUtil {
             Object fragment = AopUtil.getFragmentFromView(view, activity);
             if (fragment != null) {
                 AopUtil.getScreenNameAndTitleFromFragment(eventJson, fragment, activity);
-            }
-            //3.获取 View 自定义属性
-            JSONObject p = (JSONObject) view.getTag(R.id.sensors_analytics_tag_view_properties);
-            if (p != null) {
-                AopUtil.mergeJSONObject(p, eventJson);
             }
             //4.事件传入的自定义属性
             JSONUtils.mergeDistinctProperty(eventJson, properties);
@@ -755,10 +618,6 @@ public class AopUtil {
         try {
             if (view != null) {
                 String fragmentName = (String) view.getTag(R.id.sensors_analytics_tag_view_fragment_name);
-                String fragmentName2 = (String) view.getTag(R.id.sensors_analytics_tag_view_fragment_name2);
-                if (!TextUtils.isEmpty(fragmentName2)) {
-                    fragmentName = fragmentName2;
-                }
                 if (TextUtils.isEmpty(fragmentName)) {
                     if (activity == null) {
                         //获取所在的 Context
@@ -795,21 +654,9 @@ public class AopUtil {
             if (properties == null) {
                 properties = new JSONObject();
             }
-            if ((SensorsDataAPI.sharedInstance().isHeatMapEnabled() || SensorsDataAPI.sharedInstance().isVisualizedAutoTrackEnabled())
-                    && (SensorsDataAPI.sharedInstance().isHeatMapActivity(activity.getClass()) || SensorsDataAPI.sharedInstance().isVisualizedAutoTrackActivity(activity.getClass()))) {
-                String elementSelector = ViewUtil.getElementSelector(view);
-                if (!TextUtils.isEmpty(elementSelector)) {
-                    properties.put(AopConstants.ELEMENT_SELECTOR, elementSelector);
-                }
-            }
+
             ViewNode viewNode = ViewTreeStatusObservable.getInstance().getViewNode(view);
             if (viewNode != null) {
-                if (!TextUtils.isEmpty(viewNode.getViewPath())) {
-                    if ((SensorsDataAPI.sharedInstance().isVisualizedAutoTrackEnabled() && SensorsDataAPI.sharedInstance().isVisualizedAutoTrackActivity(activity.getClass()))
-                            || (SensorsDataAPI.sharedInstance().isHeatMapEnabled() && SensorsDataAPI.sharedInstance().isHeatMapActivity(activity.getClass()))) {
-                        properties.put(AopConstants.ELEMENT_PATH, viewNode.getViewPath());
-                    }
-                }
                 if (!TextUtils.isEmpty(viewNode.getViewPosition())) {
                     properties.put(AopConstants.ELEMENT_POSITION, viewNode.getViewPosition());
                 }

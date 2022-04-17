@@ -29,13 +29,10 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
 
 import com.sensorsdata.analytics.android.sdk.AopConstants;
-import com.sensorsdata.analytics.android.sdk.AppStateManager;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.util.ViewUtil;
-import com.sensorsdata.analytics.android.sdk.util.WindowHelper;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 import com.sensorsdata.analytics.android.sdk.visual.util.Dispatcher;
-import com.sensorsdata.analytics.android.sdk.visual.util.VisualUtil;
 
 import org.json.JSONObject;
 
@@ -125,12 +122,7 @@ public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrol
                 if (reference != null && reference.get() != null) {
                     rootView = reference.get().getRootView();
                 }
-                if (rootView == null) {
-                    Activity activity = AppStateManager.getInstance().getForegroundActivity();
-                    if (activity != null && activity.getWindow() != null && activity.getWindow().isActive()) {
-                        rootView = activity.getWindow().getDecorView();
-                    }
-                }
+
                 if (rootView != null) {
                     traverseNode(rootView);
                 }
@@ -140,47 +132,6 @@ public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrol
             SALog.printStackTrace(e);
         }
         return viewNode;
-    }
-
-    /**
-     * 通过 elementPath 获取目标 View
-     *
-     * @param elementPath view 的元素路径
-     * @return 目标 View
-     */
-    public ViewNode getViewNode(String elementPath) {
-        ViewNode viewNode = null;
-        try {
-            viewNode = mWebViewHashMap.get(elementPath);
-            // ViewTree 中不存在，需要主动遍历
-            if (viewNode == null || viewNode.getView() == null || viewNode.getView().get() == null) {
-                View rootView = null;
-                Activity activity = AppStateManager.getInstance().getForegroundActivity();
-                if (activity != null && activity.getWindow() != null && activity.getWindow().isActive()) {
-                    rootView = activity.getWindow().getDecorView();
-                }
-                if (rootView != null) {
-                    traverseNode(rootView);
-                }
-                viewNode = mWebViewHashMap.get(elementPath);
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return viewNode;
-    }
-
-    /**
-     * WebView 缓存需要在页面销毁时候进行释放，优化性能。
-     */
-    public void clearWebViewCache() {
-        try {
-            if (mWebViewHashMap != null) {
-                mWebViewHashMap.clear();
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
     }
 
     private void traverseNode() {
@@ -198,12 +149,6 @@ public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrol
             // 主动遍历
             if (rootView != null) {
                 traverseNode(rootView, tempSparseArray, tempHashMap, tempWebViewHashMap);
-            } else {
-                // 被动缓存
-                final View[] views = WindowHelper.getSortedWindowViews();
-                for (View view : views) {
-                    traverseNode(view, tempSparseArray, tempHashMap, tempWebViewHashMap);
-                }
             }
             mViewNodesHashMap = tempHashMap;
             mViewNodesWithHashCode = tempSparseArray;
@@ -255,20 +200,6 @@ public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrol
             if (viewNode != null) {
                 // 缓存 ViewNode,用于获取 $element_path
                 sparseArray.put(view.hashCode(), viewNode);
-                if (!TextUtils.isEmpty(viewNode.getViewPath())) {
-                    JSONObject jsonObject = VisualUtil.getScreenNameAndTitle(view, null);
-                    if (jsonObject != null) {
-                        String screenName = jsonObject.optString(AopConstants.SCREEN_NAME);
-                        if (!TextUtils.isEmpty(screenName)) {
-                            if (!TextUtils.isEmpty(viewNode.getViewContent())) {
-                                hashMap.put(generateKey(viewNode.getViewPath(), viewNode.getViewPosition(), screenName), viewNode);
-                            }
-                            if (ViewUtil.instanceOfWebView(view)) {
-                                webViewHashMap.put(viewNode.getViewPath() + screenName, viewNode);
-                            }
-                        }
-                    }
-                }
             }
             if (view instanceof ViewGroup) {
                 final ViewGroup group = (ViewGroup) view;

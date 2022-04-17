@@ -38,39 +38,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void enableAutoTrackFragment(Class<?> fragment) {
-    }
-
-    @Override
-    public void enableAutoTrackFragments(List<Class<?>> fragmentsList) {
-    }
-
-    @Override
-    public void ignoreAutoTrackFragments(List<Class<?>> fragmentList) {
-
-    }
-
-    @Override
-    public void ignoreAutoTrackFragment(Class<?> fragment) {
-
-    }
-
-    @Override
-    public void resumeIgnoredAutoTrackFragments(List<Class<?>> fragmentList) {
-
-    }
-
-    @Override
-    public void resumeIgnoredAutoTrackFragment(Class<?> fragment) {
-
-    }
-
-    @Override
-    public boolean isFragmentAutoTrackAppViewScreen(Class<?> fragment) {
-        return false;
-    }
-
-    @Override
     public String getServerUrl() {
         return null;
     }
@@ -132,15 +99,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public int getSessionIntervalTime() {
-        return 30 * 1000;
-    }
-
-    @Override
-    public void setSessionIntervalTime(int sessionIntervalTime) {
-    }
-
-    @Override
     public void enableAutoTrack(List<AutoTrackEventType> eventTypeList) {
 
     }
@@ -161,88 +119,8 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void trackFragmentAppViewScreen() {
-
-    }
-
-    @Override
-    public boolean isTrackFragmentAppViewScreenEnabled() {
-        return false;
-    }
-
-    @Override
     public boolean isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType eventType) {
         return true;
-    }
-
-    @Override
-    public void setViewID(View view, String viewID) {
-
-    }
-
-    @Override
-    public void setViewID(android.app.Dialog view, String viewID) {
-
-    }
-
-    @Override
-    public void setViewID(Object view, String viewID) {
-
-    }
-
-    @Override
-    public void setViewActivity(View view, Activity activity) {
-
-    }
-
-    @Override
-    public void setViewFragmentName(View view, String fragmentName) {
-
-    }
-
-    @Override
-    public void ignoreView(View view) {
-
-    }
-
-    @Override
-    public void ignoreView(View view, boolean ignore) {
-
-    }
-
-    @Override
-    public void setViewProperties(View view, JSONObject properties) {
-
-    }
-
-    @Override
-    public List<Class> getIgnoredViewTypeList() {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public void ignoreViewType(Class viewType) {
-
-    }
-
-    @Override
-    public boolean isHeatMapActivity(Class<?> activity) {
-        return false;
-    }
-
-    @Override
-    public void addHeatMapActivity(Class<?> activity) {
-
-    }
-
-    @Override
-    public void addHeatMapActivities(List<Class<?>> activitiesList) {
-
-    }
-
-    @Override
-    public boolean isHeatMapEnabled() {
-        return false;
     }
 
     @Override
@@ -411,40 +289,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void enableTrackScreenOrientation(boolean enable) {
-
-    }
-
-    @Override
-    public void resumeTrackScreenOrientation() {
-
-    }
-
-    @Override
-    public void stopTrackScreenOrientation() {
-
-    }
-    @Override
-    public boolean isVisualizedAutoTrackActivity(Class<?> activity) {
-        return false;
-    }
-
-    @Override
-    public void addVisualizedAutoTrackActivity(Class<?> activity) {
-
-    }
-
-    @Override
-    public void addVisualizedAutoTrackActivities(List<Class<?>> activitiesList) {
-
-    }
-
-    @Override
-    public boolean isVisualizedAutoTrackEnabled() {
-        return false;
-    }
-
-    @Override
     public void itemSet(String itemType, String itemId, JSONObject properties) {
     }
 
@@ -475,11 +319,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     @Override
     int getFlushNetworkPolicy() {
         return 0;
-    }
-
-    @Override
-    public String getScreenOrientation() {
-        return "";
     }
 
     @Override

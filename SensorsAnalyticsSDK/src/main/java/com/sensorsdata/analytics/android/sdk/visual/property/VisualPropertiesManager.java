@@ -20,12 +20,10 @@ package com.sensorsdata.analytics.android.sdk.visual.property;
 import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 
 import com.sensorsdata.analytics.android.sdk.AopConstants;
-import com.sensorsdata.analytics.android.sdk.AppStateManager;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
@@ -55,13 +53,11 @@ public class VisualPropertiesManager {
     private static final String PROPERTY_TYPE_NUMBER = "NUMBER";
     private VisualConfig mVisualConfig;
     private VisualPropertiesCache mConfigCache;
-    private VisualConfigRequestHelper mRequestHelper;
     private CollectLogListener mCollectLogListener;
 
     private VisualPropertiesManager() {
         mConfigCache = new VisualPropertiesCache();
         mVisualConfig = mConfigCache.getVisualConfig();
-        mRequestHelper = new VisualConfigRequestHelper();
     }
 
     public static VisualPropertiesManager getInstance() {
@@ -72,33 +68,6 @@ public class VisualPropertiesManager {
         private static VisualPropertiesManager INSTANCE = new VisualPropertiesManager();
     }
 
-    public void requestVisualConfig(Context context, SensorsDataAPI sensorsDataAPI) {
-        try {
-            if (sensorsDataAPI == null || !sensorsDataAPI.isNetworkRequestEnable()) {
-                SALog.i(TAG, "Close network request");
-                return;
-            }
-            mRequestHelper.requestVisualConfig(context, getVisualConfigVersion(), new VisualConfigRequestHelper.IApiCallback() {
-                @Override
-                public void onSuccess(String message) {
-                    save2Cache(message);
-                }
-            });
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    public void requestVisualConfig() {
-        try {
-            Context context = SensorsDataAPI.sharedInstance().getContext();
-            if (context != null) {
-                requestVisualConfig(context, SensorsDataAPI.sharedInstance());
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
 
     public VisualPropertiesCache getVisualPropertiesCache() {
         return mConfigCache;
@@ -182,15 +151,6 @@ public class VisualPropertiesManager {
                 return;
             }
 
-            // 校验开关是否打开
-            if (!SensorsDataAPI.sharedInstance().isVisualizedAutoTrackEnabled()) {
-                SALog.i(TAG, "you should call 'enableVisualizedAutoTrack(true)' first");
-                if (mCollectLogListener != null) {
-                    mCollectLogListener.onSwitchClose();
-                }
-                return;
-            }
-
             Activity activity = null;
             if (viewNode != null) {
                 WeakReference<View> view = viewNode.getView();
@@ -198,10 +158,7 @@ public class VisualPropertiesManager {
                     activity = AopUtil.getActivityFromContext(view.get().getContext(), view.get());
                 }
             }
-            if (activity == null) {
-                activity = AppStateManager.getInstance().getForegroundActivity();
-            }
-            if (!(activity != null && SensorsDataAPI.sharedInstance().isVisualizedAutoTrackActivity(activity.getClass()))) {
+            if (!(activity != null)) {
                 SALog.i(TAG, "activity is null or not in white list and return");
                 if (mCollectLogListener != null) {
                     mCollectLogListener.onOtherError("activity is null or not in white list and return");

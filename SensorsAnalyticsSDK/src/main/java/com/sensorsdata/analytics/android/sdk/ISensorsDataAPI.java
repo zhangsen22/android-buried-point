@@ -18,18 +18,13 @@ package com.sensorsdata.analytics.android.sdk;
 
 import android.app.Activity;
 import android.view.View;
-import android.webkit.WebView;
-
-import com.sensorsdata.analytics.android.sdk.internal.api.IFragmentAPI;
-
 import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
-public interface ISensorsDataAPI extends IFragmentAPI {
+public interface ISensorsDataAPI{
     /**
      * 返回预置属性
      *
@@ -153,24 +148,6 @@ public interface ISensorsDataAPI extends IFragmentAPI {
     void setFlushBulkSize(int flushBulkSize);
 
     /**
-     * 设置 App 切换到后台与下次事件的事件间隔
-     * 默认值为 30*1000 毫秒
-     * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
-     *
-     * @return 返回设置的 SessionIntervalTime ，默认是 30s
-     */
-    int getSessionIntervalTime();
-
-    /**
-     * 设置 App 切换到后台与下次事件的事件间隔
-     * 默认值为 30*1000 毫秒
-     * 若 App 在后台超过设定事件，则认为当前 Session 结束，发送 $AppEnd 事件
-     *
-     * @param sessionIntervalTime int
-     */
-    void setSessionIntervalTime(int sessionIntervalTime);
-
-    /**
      * 打开 SDK 自动追踪
      * 该功能自动追踪 App 的一些行为，指定哪些 AutoTrack 事件被追踪，具体信息请参考文档:
      * https://sensorsdata.cn/manual/android_sdk.html
@@ -216,141 +193,6 @@ public interface ISensorsDataAPI extends IFragmentAPI {
      * @return true 被忽略; false 没有被忽略
      */
     boolean isAutoTrackEventTypeIgnored(int autoTrackEventType);
-
-    /**
-     * 设置界面元素 ID
-     *
-     * @param view 要设置的 View
-     * @param viewID String 给这个 View 的 ID
-     */
-    void setViewID(View view, String viewID);
-
-    /**
-     * 设置界面元素 ID
-     *
-     * @param view 要设置的 View
-     * @param viewID String 给这个 View 的 ID
-     */
-    void setViewID(android.app.Dialog view, String viewID);
-
-    /**
-     * 设置界面元素 ID
-     *
-     * @param view 要设置的 View
-     * @param viewID String 给这个 View 的 ID
-     */
-    void setViewID(Object view, String viewID);
-
-    /**
-     * 设置 View 所属 Activity
-     *
-     * @param view 要设置的 View
-     * @param activity Activity View 所属 Activity
-     */
-    void setViewActivity(View view, Activity activity);
-
-    /**
-     * 设置 View 所属 Fragment 名称
-     *
-     * @param view 要设置的 View
-     * @param fragmentName String View 所属 Fragment 名称
-     */
-    void setViewFragmentName(View view, String fragmentName);
-
-    /**
-     * 忽略 View
-     *
-     * @param view 要忽略的 View
-     */
-    void ignoreView(View view);
-
-    /**
-     * 忽略View
-     *
-     * @param view View
-     * @param ignore 是否忽略
-     */
-    void ignoreView(View view, boolean ignore);
-
-    /**
-     * 设置View属性
-     *
-     * @param view 要设置的 View
-     * @param properties 要设置的 View 的属性
-     */
-    void setViewProperties(View view, JSONObject properties);
-
-    /**
-     * 获取忽略采集 View 的集合
-     *
-     * @return 忽略采集的 View 集合
-     */
-    List<Class> getIgnoredViewTypeList();
-
-    /**
-     * 忽略某一类型的 View
-     *
-     * @param viewType Class
-     */
-    void ignoreViewType(Class viewType);
-
-    /**
-     * activity 是否开启了可视化全埋点
-     *
-     * @param activity activity 类的对象
-     * @return true 代表 activity 开启了可视化全埋点，false 代表 activity 关闭了可视化全埋点
-     */
-    boolean isVisualizedAutoTrackActivity(Class<?> activity);
-
-    /**
-     * 开启某个 activity 的可视化全埋点
-     *
-     * @param activity activity 类的对象
-     */
-    void addVisualizedAutoTrackActivity(Class<?> activity);
-
-    /**
-     * 开启多个 activity 的可视化全埋点
-     *
-     * @param activitiesList activity 类的对象集合
-     */
-    void addVisualizedAutoTrackActivities(List<Class<?>> activitiesList);
-
-    /**
-     * 是否开启可视化全埋点
-     *
-     * @return true 代表开启了可视化全埋点， false 代表关闭了可视化全埋点
-     */
-    boolean isVisualizedAutoTrackEnabled();
-
-    /**
-     * activity 是否开启了点击图
-     *
-     * @param activity activity 类的对象
-     * @return true 代表 activity 开启了点击图， false 代表 activity 关闭了点击图
-     */
-    boolean isHeatMapActivity(Class<?> activity);
-
-    /**
-     * 开启某个 activity 的点击图
-     *
-     * @param activity activity 类的对象
-     */
-    void addHeatMapActivity(Class<?> activity);
-
-    /**
-     * 开启多个 activity 的点击图
-     *
-     * @param activitiesList activity 类的对象集合
-     */
-    void addHeatMapActivities(List<Class<?>> activitiesList);
-
-    /**
-     * 是否开启点击图
-     *
-     * @return true 代表开启了点击图，false 代表关闭了点击图
-     */
-    boolean isHeatMapEnabled();
 
     /**
      * 调用 track 接口，追踪一个带有属性的事件
@@ -551,30 +393,6 @@ public interface ISensorsDataAPI extends IFragmentAPI {
      * 清除 GPS 位置信息
      */
     void clearGPSLocation();
-
-    /**
-     * 开启/关闭采集屏幕方向
-     *
-     * @param enable true：开启 false：关闭
-     */
-    void enableTrackScreenOrientation(boolean enable);
-
-    /**
-     * 恢复采集屏幕方向
-     */
-    void resumeTrackScreenOrientation();
-
-    /**
-     * 暂停采集屏幕方向
-     */
-    void stopTrackScreenOrientation();
-
-    /**
-     * 获取当前屏幕方向
-     *
-     * @return portrait:竖屏 landscape:横屏
-     */
-    String getScreenOrientation();
 
     /**
      * 删除本地缓存的全部事件

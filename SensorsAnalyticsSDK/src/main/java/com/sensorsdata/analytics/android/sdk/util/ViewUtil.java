@@ -40,11 +40,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.sensorsdata.analytics.android.sdk.AppStateManager;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 import com.sensorsdata.analytics.android.sdk.visual.snap.SnapCache;
-import com.sensorsdata.analytics.android.sdk.visual.util.VisualUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -292,9 +290,7 @@ public class ViewUtil {
         if (view == null || view.getWindowVisibility() == View.GONE) {
             return false;
         }
-        if (WindowHelper.isDecorView(view.getClass())) {
-            return true;
-        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
             Boolean localVisibleRect = SnapCache.getInstance().getLocalVisibleRect(view);
             boolean viewLocalVisiable;
@@ -367,37 +363,6 @@ public class ViewUtil {
         }
     }
 
-    public static int getMainWindowCount(View[] windowRootViews) {
-        int mainWindowCount = 0;
-        WindowHelper.init();
-        for (View windowRootView : windowRootViews) {
-            if (windowRootView != null) {
-                mainWindowCount += WindowHelper.getWindowPrefix(windowRootView).equals(WindowHelper.getMainWindowPrefix()) ? 1 : 0;
-            }
-        }
-        return mainWindowCount;
-    }
-
-    public static boolean isWindowNeedTraverse(View root, String prefix, boolean skipOtherActivity) {
-        if ((root.hashCode() == AppStateManager.getInstance().getCurrentRootWindowsHashCode())) {
-            return true;
-        }
-        if (root instanceof ViewGroup) {
-            if (!skipOtherActivity) {
-                return true;
-            }
-            if (!(root.getWindowVisibility() == View.GONE || root.getVisibility() != View.VISIBLE || TextUtils.equals(prefix, WindowHelper.getMainWindowPrefix()) || root.getWidth() == 0 || root.getHeight() == 0)) {
-                return true;
-            }
-        }
-        if (root.getWindowVisibility() == View.VISIBLE || root.getVisibility() == View.VISIBLE) {
-            if (WindowHelper.isCustomWindow(root)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 
     public static ViewNode getViewPathAndPosition(View clickView, boolean fromVisual) {
         ArrayList<View> arrayList = new ArrayList<View>(8);
@@ -440,70 +405,7 @@ public class ViewUtil {
         return null;
     }
 
-    public static String getElementSelector(View view) {
-        String currentPath = SnapCache.getInstance().getSelectPath(view);
-        if (currentPath != null) {
-            return currentPath;
-        }
-        ViewParent viewParent;
-        String selectPath;
-        View parent_view = null;
-        viewParent = view.getParent();
-        if (viewParent instanceof ViewGroup) {
-            parent_view = (View) viewParent;
-        }
-        String parentPath = null;
-        if (parent_view != null) {
-            parentPath = SnapCache.getInstance().getSelectPath(parent_view);
-        }
-        String path = SnapCache.getInstance().getCanonicalName(view.getClass());
 
-        if (parent_view != null) {
-            if (parentPath == null) {
-                parentPath = getElementSelectorOrigin(parent_view);
-                SnapCache.getInstance().setSelectPath(parent_view, parentPath);
-            }
-            StringBuilder sb = new StringBuilder();
-            if (parentPath != null && !parentPath.equals("")) {
-                sb.append(parentPath);
-                sb.append("/");
-            }
-            int index = VisualUtil.getChildIndex(viewParent, view);
-            sb.append(path);
-            sb.append("[");
-            sb.append(index);
-            sb.append("]");
-            selectPath = sb.toString();
-        } else {
-            selectPath = getElementSelectorOrigin(view);
-        }
-        SnapCache.getInstance().setSelectPath(view, selectPath);
-        return selectPath;
-    }
-
-    private static String getElementSelectorOrigin(View view) {
-        ViewParent viewParent;
-        List<String> viewPath = new LinkedList<>();
-        do {
-            viewParent = view.getParent();
-            int index = VisualUtil.getChildIndex(viewParent, view);
-            viewPath.add(view.getClass().getCanonicalName() + "[" + index + "]");
-            if (viewParent instanceof ViewGroup) {
-                view = (ViewGroup) viewParent;
-            }
-        } while (viewParent instanceof ViewGroup);
-
-        Collections.reverse(viewPath);
-
-        StringBuilder stringBuffer = new StringBuilder();
-        for (int i = 1; i < viewPath.size(); i++) {
-            stringBuffer.append(viewPath.get(i));
-            if (i != (viewPath.size() - 1)) {
-                stringBuffer.append("/");
-            }
-        }
-        return stringBuffer.toString();
-    }
 
     private static int getViewPosition(View view, int viewIndex) {
         int idx = viewIndex;
@@ -529,7 +431,7 @@ public class ViewUtil {
         if (parentObject == null) {
             return null;
         }
-        if (!WindowHelper.isDecorView(view.getClass()) || (parentObject instanceof View)) {
+        if ( (parentObject instanceof View)) {
             if (parentObject instanceof View) {
                 View parentView = (View) parentObject;
                 StringBuilder opx = new StringBuilder();
@@ -586,19 +488,8 @@ public class ViewUtil {
                     viewName = ViewUtil.getCanonicalAndCheckCustomView(fragment.getClass());
                     opx.append("/").append(viewName).append("[0]");
                     px.append("/").append(viewName).append("[0]");
-                } else {
-                    viewPosition = VisualUtil.getChildIndex(parentObject, view);
-                    opx.append("/").append(viewName).append("[").append(viewPosition).append("]");
-                    px.append("/").append(viewName).append("[").append(viewPosition).append("]");
                 }
-                if (WindowHelper.isDecorView(parentView.getClass())) {
-                    if (opx.length() > 0) {
-                        opx.deleteCharAt(0);
-                    }
-                    if (px.length() > 0) {
-                        px.deleteCharAt(0);
-                    }
-                }
+
                 if (!TextUtils.isEmpty(listPos)) {
                     if (sViewCache == null) {
                         sViewCache = new SparseArray<String>();

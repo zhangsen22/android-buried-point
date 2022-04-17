@@ -83,12 +83,6 @@ class WidgetTestActivity : BaseActivity(), CompoundButton.OnCheckedChangeListene
 //        }
         linearlayout.setOnClickListener { }
         mylinearlayout.setOnClickListener { }
-        SensorsDataAPI.sharedInstance().ignoreView(changeSeekBar)
-        SensorsDataAPI.sharedInstance().ignoreView(changeRatingBar)
-        SensorsDataAPI.sharedInstance().ignoreView(changeRadioBtn)
-        SensorsDataAPI.sharedInstance().ignoreView(changSwitchBtn)
-        SensorsDataAPI.sharedInstance().ignoreView(changeCheckedBtn)
-        SensorsDataAPI.sharedInstance().ignoreView(changeToggleBtn)
         linearlayout.setOnClickListener { }
         mylinearlayout.setOnClickListener { }
         val drawable = this@WidgetTestActivity.getDrawable(R.drawable.abc_btn_check_material)

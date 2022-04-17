@@ -56,11 +56,6 @@ abstract class AbstractSAConfigOptions {
     public SSLSocketFactory mSSLSocketFactory;
 
     /**
-     * 禁用辅助工具
-     */
-    public boolean mDisableDebugAssistant;
-
-    /**
      * 数据上报服务器地址
      */
     String mServerUrl;
@@ -91,29 +86,9 @@ abstract class AbstractSAConfigOptions {
     long mMaxCacheSize = 32 * 1024 * 1024L;
 
     /**
-     * 点击图是否可用
-     */
-    boolean mHeatMapEnabled;
-
-    /**
-     * 可视化全埋点是否可用
-     */
-    boolean mVisualizedEnabled;
-
-    /**
-     * 可视化全埋点自定义属性是否可用
-     */
-    boolean mVisualizedPropertiesEnabled;
-
-    /**
      * 是否开启打印日志
      */
     boolean mLogEnabled;
-
-    /**
-     * 采集屏幕方向
-     */
-    boolean mTrackScreenOrientationEnabled;
 
     /**
      * 网络上传策略
@@ -248,14 +223,6 @@ abstract class AbstractSAConfigOptions {
         return this.mEnableSession;
     }
 
-    /**
-     * 自定义属性是否可用
-     *
-     * @return true 可用，false 不可用
-     */
-    public boolean isVisualizedPropertiesEnabled() {
-        return this.mVisualizedPropertiesEnabled;
-    }
 
     public List<StorePlugin> getStorePlugins() {
         return mStorePlugins;

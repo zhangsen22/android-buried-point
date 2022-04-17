@@ -61,18 +61,6 @@ class PersistentDataOperation extends DataOperation {
                     case DbParams.TABLE_ACTIVITY_START_COUNT:
                         contentValues.put(DbParams.TABLE_ACTIVITY_START_COUNT, jsonObject.optInt(DbParams.VALUE));
                         break;
-                    case DbParams.APP_EXIT_DATA:
-                        contentValues.put(DbParams.APP_EXIT_DATA, jsonObject.optString(DbParams.VALUE));
-                        break;
-                    case DbParams.TABLE_APP_START_TIME:
-                        contentValues.put(DbParams.TABLE_APP_START_TIME, jsonObject.optLong(DbParams.VALUE));
-                        break;
-                    case DbParams.TABLE_SESSION_INTERVAL_TIME:
-                        contentValues.put(DbParams.TABLE_SESSION_INTERVAL_TIME, jsonObject.optLong(DbParams.VALUE));
-                        break;
-                    case DbParams.PersistentName.LOGIN_ID:
-                        contentValues.put(DbParams.PersistentName.LOGIN_ID, jsonObject.optString(DbParams.VALUE));
-                        break;
                     case DbParams.PersistentName.SUB_PROCESS_FLUSH_DATA:
                         contentValues.put(DbParams.PersistentName.SUB_PROCESS_FLUSH_DATA, jsonObject.optBoolean(DbParams.VALUE));
                         break;
@@ -118,16 +106,11 @@ class PersistentDataOperation extends DataOperation {
                     case DbParams.PersistentName.SUB_PROCESS_FLUSH_DATA:
                     case DbParams.TABLE_FIRST_PROCESS_START:
                         return new String[]{String.valueOf(cursor.getInt(0))};
-                    case DbParams.APP_EXIT_DATA:
-                    case DbParams.PersistentName.LOGIN_ID:
                     case DbParams.PersistentName.REMOTE_CONFIG:
                     case DbParams.PersistentName.PERSISTENT_USER_ID:
                     case DbParams.PersistentName.PERSISTENT_LOGIN_ID_KEY:
                     case DbParams.PUSH_ID_KEY:
                         return new String[]{cursor.getString(0)};
-                    case DbParams.TABLE_SESSION_INTERVAL_TIME:
-                    case DbParams.TABLE_APP_START_TIME:
-                        return new String[]{String.valueOf(cursor.getLong(0))};
                     default:
                         return null;
                 }

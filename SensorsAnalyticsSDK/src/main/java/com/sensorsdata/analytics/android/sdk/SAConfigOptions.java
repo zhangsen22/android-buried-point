@@ -29,15 +29,6 @@ import java.util.List;
 import javax.net.ssl.SSLSocketFactory;
 
 public final class SAConfigOptions extends AbstractSAConfigOptions implements Cloneable {
-    /**
-     * 是否设置点击图开关
-     */
-    boolean mInvokeHeatMapEnabled;
-
-    /**
-     * 是否设置可视化全埋点开关
-     */
-    boolean mInvokeVisualizedEnabled;
 
     /**
      * 是否设置打印日志
@@ -174,51 +165,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 禁用辅助工具
-     *
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions disableDebugAssistant() {
-        this.mDisableDebugAssistant = true;
-        return this;
-    }
-
-    /**
-     * 设置点击图是否可用
-     *
-     * @param enableHeatMap 点击图是否可用
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions enableHeatMap(boolean enableHeatMap) {
-        this.mHeatMapEnabled = enableHeatMap;
-        this.mInvokeHeatMapEnabled = true;
-        return this;
-    }
-
-    /**
-     * 设置可视化全埋点自定义属性是否可用
-     *
-     * @param enableVisualizedProperties 可视化全埋点自定义属性功能是否可用
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableVisualizedProperties(boolean enableVisualizedProperties) {
-        this.mVisualizedPropertiesEnabled = enableVisualizedProperties;
-        return this;
-    }
-
-    /**
-     * 设置可视化全埋点是否可用
-     *
-     * @param enableVisualizedAutoTrack 可视化全埋点是否可用
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions enableVisualizedAutoTrack(boolean enableVisualizedAutoTrack) {
-        this.mVisualizedEnabled = enableVisualizedAutoTrack;
-        this.mInvokeVisualizedEnabled = true;
-        return this;
-    }
-
-    /**
      * 是否打印日志
      *
      * @param enableLog 是否开启打印日志
@@ -227,17 +173,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     public SAConfigOptions enableLog(boolean enableLog) {
         this.mLogEnabled = enableLog;
         this.mInvokeLog = true;
-        return this;
-    }
-
-    /**
-     * 是否开启屏幕方向采集
-     *
-     * @param enableScreenOrientation 是否开启屏幕方向采集
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions enableTrackScreenOrientation(boolean enableScreenOrientation) {
-        this.mTrackScreenOrientationEnabled = enableScreenOrientation;
         return this;
     }
 
