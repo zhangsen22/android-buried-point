@@ -131,9 +131,7 @@ public class VisualPropertiesCache {
             if (viewList == null || viewList.size() == 0) {
                 return;
             }
-            for (View view : viewList) {
-                VisualPropertiesManager.getInstance().getVisualPropertiesH5Helper().sendToWeb(view, "updateH5VisualConfig", config);
-            }
+
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }

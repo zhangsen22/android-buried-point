@@ -1158,7 +1158,7 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
             }
             if (AopUtil.injectClickInfo(view, cloneProperties, true)) {
                 Activity activity = AopUtil.getActivityFromContext(view.getContext(), view);
-                trackInternal(AopConstants.APP_CLICK_EVENT_NAME, cloneProperties, AopUtil.addViewPathProperties(activity, view, cloneProperties));
+                trackInternal(null, cloneProperties, AopUtil.addViewPathProperties(activity, view, cloneProperties));
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
@@ -1580,7 +1580,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     public enum AutoTrackEventType {
         APP_START(1),
         APP_END(1 << 1),
-        APP_CLICK(1 << 2),
         APP_VIEW_SCREEN(1 << 3);
         private final int eventValue;
 
@@ -1598,8 +1597,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                     return APP_START;
                 case "$AppEnd":
                     return APP_END;
-                case "$AppClick":
-                    return APP_CLICK;
                 case "$AppViewScreen":
                     return APP_VIEW_SCREEN;
                 default:

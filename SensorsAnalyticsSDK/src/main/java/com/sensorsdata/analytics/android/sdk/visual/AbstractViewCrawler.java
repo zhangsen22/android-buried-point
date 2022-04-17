@@ -244,9 +244,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                 // 需要把全埋点的开关状态，透传给前端，前端进行错误提示
                 try {
                     JSONArray array = new JSONArray();
-                    if (!SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_CLICK)) {
-                        array.put(AopConstants.APP_CLICK_EVENT_NAME);
-                    }
                     if (!SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_VIEW_SCREEN)) {
                         array.put("$AppViewScreen");
                     }

@@ -94,10 +94,6 @@ public class SensorsDataAutoTrackHelper {
             if (!SensorsDataAPI.sharedInstance().isAutoTrackEnabled()) {
                 return;
             }
-            //$AppClick 被过滤
-            if (SensorsDataAPI.sharedInstance().isAutoTrackEventTypeIgnored(SensorsDataAPI.AutoTrackEventType.APP_CLICK)) {
-                return;
-            }
 
             //获取所在的 Context
             Context context = view.getContext();
@@ -138,7 +134,7 @@ public class SensorsDataAutoTrackHelper {
             JSONObject properties = new JSONObject();
 
             if (AopUtil.injectClickInfo(view, properties, isFromUser)) {
-                SensorsDataAPI.sharedInstance().trackAutoEvent(AopConstants.APP_CLICK_EVENT_NAME, properties, AopUtil.addViewPathProperties(activity, view, properties));
+                SensorsDataAPI.sharedInstance().trackAutoEvent(null, properties, AopUtil.addViewPathProperties(activity, view, properties));
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
