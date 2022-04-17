@@ -19,10 +19,8 @@ package com.sensorsdata.analytics.android.sdk;
 
 import android.app.Activity;
 import android.view.View;
-import android.webkit.WebView;
 
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
-import com.sensorsdata.analytics.android.sdk.listener.SAJSListener;
 
 import org.json.JSONObject;
 
@@ -699,11 +697,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     @Override
     public void enableDataCollect() {
-
-    }
-
-    @Override
-    public void addSAJSListener(SAJSListener listener) {
 
     }
 
