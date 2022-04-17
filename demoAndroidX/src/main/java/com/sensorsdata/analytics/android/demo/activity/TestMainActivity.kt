@@ -44,7 +44,6 @@ class TestMainActivity : AppCompatActivity() {
                 DataEntity("NavigationView", NavigationViewActivity::class.java, true),
                 DataEntity("ViewScreen", ViewScreenActivity::class.java, true),
                 DataEntity("ListView & ExpandableListView", ListViewTestActivity::class.java, true),
-                DataEntity("GridView ", GridViewTestActivity::class.java, true),
                 DataEntity("hint 采集", HintTestActivity::class.java, true),
                 DataEntity("Crash 测试", CrashTestActivity::class.java, true),
                 DataEntity("PopupMenu 测试", PopupMenuActivity::class.java, true),
