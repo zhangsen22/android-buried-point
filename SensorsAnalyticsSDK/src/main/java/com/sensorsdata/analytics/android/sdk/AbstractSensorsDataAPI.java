@@ -847,11 +847,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                 sendProperties.remove("$anonymization_id");
             }
 
-            try {
-                SessionRelatedManager.getInstance().handleEventOfSession(eventName, sendProperties, eventTime);
-            } catch (Exception e) {
-                SALog.printStackTrace(e);
-            }
             boolean isEnterDb = isEnterDb(eventName, sendProperties);
             if (!isEnterDb) {
                 SALog.d(TAG, eventName + " event can not enter database");
