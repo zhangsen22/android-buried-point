@@ -50,6 +50,7 @@ public class VisualPropertiesCache {
     public void save2Cache(String config) {
         SALog.i(TAG, "save2Cache config is:" + config);
         this.mPersistentVisualConfig.commit(config);
+        doOnSaveCache(config);
     }
 
     public String getVisualCache() {
@@ -106,6 +107,7 @@ public class VisualPropertiesCache {
                             visualProperty.screenName = propertyObject.optString("screen_name");
                             visualProperty.name = propertyObject.optString("name");
                             visualProperty.regular = propertyObject.optString("regular");
+                            visualProperty.isH5 = propertyObject.optBoolean("h5");
                             visualProperty.type = propertyObject.optString("type");
                             visualProperty.webViewElementPath = propertyObject.optString("webview_element_path");
                             visualProperties.add(visualProperty);
@@ -118,6 +120,62 @@ public class VisualPropertiesCache {
             }
             return config;
         } catch (JSONException e) {
+            SALog.printStackTrace(e);
+        }
+        return null;
+    }
+
+    private void doOnSaveCache(String config) {
+        try {
+            List<View> viewList = ViewTreeStatusObservable.getInstance().getCurrentWebView();
+            if (viewList == null || viewList.size() == 0) {
+                return;
+            }
+            for (View view : viewList) {
+                VisualPropertiesManager.getInstance().getVisualPropertiesH5Helper().sendToWeb(view, "updateH5VisualConfig", config);
+            }
+        } catch (Exception e) {
+            SALog.printStackTrace(e);
+        }
+    }
+
+    public JSONArray getH5JsonArrayFromCache(String eventName, String webViewElementPath) {
+        String persistentVisualConfig = this.mPersistentVisualConfig.get();
+        if (TextUtils.isEmpty(persistentVisualConfig)) {
+            return null;
+        }
+        try {
+            JSONObject object = new JSONObject(persistentVisualConfig);
+            JSONArray array = new JSONArray();
+            JSONArray jsonArray = object.optJSONArray("events");
+            if (jsonArray != null && jsonArray.length() > 0) {
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject visualPropertiesObject = jsonArray.optJSONObject(i);
+                    if (visualPropertiesObject == null) {
+                        continue;
+                    }
+                    VisualConfig.VisualPropertiesConfig propertiesConfig = new VisualConfig.VisualPropertiesConfig();
+                    propertiesConfig.eventName = visualPropertiesObject.optString("event_name");
+                    if (!TextUtils.equals(propertiesConfig.eventName, eventName)) {
+                        continue;
+                    }
+                    JSONArray properties = visualPropertiesObject.optJSONArray("properties");
+                    if (properties != null && properties.length() > 0) {
+                        for (int j = 0; j < properties.length(); j++) {
+                            JSONObject propertyObject = properties.optJSONObject(j);
+                            VisualConfig.VisualProperty visualProperty = new VisualConfig.VisualProperty();
+                            visualProperty.webViewElementPath = propertyObject.optString("webview_element_path");
+                            if (TextUtils.equals(visualProperty.webViewElementPath, webViewElementPath)) {
+                                array.put(propertyObject);
+                            }
+                        }
+                    }
+                }
+                return array;
+            }
+        } catch (JSONException e) {
+            SALog.printStackTrace(e);
+        } catch (Exception e) {
             SALog.printStackTrace(e);
         }
         return null;

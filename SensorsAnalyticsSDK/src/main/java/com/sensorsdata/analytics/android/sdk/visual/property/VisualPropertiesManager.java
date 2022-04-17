@@ -57,11 +57,13 @@ public class VisualPropertiesManager {
     private VisualPropertiesCache mConfigCache;
     private VisualConfigRequestHelper mRequestHelper;
     private CollectLogListener mCollectLogListener;
+    private VisualPropertiesH5Helper mVisualPropertiesH5Helper;
 
     private VisualPropertiesManager() {
         mConfigCache = new VisualPropertiesCache();
         mVisualConfig = mConfigCache.getVisualConfig();
         mRequestHelper = new VisualConfigRequestHelper();
+        mVisualPropertiesH5Helper = new VisualPropertiesH5Helper();
     }
 
     public static VisualPropertiesManager getInstance() {
@@ -98,6 +100,10 @@ public class VisualPropertiesManager {
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
+    }
+
+    public VisualPropertiesH5Helper getVisualPropertiesH5Helper() {
+        return mVisualPropertiesH5Helper;
     }
 
     public VisualPropertiesCache getVisualPropertiesCache() {
@@ -358,6 +364,10 @@ public class VisualPropertiesManager {
                 } else {
                     mergeAppVisualProperty(visualProperty, event, srcObject, clickViewNode);
                 }
+            }
+            // 处理 App 内嵌 H5 属性采集
+            if (h5HashSet.size() > 0) {
+                mVisualPropertiesH5Helper.mergeJSVisualProperties(srcObject, h5HashSet, eventName);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

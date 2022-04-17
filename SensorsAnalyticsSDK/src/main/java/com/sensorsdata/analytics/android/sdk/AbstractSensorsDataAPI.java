@@ -57,6 +57,7 @@ import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.internal.rpc.SensorsDataContentObserver;
 import com.sensorsdata.analytics.android.sdk.listener.SAEventListener;
 import com.sensorsdata.analytics.android.sdk.listener.SAFunctionListener;
+import com.sensorsdata.analytics.android.sdk.listener.SAJSListener;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPresetPropertyPlugin;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SensorsDataPropertyPluginManager;
 import com.sensorsdata.analytics.android.sdk.remote.BaseSensorsDataSDKRemoteManager;
@@ -146,6 +147,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected SensorsDataDynamicSuperProperties mDynamicSuperPropertiesCallBack;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
+    private CopyOnWriteArrayList<SAJSListener> mSAJSListeners;
     protected IFragmentAPI mFragmentAPI;
     protected UserIdentityAPI mUserIdentityAPI;
     protected SAStoreManager mStoreManager;
@@ -310,6 +312,53 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
      */
     public void removeEventListener(SAEventListener eventListener) {
         mSAContextManager.removeEventListener(eventListener);
+    }
+
+    /**
+     * 监听 JS 消息
+     *
+     * @param listener JS 监听
+     */
+    public void addSAJSListener(final SAJSListener listener) {
+        try {
+            if (mSAJSListeners == null) {
+                mSAJSListeners = new CopyOnWriteArrayList<>();
+            }
+            if (!mSAJSListeners.contains(listener)) {
+                mSAJSListeners.add(listener);
+            }
+        } catch (Exception e) {
+            SALog.printStackTrace(e);
+        }
+    }
+
+    /**
+     * 移除 JS 消息
+     *
+     * @param listener JS 监听
+     */
+    public void removeSAJSListener(final SAJSListener listener) {
+        try {
+            if (mSAJSListeners != null && mSAJSListeners.contains(listener)) {
+                this.mSAJSListeners.remove(listener);
+            }
+        } catch (Exception e) {
+            SALog.printStackTrace(e);
+        }
+    }
+
+    void handleJsMessage(WeakReference<View> view, final String message) {
+        if (mSAJSListeners != null && mSAJSListeners.size() > 0) {
+            for (final SAJSListener listener : mSAJSListeners) {
+                try {
+                    if (listener != null) {
+                        listener.onReceiveJSMessage(view, message);
+                    }
+                } catch (Exception e) {
+                    SALog.printStackTrace(e);
+                }
+            }
+        }
     }
 
     /**

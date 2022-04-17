@@ -84,7 +84,7 @@ public class VisualDebugHelper {
             }
 
             String eventName = jsonObject.optString("event");
-            if (!TextUtils.equals(AopConstants.APP_CLICK_EVENT_NAME, eventName)) {
+            if (!TextUtils.equals(AopConstants.APP_CLICK_EVENT_NAME, eventName) && !TextUtils.equals(AopConstants.WEB_CLICK_EVENT_NAME, eventName)) {
                 SALog.i(TAG, "eventName is " + eventName + " filter");
                 return;
             }
@@ -137,6 +137,34 @@ public class VisualDebugHelper {
                             }
                         }
                     }
+                }
+            } else if (TextUtils.equals(AopConstants.WEB_CLICK_EVENT_NAME, eventName)) {
+                try {
+                    JSONArray array = propertyObject.optJSONArray("sensorsdata_web_visual_eventName");
+                    if (array == null) {
+                        int hashCode = jsonObject.hashCode();
+                        array = VisualPropertiesManager.getInstance().getVisualPropertiesH5Helper().getEventName(hashCode);
+                        VisualPropertiesManager.getInstance().getVisualPropertiesH5Helper().clearCache(hashCode);
+                    }
+                    if (array != null && array.length() > 0) {
+                        synchronized (object) {
+                            for (int i = 0; i < array.length(); i++) {
+                                try {
+                                    JSONObject object = new JSONObject();
+                                    SensorsDataUtils.mergeJSONObject(jsonObject, object);
+                                    object.put("event_name", array.optString(i));
+                                    if (mJsonArray == null) {
+                                        mJsonArray = new JSONArray();
+                                    }
+                                    mJsonArray.put(object);
+                                } catch (Exception e) {
+                                    SALog.printStackTrace(e);
+                                }
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    SALog.printStackTrace(e);
                 }
             }
         } catch (Exception e) {
