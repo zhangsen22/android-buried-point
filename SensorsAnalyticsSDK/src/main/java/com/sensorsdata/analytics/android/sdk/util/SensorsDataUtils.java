@@ -757,13 +757,13 @@ public final class SensorsDataUtils {
                 SensorsDataAutoTrackAppViewScreenUrl autoTrackAppViewScreenUrl = object.getClass().getAnnotation(SensorsDataAutoTrackAppViewScreenUrl.class);
                 if (autoTrackAppViewScreenUrl != null) {
                     screenUrl = autoTrackAppViewScreenUrl.url();
+                    if (TextUtils.isEmpty(screenUrl)) {
+                        screenUrl = object.getClass().getCanonicalName();
+                    }
                 }
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
-        }
-        if (screenUrl == null) {
-            screenUrl = object.getClass().getCanonicalName();
         }
         return screenUrl;
     }

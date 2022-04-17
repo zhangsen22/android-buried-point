@@ -864,7 +864,7 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                 @Override
                 public void run() {
                     try {
-                        if (!TextUtils.isEmpty(url) || cloneProperties != null) {
+                        if (!TextUtils.isEmpty(url)) {// || cloneProperties != null
                             String currentUrl = url;
                             JSONObject trackProperties = new JSONObject();
                             mLastScreenTrackProperties = cloneProperties;
