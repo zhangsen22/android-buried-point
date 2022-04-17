@@ -43,7 +43,6 @@ import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.ScreenAutoTracker;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
-import com.sensorsdata.analytics.android.sdk.SensorsDataFragmentTitle;
 import com.sensorsdata.analytics.android.sdk.visual.ViewTreeStatusObservable;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 import com.sensorsdata.analytics.android.sdk.visual.snap.SnapCache;
@@ -247,12 +246,6 @@ public class AopUtil {
             }
             boolean isTitleNull = TextUtils.isEmpty(title);
             boolean isScreenNameNull = TextUtils.isEmpty(screenName);
-            if (isTitleNull && fragment.getClass().isAnnotationPresent(SensorsDataFragmentTitle.class)) {
-                SensorsDataFragmentTitle sensorsDataFragmentTitle = fragment.getClass().getAnnotation(SensorsDataFragmentTitle.class);
-                if (sensorsDataFragmentTitle != null) {
-                    title = sensorsDataFragmentTitle.title();
-                }
-            }
             isTitleNull = TextUtils.isEmpty(title);
             if (isTitleNull || isScreenNameNull) {
                 if (activity == null) {

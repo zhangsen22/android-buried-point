@@ -586,13 +586,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
 
                     String title = null;
 
-                    if (fragment.getClass().isAnnotationPresent(SensorsDataFragmentTitle.class)) {
-                        SensorsDataFragmentTitle sensorsDataFragmentTitle = fragment.getClass().getAnnotation(SensorsDataFragmentTitle.class);
-                        if (sensorsDataFragmentTitle != null) {
-                            title = sensorsDataFragmentTitle.title();
-                        }
-                    }
-
                     if (Build.VERSION.SDK_INT >= 11) {
                         Activity activity = null;
                         try {
