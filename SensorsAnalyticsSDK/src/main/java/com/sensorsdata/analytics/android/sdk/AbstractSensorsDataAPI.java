@@ -19,7 +19,6 @@ package com.sensorsdata.analytics.android.sdk;
 
 import android.app.Activity;
 import android.app.Application;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,8 +28,6 @@ import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.sensorsdata.analytics.android.sdk.advert.utils.ChannelUtils;
-import com.sensorsdata.analytics.android.sdk.advert.utils.SAOaidHelper;
 import com.sensorsdata.analytics.android.sdk.autotrack.ActivityLifecycleCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.ActivityPageLeaveCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.FragmentPageLeaveCallbacks;
@@ -51,10 +48,8 @@ import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
 import com.sensorsdata.analytics.android.sdk.internal.api.FragmentAPI;
 import com.sensorsdata.analytics.android.sdk.internal.api.IFragmentAPI;
-import com.sensorsdata.analytics.android.sdk.useridentity.UserIdentityAPI;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventTimer;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
-import com.sensorsdata.analytics.android.sdk.internal.rpc.SensorsDataContentObserver;
 import com.sensorsdata.analytics.android.sdk.listener.SAEventListener;
 import com.sensorsdata.analytics.android.sdk.listener.SAFunctionListener;
 import com.sensorsdata.analytics.android.sdk.listener.SAJSListener;
@@ -144,12 +139,10 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected TrackTaskManager mTrackTaskManager;
     protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SensorsDataScreenOrientationDetector mOrientationDetector;
-    protected SensorsDataDynamicSuperProperties mDynamicSuperPropertiesCallBack;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
     private CopyOnWriteArrayList<SAJSListener> mSAJSListeners;
     protected IFragmentAPI mFragmentAPI;
-    protected UserIdentityAPI mUserIdentityAPI;
     protected SAStoreManager mStoreManager;
     SensorsDataEncrypt mSensorsDataEncrypt;
     BaseSensorsDataSDKRemoteManager mRemoteManager;
@@ -202,9 +195,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                 }
             }
 
-            mUserIdentityAPI = new UserIdentityAPI(mSAContextManager);
             registerLifecycleCallbacks();
-            registerObserver();
             if (!mSAConfigOptions.isDisableSDK()) {
                 delayInitTask();
             }
@@ -384,9 +375,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         return mContext;
     }
 
-    boolean isSaveDeepLinkInfo() {
-        return mSAConfigOptions.mEnableSaveDeepLinkInfo;
-    }
 
     /**
      * SDK 内部用来调用触发事件
@@ -413,7 +401,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                     if (viewNode != null && SensorsDataAPI.getConfigOptions().isVisualizedPropertiesEnabled()) {
                         VisualPropertiesManager.getInstance().mergeVisualProperties(VisualPropertiesManager.VisualEventType.APP_CLICK, properties, viewNode);
                     }
-                    trackEvent(EventType.TRACK, eventName, properties, null);
+                    trackEvent(EventType.TRACK, eventName, properties);
                 } catch (Exception e) {
                     SALog.printStackTrace(e);
                 }
@@ -513,31 +501,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                 SALog.i(TAG, "appEnterBackground error:" + e.getMessage());
             }
         }
-    }
-
-    void trackChannelDebugInstallation() {
-        final JSONObject _properties = new JSONObject();
-        addTimeProperty(_properties);
-        transformTaskQueue(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    _properties.put("$ios_install_source", ChannelUtils.getDeviceInfo(mContext,
-                            mSAContextManager.getAndroidId(), SAOaidHelper.getOAID(mContext)));
-                    // 先发送 track
-                    trackEvent(EventType.TRACK, "$ChannelDebugInstall", _properties, null);
-
-                    // 再发送 profile_set_once 或者 profile_set
-                    JSONObject profileProperties = new JSONObject();
-                    SensorsDataUtils.mergeJSONObject(_properties, profileProperties);
-                    profileProperties.put("$first_visit_time", new java.util.Date());
-                    trackEvent(EventType.PROFILE_SET_ONCE, null, profileProperties, null);
-                    flush();
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-        });
     }
 
     /**
@@ -672,13 +635,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    protected void trackEvent(EventType eventType, String eventName, JSONObject properties, String
-            originalDistinctId) {
-        trackEvent(eventType, eventName, properties, null, getDistinctId(), getLoginId(), originalDistinctId);
-    }
-
-    protected void trackEvent(final EventType eventType, String eventName, final JSONObject properties, JSONObject dynamicProperty, String
-            distinctId, String loginId, String originalDistinctId) {
+    protected void trackEvent(final EventType eventType, String eventName, final JSONObject properties) {
         try {
             EventTimer eventTimer = null;
             if (!TextUtils.isEmpty(eventName)) {
@@ -703,14 +660,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
             try {
                 JSONObject sendProperties = new JSONObject();
-                if (eventType.isTrack()) {
-                    //之前可能会因为没有权限无法获取运营商信息，检测再次获取
-                    getCarrier(sendProperties);
-                    if (!"$AppEnd".equals(eventName) && !"$AppDeeplinkLaunch".equals(eventName)) {
-                        //合并 $latest_utm 属性
-                        SensorsDataUtils.mergeJSONObject(ChannelUtils.getLatestUtmProperties(), sendProperties);
-                    }
-                }
 
                 // 将属性插件的属性合并到 sendProperties
                 sendProperties = SensorsDataUtils.mergeSuperJSONObject(
@@ -718,8 +667,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                         sendProperties);
 
                 if (eventType.isTrack()) {
-                    mergerDynamicAndSuperProperties(sendProperties, dynamicProperty);
-
                     if (mReferrerScreenTitle != null) {
                         sendProperties.put("$referrer_title", mReferrerScreenTitle);
                     }
@@ -758,17 +705,11 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                     if (SALog.isLogEnabled()) {
                         SALog.i(TAG, "track event, isDataCollectEnable = false, eventName = " + eventName + ",property = " + JSONUtils.formatJson(sendProperties.toString()));
                     }
-                    JSONObject identitiesJson = null;
-                    try {
-                        identitiesJson = new JSONObject(mUserIdentityAPI.getIdentities(eventType).toString());
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
 
-                    transformEventTaskQueue(eventType, eventName, properties, sendProperties, identitiesJson, distinctId, loginId, originalDistinctId, eventTimer);
+                    transformEventTaskQueue(eventType, eventName, properties, sendProperties);
                     return;
                 }
-                trackEventInternal(eventType, eventName, properties, sendProperties, mUserIdentityAPI.getIdentities(eventType), distinctId, loginId, originalDistinctId, eventTimer);
+                trackEventInternal(eventType, eventName, properties, sendProperties);
             } catch (JSONException e) {
                 throw new InvalidDataException("Unexpected property");
             }
@@ -927,35 +868,13 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     }
 
     /**
-     * 读取动态公共属性
-     *
-     * @return 动态公共属性
-     */
-    protected JSONObject getDynamicProperty() {
-        JSONObject dynamicProperty = null;
-        try {
-            if (mDynamicSuperPropertiesCallBack != null) {
-                dynamicProperty = mDynamicSuperPropertiesCallBack.getDynamicSuperProperties();
-                SADataHelper.assertPropertyTypes(dynamicProperty);
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return dynamicProperty;
-    }
-
-    /**
      * 合并、去重静态公共属性与动态公共属性
      *
      * @param eventProperty 保存合并后属性的 JSON
      * @param dynamicProperty 动态公共属性
      */
     private void mergerDynamicAndSuperProperties(JSONObject eventProperty, JSONObject dynamicProperty) {
-        JSONObject superProperties = getSuperProperties();
-        if (dynamicProperty == null) {
-            dynamicProperty = getDynamicProperty();
-        }
-        JSONObject removeDuplicateSuperProperties = SensorsDataUtils.mergeSuperJSONObject(dynamicProperty, superProperties);
+        JSONObject removeDuplicateSuperProperties = SensorsDataUtils.mergeSuperJSONObject(dynamicProperty, null);
         SensorsDataUtils.mergeJSONObject(removeDuplicateSuperProperties, eventProperty);
     }
 
@@ -1023,8 +942,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         return enterDb;
     }
 
-    private void trackEventInternal(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties, JSONObject identities,
-                                    String distinctId, String loginId, final String originalDistinctId, final EventTimer eventTimer) throws JSONException, InvalidDataException {
+    private void trackEventInternal(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) throws JSONException, InvalidDataException {
         String libDetail = null;
         String lib_version = VERSION;
         String appEnd_app_version = null;
@@ -1088,17 +1006,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             }
         }
 
-        if (null != eventTimer) {
-            try {
-                double duration = Double.parseDouble(eventTimer.duration());
-                if (duration > 0) {
-                    sendProperties.put("event_duration", duration);
-                }
-            } catch (Exception e) {
-                SALog.printStackTrace(e);
-            }
-        }
-
         libProperties.put("$lib", "Android");
         libProperties.put("$lib_version", lib_version);
         if (TextUtils.isEmpty(appEnd_app_version)) {
@@ -1126,7 +1033,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         dataObj.put("time", eventTime);
         dataObj.put("type", eventType.getEventType());
-        String anonymousId = getAnonymousId();
         try {
             if (sendProperties.has("$project")) {
                 dataObj.put("project", sendProperties.optString("$project"));
@@ -1153,38 +1059,11 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                 sendProperties.remove("$time");
             }
 
-            //针对 SF 弹窗展示事件特殊处理
-            if ("$PlanPopupDisplay".equals(eventName)) {
-                if (sendProperties.has("$sf_internal_anonymous_id")) {
-                    anonymousId = sendProperties.optString("$sf_internal_anonymous_id");
-                    sendProperties.remove("$sf_internal_anonymous_id");
-                }
-
-                if (sendProperties.has("$sf_internal_login_id")) {
-                    loginId = sendProperties.optString("$sf_internal_login_id");
-                    sendProperties.remove("$sf_internal_login_id");
-                }
-                if (!TextUtils.isEmpty(loginId)) {
-                    distinctId = loginId;
-                } else {
-                    distinctId = anonymousId;
-                }
-            }
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
 
-        if (TextUtils.isEmpty(distinctId)) {// 如果为空，则说明没有 loginId，所以重新设置当时状态的匿名 Id
-            dataObj.put("distinct_id", getAnonymousId());
-        } else {
-            dataObj.put("distinct_id", distinctId);
-        }
-
-        if (!TextUtils.isEmpty(loginId)) {
-            dataObj.put("login_id", loginId);
-        }
-        dataObj.put("anonymous_id", anonymousId);
-        dataObj.put("identities", identities);
+        dataObj.put("login_id", "login_id");
 
         dataObj.put("lib", libProperties);
 
@@ -1194,7 +1073,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             sendProperties.put("$is_first_day", isFirstDay(eventTime));
         } else if (eventType == EventType.TRACK_SIGNUP) {
             dataObj.put("event", eventName);
-            dataObj.put("original_id", originalDistinctId);
         }
 
         if (mAutoTrack && properties != null) {
@@ -1299,8 +1177,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     /**
      * 如果没有授权时，需要将已执行的的缓存队列切换到真正的 TaskQueue 中
      */
-    private void transformEventTaskQueue(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties, final JSONObject identities,
-                                         final String distinctId, final String loginId, final String originalDistinctId, final EventTimer eventTimer) {
+    private void transformEventTaskQueue(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) {
         try {
             if (!sendProperties.has("$time") && !("$AppStart".equals(eventName) || "$AppEnd".equals(eventName))) {
                 sendProperties.put("$time", new Date(System.currentTimeMillis()));
@@ -1317,14 +1194,10 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                         JSONUtils.mergeDistinctProperty(jsonObject, sendProperties);
                     }
 
-                    if (identities != null && eventType != EventType.TRACK_ID_UNBIND) {
-                        mUserIdentityAPI.updateIdentities(identities);
-                    }
-
                     if ("$SignUp".equals(eventName)) {// 如果是 "$SignUp" 则需要重新补上 originalId
-                        trackEventInternal(eventType, eventName, properties, sendProperties, identities, distinctId, loginId, getAnonymousId(), eventTimer);
+                        trackEventInternal(eventType, eventName, properties, sendProperties);
                     } else {
-                        trackEventInternal(eventType, eventName, properties, sendProperties, identities, distinctId, loginId, originalDistinctId, eventTimer);
+                        trackEventInternal(eventType, eventName, properties, sendProperties);
                     }
                 } catch (Exception e) {
                     SALog.printStackTrace(e);
@@ -1397,21 +1270,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     }
 
     /**
-     * 注册 ContentObserver 监听
-     */
-    private void registerObserver() {
-        // 注册跨进程业务的 ContentObserver 监听
-        SensorsDataContentObserver contentObserver = new SensorsDataContentObserver(mUserIdentityAPI);
-        ContentResolver contentResolver = mContext.getContentResolver();
-        contentResolver.registerContentObserver(DbParams.getInstance().getDataCollectUri(), false, contentObserver);
-        contentResolver.registerContentObserver(DbParams.getInstance().getSessionTimeUri(), false, contentObserver);
-        contentResolver.registerContentObserver(DbParams.getInstance().getLoginIdUri(), false, contentObserver);
-        contentResolver.registerContentObserver(DbParams.getInstance().getDisableSDKUri(), false, contentObserver);
-        contentResolver.registerContentObserver(DbParams.getInstance().getEnableSDKUri(), false, contentObserver);
-        contentResolver.registerContentObserver(DbParams.getInstance().getUserIdentities(), false, contentObserver);
-    }
-
-    /**
      * 延迟初始化任务
      */
     protected void delayInitTask() {
@@ -1419,11 +1277,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             @Override
             public void run() {
                 try {
-                    if (isSaveDeepLinkInfo()) {
-                        ChannelUtils.loadUtmByLocal(mContext);
-                    } else {
-                        ChannelUtils.clearLocalUtm(mContext);
-                    }
                     registerNetworkListener();
                 } catch (Exception ex) {
                     SALog.printStackTrace(ex);

@@ -122,10 +122,6 @@ public class SensorsDataSDKRemoteConfig {
             this.mAutoTrackEventType |= SensorsAnalyticsAutoTrackEventType.APP_END;
         }
 
-        if ((this.autoTrackMode & SensorsAnalyticsAutoTrackEventType.APP_CLICK) == SensorsAnalyticsAutoTrackEventType.APP_CLICK) {
-            this.mAutoTrackEventType |= SensorsAnalyticsAutoTrackEventType.APP_CLICK;
-        }
-
         if ((this.autoTrackMode & SensorsAnalyticsAutoTrackEventType.APP_VIEW_SCREEN) == SensorsAnalyticsAutoTrackEventType.APP_VIEW_SCREEN) {
             this.mAutoTrackEventType |= SensorsAnalyticsAutoTrackEventType.APP_VIEW_SCREEN;
         }

@@ -74,7 +74,7 @@ public class SensorsDataExceptionHandler implements Thread.UncaughtExceptionHand
                     } catch (Exception ex) {
                         SALog.printStackTrace(ex);
                     }
-                    SensorsDataAPI.sharedInstance().trackEvent(EventType.TRACK, "AppCrashed", messageProp, null);
+                    SensorsDataAPI.sharedInstance().trackEvent(EventType.TRACK, "AppCrashed", messageProp);
                 } catch (Exception ex) {
                     SALog.printStackTrace(ex);
                 }

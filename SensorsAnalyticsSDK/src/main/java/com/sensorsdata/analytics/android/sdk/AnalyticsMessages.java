@@ -311,11 +311,6 @@ class AnalyticsMessages {
                 connection.addRequestProperty("Dry-Run", "true");
             }
 
-            String cookie = mSensorsDataAPI.getCookie(false);
-            if (!TextUtils.isEmpty(cookie)) {
-                connection.setRequestProperty("Cookie", cookie);
-            }
-
             Uri.Builder builder = new Uri.Builder();
             //先校验crc
             if (!TextUtils.isEmpty(data)) {

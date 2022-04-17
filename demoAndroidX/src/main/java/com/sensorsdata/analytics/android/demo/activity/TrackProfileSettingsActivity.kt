@@ -54,28 +54,7 @@ class TrackProfileSettingsActivity : BaseActivity() {
                                 .append("ProductPrice", 100)
                                 .append("ProductName", "Apple").toJSONObject())
             }
-            R.id.track_installation -> {
-                //check permission
-                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                    Manifest.permission.READ_PHONE_STATE)) {
-                        val setIntent = Intent(ACTION_APPLICATION_DETAILS_SETTINGS,
-                                Uri.fromParts("package", packageName, null))
-                        startActivityForResult(setIntent, 101)
-                    } else {
-                        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_PHONE_STATE), 123)
-                    }
-                    return
-                }
-                SensorsDataAPI.sharedInstance(this).trackAppInstall(PropertyBuilder.newInstance().append("pKey", "pValue").toJSONObject())
-            }
-            //匿名 ID 和用户 ID 关联
-            R.id.login_btn -> {
-                SensorsDataAPI.sharedInstance(this).login("130xxxx1234",
-                        PropertyBuilder.newInstance()
-                                .append("grade", 4)
-                                .append("school", "北大附小").toJSONObject())
-            }
+
             //设置用户profile
             R.id.profile_set_btn -> {
                 SensorsDataAPI.sharedInstance(this).profileSet(PropertyBuilder.newInstance()
@@ -100,9 +79,7 @@ class TrackProfileSettingsActivity : BaseActivity() {
             R.id.item_delete -> {
                 SensorsDataAPI.sharedInstance().itemDelete("itemType", "itemId")
             }
-            R.id.trackChannelEvent -> {
-                SensorsDataAPI.sharedInstance().trackChannelEvent("hello_world211")
-            }
+
             R.id.track_view_onclick -> {
                 SensorsDataAPI.sharedInstance().trackViewAppClick(track_view_onclick)
             }

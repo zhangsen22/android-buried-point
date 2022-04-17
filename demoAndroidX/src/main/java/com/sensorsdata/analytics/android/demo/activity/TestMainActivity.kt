@@ -35,7 +35,7 @@ class TestMainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_list)
-        dataList = listOf(DataEntity("通用 Property 和基础接口设置", BasePropertyActivity::class.java, true),
+        dataList = listOf(
                 DataEntity("track*, profile* 等接口调用", TrackProfileSettingsActivity::class.java, true),
                 DataEntity("OnClick", ClickActivity::class.java, true),
                 DataEntity("Widget 采集测试", WidgetTestActivity::class.java, true),
@@ -43,8 +43,6 @@ class TestMainActivity : AppCompatActivity() {
                 DataEntity("TabHost", MyTabHostActivity::class.java, true),
                 DataEntity("NavigationView", NavigationViewActivity::class.java, true),
                 DataEntity("ViewScreen", ViewScreenActivity::class.java, true),
-                DataEntity("ListView & ExpandableListView", ListViewTestActivity::class.java, true),
-                DataEntity("hint 采集", HintTestActivity::class.java, true),
                 DataEntity("Crash 测试", CrashTestActivity::class.java, true),
                 DataEntity("PopupMenu 测试", PopupMenuActivity::class.java, true),
                 DataEntity("Dialog", DialogActivity::class.java, true),

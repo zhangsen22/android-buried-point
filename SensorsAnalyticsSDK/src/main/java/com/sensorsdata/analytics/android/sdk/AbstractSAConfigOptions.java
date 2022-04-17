@@ -121,26 +121,6 @@ abstract class AbstractSAConfigOptions {
     int mNetworkTypePolicy = SensorsNetworkType.TYPE_3G | SensorsNetworkType.TYPE_4G | SensorsNetworkType.TYPE_WIFI | SensorsNetworkType.TYPE_5G;
 
     /**
-     * 是否使用上次启动时保存的 utm 属性.
-     */
-    boolean mEnableSaveDeepLinkInfo = false;
-
-    /**
-     * 是否自动进行 H5 打通
-     */
-    boolean isAutoTrackWebView;
-
-    /**
-     * WebView 是否支持 JellyBean
-     */
-    boolean isWebViewSupportJellyBean;
-
-    /**
-     * 是否在手动埋点事件中自动添加渠道匹配信息
-     */
-    boolean isAutoAddChannelCallbackEvent;
-
-    /**
      * 是否子进程上报数据
      */
     boolean isSubProcessFlushData = false;
@@ -212,15 +192,6 @@ abstract class AbstractSAConfigOptions {
      */
     public boolean isDataCollectEnable() {
         return isDataCollectEnable;
-    }
-
-    /**
-     * 是否开启 DeepLink
-     *
-     * @return true 开启，false 未开启
-     */
-    public boolean isSaveDeepLinkInfo() {
-        return mEnableSaveDeepLinkInfo;
     }
 
     /**

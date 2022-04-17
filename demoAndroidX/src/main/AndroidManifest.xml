@@ -48,7 +48,6 @@
         <activity android:name=".activity.MyTabHostActivity" />
         <activity android:name=".activity.TabVPFragActivity" />
         <activity android:name=".activity.NavigationViewActivity" />
-        <activity android:name=".activity.HintTestActivity" />
         <activity android:name=".activity.CrashTestActivity" />
         <activity android:name=".PopupMenuActivity" />
         <activity android:name=".activity.VPViewActivity" />
@@ -58,7 +57,6 @@
         <activity android:name=".activity.TabAppParentFrgActivity" />
         <activity android:name=".activity.VPAppParentFrgActivity" />
         <activity android:name=".activity.TabParentFrgActivity1" />
-        <activity android:name=".activity.TestMultiProcessSubActivity" android:process=":subprocess"/>
         <activity
             android:name=".activity.LambdaTestPageActivity"
             android:theme="@style/AppThemeNoBar" />

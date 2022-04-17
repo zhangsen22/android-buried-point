@@ -306,15 +306,14 @@ public class NetworkUtils {
         // Mobile network
         int networkType = TelephonyManager.NETWORK_TYPE_UNKNOWN;
         if (telephonyManager != null) {
-            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                    && (SensorsDataUtils.checkHasPermission(context, Manifest.permission.READ_PHONE_STATE) || telephonyManager.hasCarrierPrivileges())) {
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && (SensorsDataUtils.checkHasPermission(context, Manifest.permission.READ_PHONE_STATE) || telephonyManager.hasCarrierPrivileges())) {
                 networkType = telephonyManager.getDataNetworkType();
             } else {
-                try {
-                    networkType = telephonyManager.getNetworkType();
-                } catch (Exception ex) {
-                    SALog.printStackTrace(ex);
-                }
+//                try {
+//                    networkType = telephonyManager.getNetworkType();
+//                } catch (Exception ex) {
+//                    SALog.printStackTrace(ex);
+//                }
             }
         }
 

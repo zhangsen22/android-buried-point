@@ -33,7 +33,6 @@ import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataActivityLifecycleCallbacks;
 import com.sensorsdata.analytics.android.sdk.SensorsDataExceptionHandler;
 import com.sensorsdata.analytics.android.sdk.SessionRelatedManager;
-import com.sensorsdata.analytics.android.sdk.advert.utils.ChannelUtils;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstStart;
@@ -228,9 +227,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
             mDbAdapter.commitActivityCount(++mStartActivityCount);
             // 如果是第一个页面
             if (mStartActivityCount == 1) {
-                if (mSensorsDataInstance.getConfigOptions().isSaveDeepLinkInfo()) {// 保存 utm 信息时,在 endData 中合并保存的 latestUtm 信息。
-                    SensorsDataUtils.mergeJSONObject(ChannelUtils.getLatestUtmProperties(), endDataProperty);
-                }
                 mHandler.removeMessages(MESSAGE_CODE_APP_END);
                 isSessionTimeout = isSessionTimeOut();
                 if (isSessionTimeout) {
@@ -395,8 +391,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
                 }
                 endDataProperty.put(APP_VERSION, AppInfoUtils.getAppVersionName(mContext));
                 endDataProperty.put(LIB_VERSION, SensorsDataAPI.sharedInstance().getSDKVersion());
-                // 合并 $utm 信息
-                ChannelUtils.mergeUtmToEndData(ChannelUtils.getLatestUtmProperties(), endDataProperty);
                 mDbAdapter.commitAppExitData(endDataProperty.toString());
             }
         } catch (Throwable e) {
@@ -513,8 +507,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
         activityProperty = AopUtil.buildTitleNoAutoTrackerProperties(activity);
         SensorsDataUtils.mergeJSONObject(activityProperty, endDataProperty);
         if (!SensorsDataAPI.getConfigOptions().isDisableSDK()) {
-            // 清除 AppEnd 中的 DeepLink 信息
-            ChannelUtils.removeDeepLinkInfo(endDataProperty);
             // 合并渠道信息到 $AppStart 事件中
             if (mDeepLinkProperty == null) {
                 mDeepLinkProperty = new JSONObject();

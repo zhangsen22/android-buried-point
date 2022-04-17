@@ -21,25 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="doOnClick"
-        android:text="track a event"
-        android:textAllCaps="false" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/track_installation"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="track installation"
-        android:textAllCaps="false" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/login_btn"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="login"
+        android:text="产生一个自定义事件"
         android:textAllCaps="false" />
 
 
@@ -115,15 +97,6 @@
         android:layout_height="wrap_content"
         android:onClick="doOnClick"
         android:text="item delete"
-        android:textAllCaps="false" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/trackChannelEvent"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="Track Channel Event"
         android:textAllCaps="false" />
 
     <androidx.appcompat.widget.AppCompatButton

@@ -22,7 +22,6 @@ import android.text.TextUtils;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.StorePlugin;
 import com.sensorsdata.analytics.android.sdk.encrypt.IPersistentSecretKey;
 import com.sensorsdata.analytics.android.sdk.encrypt.SAEncryptListener;
-import com.sensorsdata.analytics.android.sdk.advert.utils.ChannelUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -250,51 +249,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
      */
     public SAConfigOptions setNetworkTypePolicy(int networkTypePolicy) {
         this.mNetworkTypePolicy = networkTypePolicy;
-        return this;
-    }
-
-    /**
-     * 设置是否保存 utm 属性
-     *
-     * @param enableSave boolean 默认 false 不保存
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableSaveDeepLinkInfo(boolean enableSave) {
-        this.mEnableSaveDeepLinkInfo = enableSave;
-        return this;
-    }
-
-    /**
-     * 用户需采集渠道信息自定义属性 key 值，可传多个。
-     *
-     * @param channels 渠道信息自定义属性 key 值
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions setSourceChannels(String... channels) {
-        ChannelUtils.setSourceChannelKeys(channels);
-        return this;
-    }
-
-    /**
-     * 开启自动打通所有的 WebView H5 功能。目前支持的 Android 系统自带的 WebView 以及腾讯的 x5WebView.
-     *
-     * @param isSupportJellyBean 是否支持 API level 16 及以下的版本。因为 API level 16 及以下的版本，addJavascriptInterface 有安全漏洞，请谨慎使用。
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableJavaScriptBridge(boolean isSupportJellyBean) {
-        this.isAutoTrackWebView = true;
-        this.isWebViewSupportJellyBean = isSupportJellyBean;
-        return this;
-    }
-
-    /**
-     * 是否在手动埋点事件中自动添加渠道匹配信息
-     *
-     * @param isAutoAddChannelCallbackEvent true: 开启，false: 不开启，默认是 false
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableAutoAddChannelCallbackEvent(boolean isAutoAddChannelCallbackEvent) {
-        this.isAutoAddChannelCallbackEvent = isAutoAddChannelCallbackEvent;
         return this;
     }
 

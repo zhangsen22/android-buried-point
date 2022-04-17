@@ -33,11 +33,6 @@ public interface SensorsAnalyticsAutoTrackEventType {
     int APP_END = 1 << 1;
 
     /**
-     * 控件点击事件
-     */
-    int APP_CLICK = 1 << 2;
-
-    /**
      * 页面浏览事件
      */
     int APP_VIEW_SCREEN = 1 << 3;

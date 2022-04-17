@@ -281,101 +281,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public String getDistinctId() {
-        return null;
-    }
-
-    @Override
-    public String getAnonymousId() {
-        return null;
-    }
-
-    @Override
-    public void resetAnonymousId() {
-
-    }
-
-    @Override
-    public String getLoginId() {
-        return null;
-    }
-
-    @Override
-    public void identify(String distinctId) {
-
-    }
-
-    @Override
-    public void login(String loginId) {
-
-    }
-
-    @Override
-    public void login(String loginId, JSONObject properties) {
-
-    }
-
-    @Override
-    public void loginWithKey(String loginIDKey, String loginId) {
-
-    }
-
-    @Override
-    public void loginWithKey(String loginIDKey, String loginId, JSONObject properties) {
-
-    }
-
-    @Override
-    public void logout() {
-
-    }
-
-    @Override
-    public JSONObject getIdentities() {
-        return new JSONObject();
-    }
-
-    @Override
-    public void trackInstallation(String eventName, JSONObject properties, boolean disableCallback) {
-
-    }
-
-    @Override
-    public void trackInstallation(String eventName, JSONObject properties) {
-
-    }
-
-    @Override
-    public void trackInstallation(String eventName) {
-
-    }
-
-    @Override
-    public void trackAppInstall(JSONObject properties, boolean disableCallback) {
-
-    }
-
-    @Override
-    public void trackAppInstall(JSONObject properties) {
-
-    }
-
-    @Override
-    public void trackAppInstall() {
-
-    }
-
-    @Override
-    public void trackChannelEvent(String eventName) {
-
-    }
-
-    @Override
-    public void trackChannelEvent(final String eventName, JSONObject properties) {
-
-    }
-
-    @Override
     public void track(String eventName, JSONObject properties) {
 
     }
@@ -386,36 +291,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     public void trackInternal(final String eventName, final JSONObject properties) {
-
-    }
-
-    @Deprecated
-    @Override
-    public void trackTimer(final String eventName, final TimeUnit timeUnit) {
-
-    }
-
-    @Override
-    public void removeTimer(String eventName) {
-    }
-
-    @Override
-    public String trackTimerStart(String eventName) {
-        return "";
-    }
-
-    @Override
-    public void trackTimerEnd(final String eventName, JSONObject properties) {
-
-    }
-
-    @Override
-    public void trackTimerEnd(final String eventName) {
-
-    }
-
-    @Override
-    public void clearTrackTimer() {
 
     }
 
@@ -479,10 +354,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     }
 
-    @Override
-    public void registerDynamicSuperProperties(SensorsDataDynamicSuperProperties dynamicSuperProperties) {
-
-    }
 
     @Override
     public void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack) {
@@ -491,26 +362,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     @Override
     public void deleteAll() {
-
-    }
-
-    @Override
-    public JSONObject getSuperProperties() {
-        return new JSONObject();
-    }
-
-    @Override
-    public void registerSuperProperties(JSONObject superProperties) {
-
-    }
-
-    @Override
-    public void unregisterSuperProperty(String superPropertyName) {
-
-    }
-
-    @Override
-    public void clearSuperProperties() {
 
     }
 
@@ -561,21 +412,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     @Override
     public void profileDelete() {
-
-    }
-
-    @Override
-    protected void trackEvent(EventType eventType, String eventName, JSONObject properties, String originalDistinctId) {
-
-    }
-
-    @Override
-    public void trackTimerPause(String eventName) {
-
-    }
-
-    @Override
-    public void trackTimerResume(String eventName) {
 
     }
 
@@ -633,27 +469,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     public void stopTrackScreenOrientation() {
 
     }
-
-    @Override
-    public void setCookie(String cookie, boolean encode) {
-
-    }
-
-    @Override
-    public String getCookie(boolean decode) {
-        return null;
-    }
-
-    @Override
-    public void profilePushId(String pushTypeKey, String pushId) {
-
-    }
-
-    @Override
-    public void profileUnsetPushId(String pushTypeKey) {
-
-    }
-
     @Override
     public boolean isVisualizedAutoTrackActivity(Class<?> activity) {
         return false;
@@ -715,10 +530,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     @Override
     public String getScreenOrientation() {
         return "";
-    }
-
-    @Override
-    void trackChannelDebugInstallation() {
     }
 
     @Override

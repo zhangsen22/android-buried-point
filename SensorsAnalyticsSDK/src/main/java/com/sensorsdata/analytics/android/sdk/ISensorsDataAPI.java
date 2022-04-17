@@ -21,7 +21,6 @@ import android.view.View;
 import android.webkit.WebView;
 
 import com.sensorsdata.analytics.android.sdk.internal.api.IFragmentAPI;
-import com.sensorsdata.analytics.android.sdk.useridentity.IUserIdentityAPI;
 
 import org.json.JSONObject;
 
@@ -30,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-public interface ISensorsDataAPI extends IFragmentAPI, IUserIdentityAPI {
+public interface ISensorsDataAPI extends IFragmentAPI {
     /**
      * 返回预置属性
      *
@@ -401,74 +400,6 @@ public interface ISensorsDataAPI extends IFragmentAPI, IUserIdentityAPI {
     boolean isHeatMapEnabled();
 
     /**
-     * 用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
-     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
-     *
-     * @param eventName 渠道追踪事件的名称
-     * @param properties 渠道追踪事件的属性
-     * @param disableCallback 是否关闭这次渠道匹配的回调请求
-     */
-    void trackInstallation(String eventName, JSONObject properties, boolean disableCallback);
-
-    /**
-     * 用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
-     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
-     *
-     * @param eventName 渠道追踪事件的名称
-     * @param properties 渠道追踪事件的属性
-     */
-    void trackInstallation(String eventName, JSONObject properties);
-
-    /**
-     * 用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
-     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
-     *
-     * @param eventName 渠道追踪事件的名称
-     */
-    void trackInstallation(String eventName);
-
-    /**
-     * 记录 $AppInstall 事件，用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
-     * 注意：如果之前使用 trackInstallation 触发的激活事件，需要继续保持原来的调用，无需改成 trackAppInstall，否则会导致激活事件数据分离。
-     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
-     *
-     * @param properties 渠道追踪事件的属性
-     * @param disableCallback 是否关闭这次渠道匹配的回调请求
-     */
-    void trackAppInstall(JSONObject properties, boolean disableCallback);
-
-    /**
-     * 记录 $AppInstall 事件，用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
-     * 注意：如果之前使用 trackInstallation 触发的激活事件，需要继续保持原来的调用，无需改成 trackAppInstall，否则会导致激活事件数据分离。
-     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
-     *
-     * @param properties 渠道追踪事件的属性
-     */
-    void trackAppInstall(JSONObject properties);
-
-    /**
-     * 记录 $AppInstall 事件，用于在 App 首次启动时追踪渠道来源，并设置追踪渠道事件的属性。
-     * 注意：如果之前使用 trackInstallation 触发的激活事件，需要继续保持原来的调用，无需改成 trackAppInstall，否则会导致激活事件数据分离。
-     * 这是 Sensors Analytics 进阶功能，请参考文档 https://sensorsdata.cn/manual/track_installation.html
-     */
-    void trackAppInstall();
-
-    /**
-     * 调用 track 接口，并附加渠道信息.
-     *
-     * @param eventName 事件的名称
-     */
-    void trackChannelEvent(String eventName);
-
-    /**
-     * 调用 track 接口，并附加渠道信息.
-     *
-     * @param eventName 事件的名称
-     * @param properties 事件的属性
-     */
-    void trackChannelEvent(String eventName, JSONObject properties);
-
-    /**
      * 调用 track 接口，追踪一个带有属性的事件
      *
      * @param eventName 事件的名称
@@ -482,46 +413,6 @@ public interface ISensorsDataAPI extends IFragmentAPI, IUserIdentityAPI {
      * @param eventName 事件的名称
      */
     void track(String eventName);
-
-    /**
-     * 初始化事件的计时器。
-     * 若需要统计某个事件的持续时间，先在事件开始时调用 trackTimer("Event") 记录事件开始时间，该方法并不会真正发
-     * 送事件；随后在事件结束时，调用 track("Event", properties)，SDK 会追踪 "Event" 事件，并自动将事件持续时
-     * 间记录在事件属性 "event_duration" 中。
-     * 多次调用 trackTimer("Event") 时，事件 "Event" 的开始时间以最后一次调用时为准。
-     *
-     * @param eventName 事件的名称
-     * @param timeUnit 计时结果的时间单位
-     */
-    @Deprecated
-    void trackTimer(final String eventName, final TimeUnit timeUnit);
-
-    /**
-     * 删除事件的计时器
-     *
-     * @param eventName 事件名称
-     */
-    void removeTimer(final String eventName);
-
-    /**
-     * 停止事件计时器
-     *
-     * @param eventName 事件的名称，或者交叉计算场景时 trackTimerStart 的返回值
-     * @param properties 事件的属性
-     */
-    void trackTimerEnd(final String eventName, JSONObject properties);
-
-    /**
-     * 停止事件计时器
-     *
-     * @param eventName 事件的名称，或者交叉计算场景时 trackTimerStart 的返回值
-     */
-    void trackTimerEnd(final String eventName);
-
-    /**
-     * 清除所有事件计时器
-     */
-    void clearTrackTimer();
 
     /**
      * 获取 LastScreenUrl
@@ -600,44 +491,11 @@ public interface ISensorsDataAPI extends IFragmentAPI, IUserIdentityAPI {
     void flushScheduled();
 
     /**
-     * 注册事件动态公共属性
-     *
-     * @param dynamicSuperProperties 事件动态公共属性回调接口
-     */
-    void registerDynamicSuperProperties(SensorsDataDynamicSuperProperties dynamicSuperProperties);
-
-    /**
      * 设置 track 事件回调
      *
      * @param trackEventCallBack track 事件回调接口
      */
     void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack);
-
-    /**
-     * 获取事件公共属性
-     *
-     * @return 当前所有 Super 属性
-     */
-    JSONObject getSuperProperties();
-
-    /**
-     * 注册所有事件都有的公共属性
-     *
-     * @param superProperties 事件公共属性
-     */
-    void registerSuperProperties(JSONObject superProperties);
-
-    /**
-     * 删除事件公共属性
-     *
-     * @param superPropertyName 事件属性名称
-     */
-    void unregisterSuperProperty(String superPropertyName);
-
-    /**
-     * 删除所有事件公共属性
-     */
-    void clearSuperProperties();
 
     /**
      * 设置用户的一个或多个 Profile。
@@ -766,66 +624,9 @@ public interface ISensorsDataAPI extends IFragmentAPI, IUserIdentityAPI {
     String getScreenOrientation();
 
     /**
-     * 初始化事件的计时器，计时单位为秒。
-     *
-     * @param eventName 事件的名称
-     * @return 交叉计时的事件名称
-     */
-    String trackTimerStart(final String eventName);
-
-    /**
-     * 暂停事件计时器，计时单位为秒。
-     *
-     * @param eventName 事件的名称
-     */
-    void trackTimerPause(final String eventName);
-
-    /**
-     * 恢复事件计时器，计时单位为秒。
-     *
-     * @param eventName 事件的名称
-     */
-    void trackTimerResume(final String eventName);
-
-    /**
-     * 设置 Cookie，flush 的时候会设置 HTTP 的 cookie
-     * 内部会 URLEncoder.encode(cookie, "UTF-8")
-     *
-     * @param cookie String cookie
-     * @param encode boolean 是否 encode
-     */
-    void setCookie(final String cookie, boolean encode);
-
-    /**
-     * 获取已设置的 Cookie
-     * URLDecoder.decode(Cookie, "UTF-8")
-     *
-     * @param decode String
-     * @return String cookie
-     */
-    String getCookie(boolean decode);
-
-    /**
      * 删除本地缓存的全部事件
      */
     void deleteAll();
-
-    /**
-     * 保存用户推送 ID 到用户表
-     *
-     * @param pushTypeKey 属性名称（例如 jgId）
-     * @param pushId 推送 ID
-     * 使用 profilePushId("jgId",JPushInterface.getRegistrationID(this))
-     */
-
-    void profilePushId(String pushTypeKey, String pushId);
-
-    /**
-     * 删除用户设置的 pushId
-     *
-     * @param pushTypeKey 属性名称（例如 jgId）
-     */
-    void profileUnsetPushId(String pushTypeKey);
 
     /**
      * 设置 item
