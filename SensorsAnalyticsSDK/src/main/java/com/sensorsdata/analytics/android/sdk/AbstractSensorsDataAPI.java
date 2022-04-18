@@ -91,6 +91,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected boolean mEnableNetworkRequest = true;
     // Session 时长
     protected TrackTaskManager mTrackTaskManager;
+    protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
     protected SAStoreManager mStoreManager;
@@ -112,6 +113,8 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             mStoreManager.registerPlugins(mSAConfigOptions.getStorePlugins(), mContext);
             mStoreManager.upgrade();
             mTrackTaskManager = TrackTaskManager.getInstance();
+            mTrackTaskManagerThread = new TrackTaskManagerThread();
+            new Thread(mTrackTaskManagerThread, ThreadNameConstants.THREAD_TASK_QUEUE).start();
             SensorsDataExceptionHandler.init();
             initSAConfig(mSAConfigOptions.mServerUrl, packageName);
             mMessages = AnalyticsMessages.getInstance(mContext, (SensorsDataAPI) this);
@@ -366,6 +369,26 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
+    }
+
+    /**
+     * 在未同意合规时转换队列
+     *
+     * @param runnable 任务
+     */
+    public void transformTaskQueue(final Runnable runnable) {
+        // 禁用采集事件时，先计算基本信息存储到缓存中
+        if (!mSAConfigOptions.isDataCollectEnable) {
+            mTrackTaskManager.addTrackEventTask(new Runnable() {
+                @Override
+                public void run() {
+                    mTrackTaskManager.transformTaskQueue(runnable);
+                }
+            });
+            return;
+        }
+
+        mTrackTaskManager.addTrackEventTask(runnable);
     }
 
     protected void initSAConfig(String serverURL, String packageName) {

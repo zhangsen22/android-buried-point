@@ -331,4 +331,14 @@ public interface ISensorsDataAPI{
      */
     void itemDelete(String itemType, String itemId);
 
+    /**
+     * 停止事件采集，注意不要随便调用，调用后会造成数据丢失。
+     */
+    void stopTrackThread();
+
+    /**
+     * 开启事件采集
+     */
+    void startTrackThread();
+
 }

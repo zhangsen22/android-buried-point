@@ -445,6 +445,23 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
+    public void stopTrackThread() {
+        if (mTrackTaskManagerThread != null && !mTrackTaskManagerThread.isStopped()) {
+            mTrackTaskManagerThread.stop();
+            SALog.i(TAG, "Data collection thread has been stopped");
+        }
+    }
+
+    @Override
+    public void startTrackThread() {
+        if (mTrackTaskManagerThread == null || mTrackTaskManagerThread.isStopped()) {
+            mTrackTaskManagerThread = new TrackTaskManagerThread();
+            new Thread(mTrackTaskManagerThread).start();
+            SALog.i(TAG, "Data collection thread has been started");
+        }
+    }
+
+    @Override
     public void deleteAll() {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
