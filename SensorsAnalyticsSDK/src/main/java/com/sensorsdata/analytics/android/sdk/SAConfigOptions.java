@@ -150,16 +150,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 是否多进程上报数据
-     *
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableSubProcessFlushData() {
-        this.isSubProcessFlushData = true;
-        return this;
-    }
-
-    /**
      * 禁用数据采集
      *
      * @return SAConfigOptions
@@ -170,10 +160,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
         return this;
     }
 
-    public boolean isDataCollect() {
-        return this.isDataCollectEnable;
-    }
-
     /**
      * 设置 SSLSocketFactory，HTTPS 请求连接时需要使用
      *
@@ -182,17 +168,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
      */
     public SAConfigOptions setSSLSocketFactory(SSLSocketFactory SSLSocketFactory) {
         this.mSSLSocketFactory = SSLSocketFactory;
-        return this;
-    }
-
-    /**
-     * 是否关闭 SDK
-     *
-     * @param disableSDK 是否关闭 SDK
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions disableSDK(boolean disableSDK) {
-        this.isDisableSDK = disableSDK;
         return this;
     }
 
@@ -295,14 +270,4 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
         return copyObject;
     }
 
-    /**
-     * 是否开启 session_id 的采集
-     *
-     * @param enableSession 是否开启 Session 采集
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableSession(boolean enableSession) {
-        this.mEnableSession = enableSession;
-        return this;
-    }
 }

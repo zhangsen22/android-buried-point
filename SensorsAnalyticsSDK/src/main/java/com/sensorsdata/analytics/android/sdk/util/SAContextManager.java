@@ -103,18 +103,6 @@ public class SAContextManager {
     }
 
     /**
-     * 获取 AndroidID
-     *
-     * @return AndroidID
-     */
-    public String getAndroidId() {
-        if (TextUtils.isEmpty(mAndroidId) && SensorsDataAPI.getConfigOptions().isDataCollectEnable()) {
-            mAndroidId = SensorsDataUtils.getAndroidID(mContext);
-        }
-        return mAndroidId;
-    }
-
-    /**
      * 获取预置属性信息
      *
      * @return 预置属性信息

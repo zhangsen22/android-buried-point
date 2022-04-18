@@ -67,9 +67,6 @@ public abstract class PersistentIdentity<T> {
      */
     @SuppressWarnings("unchecked")
     public void commit(T item) {
-        if (SensorsDataAPI.getConfigOptions().isDisableSDK()) {
-            return;
-        }
         this.item = item;
 
         synchronized (saStoreManager) {

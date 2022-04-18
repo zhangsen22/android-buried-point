@@ -72,11 +72,6 @@ abstract class AbstractSAConfigOptions {
     int mNetworkTypePolicy = SensorsNetworkType.TYPE_3G | SensorsNetworkType.TYPE_4G | SensorsNetworkType.TYPE_WIFI | SensorsNetworkType.TYPE_5G;
 
     /**
-     * 是否子进程上报数据
-     */
-    boolean isSubProcessFlushData = false;
-
-    /**
      * 是否开启加密
      */
     boolean mEnableEncrypt = false;
@@ -90,16 +85,6 @@ abstract class AbstractSAConfigOptions {
      * 关闭数据采集，默认开启数据采集
      */
     boolean isDataCollectEnable = true;
-
-    /**
-     * 是否关闭 SDK
-     */
-    boolean isDisableSDK = false;
-
-    /**
-     * 是开启 session 采集开关
-     */
-    boolean mEnableSession = false;
 
     /**
      * 自定义加密实现接口
@@ -137,24 +122,6 @@ abstract class AbstractSAConfigOptions {
     boolean mDisableDeviceId = false;
 
     /**
-     * 是否开启数据采集
-     *
-     * @return true 开启，false 未开启
-     */
-    public boolean isDataCollectEnable() {
-        return isDataCollectEnable;
-    }
-
-    /**
-     * 是否允许多进程上报数据
-     *
-     * @return true 开启，false 未开启
-     */
-    public boolean isMultiProcessFlush() {
-        return isSubProcessFlushData;
-    }
-
-    /**
      * 是否开启页面停留时长采集
      *
      * @return true 开启，false 未开启
@@ -180,25 +147,6 @@ abstract class AbstractSAConfigOptions {
     public List<SAEncryptListener> getEncryptors() {
         return mEncryptors;
     }
-
-    /**
-     * 是否禁止 SDK
-     *
-     * @return true 禁止了 SDK，false 未禁止
-     */
-    public boolean isDisableSDK() {
-        return this.isDisableSDK;
-    }
-
-    /**
-     * 是否开启 session_id 的采集
-     *
-     * @return true 开启，false 关闭
-     */
-    public boolean isEnableSession() {
-        return this.mEnableSession;
-    }
-
 
     public List<StorePlugin> getStorePlugins() {
         return mStorePlugins;

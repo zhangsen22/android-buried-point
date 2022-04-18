@@ -153,19 +153,8 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             mRemoteManager = new SensorsDataRemoteManager((SensorsDataAPI) this);
             //先从缓存中读取 SDKConfig
             mRemoteManager.applySDKConfigFromCache();
-            //打开 debug 模式，弹出提示
-            if (mDebugMode != SensorsDataAPI.DebugMode.DEBUG_OFF && mIsMainProcess) {
-                if (SHOW_DEBUG_INFO_VIEW) {
-                    if (!isSDKDisabled()) {
-                        showDebugModeWarning();
-                    }
-                }
-            }
 
             registerLifecycleCallbacks();
-            if (!mSAConfigOptions.isDisableSDK()) {
-                delayInitTask();
-            }
             if (SALog.isLogEnabled()) {
                 SALog.i(TAG, String.format(Locale.CHINA, "Initialized the instance of Sensors Analytics SDK with server"
                         + " url '%s', flush interval %d ms, debugMode: %s", mServerUrl, mSAConfigOptions.mFlushInterval, debugMode));
@@ -218,28 +207,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             SALog.i(TAG, "remote config: SDK is disabled");
         }
         return isSDKDisabled;
-    }
-
-    /**
-     * 返回本地是否关闭了 SDK
-     *
-     * @return true：关闭；false：没有关闭
-     */
-    private static boolean isSDKDisableByLocal() {
-        if (mSAConfigOptions == null) {
-            SALog.i(TAG, "SAConfigOptions is null");
-            return true;
-        }
-        return mSAConfigOptions.isDisableSDK;
-    }
-
-    /**
-     * 返回是否关闭了 SDK
-     *
-     * @return true：关闭；false：没有关闭
-     */
-    public static boolean isSDKDisabled() {
-        return isSDKDisableByLocal() || isSDKDisabledByRemote();
     }
 
     /**
@@ -574,7 +541,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             enableLog(configBundle.getBoolean("com.sensorsdata.analytics.android.EnableLogging",
                     this.mDebugMode != SensorsDataAPI.DebugMode.DEBUG_OFF));
         }
-        SALog.setDisableSDK(mSAConfigOptions.isDisableSDK);
 
         setServerUrl(serverURL);
         if (mSAConfigOptions.mEnableTrackAppCrash) {
@@ -593,11 +559,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         if (mSAConfigOptions.mMaxCacheSize == 0) {
             mSAConfigOptions.setMaxCacheSize(32 * 1024 * 1024L);
-        }
-
-        if (mSAConfigOptions.isDisableSDK) {
-            mEnableNetworkRequest = false;
-            isChangeEnableNetworkFlag = true;
         }
 
         SHOW_DEBUG_INFO_VIEW = configBundle.getBoolean("com.sensorsdata.analytics.android.ShowDebugInfoView",

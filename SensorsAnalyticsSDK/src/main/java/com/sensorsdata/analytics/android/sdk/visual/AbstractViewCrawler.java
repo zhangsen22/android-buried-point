@@ -39,7 +39,6 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
 import com.sensorsdata.analytics.android.sdk.util.Base64Coder;
-import com.sensorsdata.analytics.android.sdk.visual.model.SnapInfo;
 import com.sensorsdata.analytics.android.sdk.visual.property.VisualPropertiesManager;
 import com.sensorsdata.analytics.android.sdk.visual.snap.EditState;
 
@@ -224,7 +223,6 @@ public abstract class AbstractViewCrawler implements VTrack {
             ByteArrayOutputStream payload_out = null;
             GZIPOutputStream gos = null;
             ByteArrayOutputStream os = null;
-            SnapInfo info = null;
             try {
                 writer.write("{".getBytes());
                 writer.write(("\"type\": \"snapshot_response\",").getBytes());
@@ -296,21 +294,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                     writer.write("}".getBytes());
                 }
 
-                String pageName = null;
-                if (!TextUtils.isEmpty(info.screenName)) {
-                    writer.write((",\"screen_name\": \"" + info.screenName + "\"").getBytes());
-                    pageName = info.screenName;
-                }
-
-
-                SALog.i(TAG, "page_name： " + pageName);
-                if (!TextUtils.isEmpty(pageName)) {
-                    writer.write((",\"page_name\": \"" + pageName + "\"").getBytes());
-                }
-
-                if (!TextUtils.isEmpty(info.activityTitle)) {
-                    writer.write((",\"title\": \"" + info.activityTitle + "\"").getBytes());
-                }
                 writer.write("}".getBytes());
                 writer.flush();
             } catch (final IOException e) {
@@ -360,11 +343,6 @@ public abstract class AbstractViewCrawler implements VTrack {
                 connection = (HttpURLConnection) url.openConnection();
                 SAConfigOptions configOptions = SensorsDataAPI.getConfigOptions();
                 if (configOptions != null) {
-                    if (configOptions.isDisableSDK()) {
-                        mMessageThreadHandler.sendMessageDelayed(mMessageThreadHandler.obtainMessage(MESSAGE_SEND_STATE_FOR_EDITING), 1000);
-                        return;
-                    }
-
                     if (configOptions.mSSLSocketFactory != null
                             && connection instanceof HttpsURLConnection) {
                         ((HttpsURLConnection) connection).setSSLSocketFactory(configOptions.mSSLSocketFactory);

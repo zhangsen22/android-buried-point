@@ -89,7 +89,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
         this.mFirstDay = firstDay;
         this.mDbAdapter = DbAdapter.getInstance();
         this.mContext = context;
-        mDataCollectState = SensorsDataAPI.getConfigOptions().isDataCollectEnable();
     }
 
     @Override
@@ -177,19 +176,10 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
     private void buildScreenProperties(Activity activity) {
         activityProperty = AopUtil.buildTitleNoAutoTrackerProperties(activity);
         SensorsDataUtils.mergeJSONObject(activityProperty, endDataProperty);
-        if (!SensorsDataAPI.getConfigOptions().isDisableSDK()) {
-            // 合并渠道信息到 $AppStart 事件中
-            if (mDeepLinkProperty == null) {
-                mDeepLinkProperty = new JSONObject();
-            }
-        }
     }
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {
-        if (SensorsDataAPI.getConfigOptions().isMultiProcessFlush()) {
-            DbAdapter.getInstance().commitSubProcessFlushState(false);
-        }
 
         // 注意这里要重置为 0，对于跨进程的情况，如果子进程崩溃，主进程但是没崩溃，造成统计个数异常，所以要重置为 0。
         DbAdapter.getInstance().commitActivityCount(0);

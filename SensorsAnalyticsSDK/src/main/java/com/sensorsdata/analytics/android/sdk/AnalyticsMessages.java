@@ -208,14 +208,7 @@ class AnalyticsMessages {
                 return;
             }
 
-            // 如果开启多进程上报
-            if (mSensorsDataAPI.getConfigOptions().isMultiProcessFlush()) {
-                // 已经有进程在上报
-                if (DbAdapter.getInstance().isSubProcessFlushing()) {
-                    return;
-                }
-                DbAdapter.getInstance().commitSubProcessFlushState(true);
-            } else if (!SensorsDataAPI.mIsMainProcess) {//不是主进程
+            if (!SensorsDataAPI.mIsMainProcess) {//不是主进程
                 return;
             }
         } catch (Exception e) {
@@ -283,9 +276,6 @@ class AnalyticsMessages {
                 }
 
             }
-        }
-        if (mSensorsDataAPI.getConfigOptions().isMultiProcessFlush()) {
-            DbAdapter.getInstance().commitSubProcessFlushState(false);
         }
     }
 

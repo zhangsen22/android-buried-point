@@ -71,9 +71,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
      * @return SensorsDataAPI 单例
      */
     public static SensorsDataAPI sharedInstance(Context context) {
-        if (isSDKDisabled()) {
-            return new SensorsDataAPIEmptyImplementation();
-        }
 
         if (null == context) {
             return new SensorsDataAPIEmptyImplementation();
@@ -140,10 +137,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     public static SensorsDataAPI sharedInstance() {
-        if (isSDKDisabled()) {
-            return new SensorsDataAPIEmptyImplementation();
-        }
-
         return getSDKInstance();
     }
 
