@@ -33,7 +33,6 @@ import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallationWithCallback;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
@@ -78,7 +77,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
     protected final PersistentFirstDay mFirstDay;
-    protected final PersistentFirstTrackInstallationWithCallback mFirstTrackInstallationWithCallback;
     private Map<String, Object> mDeviceInfo;
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
@@ -108,7 +106,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         setDebugMode(debugMode);
         final String packageName = context.getApplicationContext().getPackageName();
         PersistentLoader.initLoader(context);
-        mFirstTrackInstallationWithCallback = (PersistentFirstTrackInstallationWithCallback) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL_CALLBACK);
         mFirstDay = (PersistentFirstDay) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_DAY);
         try {
             mSAConfigOptions = configOptions.clone();
@@ -142,7 +139,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mContext = null;
         mMessages = null;
         mFirstDay = null;
-        mFirstTrackInstallationWithCallback = null;
         mSensorsDataEncrypt = null;
     }
 

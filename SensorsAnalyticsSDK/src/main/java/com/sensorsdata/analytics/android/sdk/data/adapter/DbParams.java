@@ -40,8 +40,6 @@ public class DbParams {
 
     public interface PersistentName {
         String FIRST_DAY = "first_day";
-        String FIRST_INSTALL_CALLBACK = "first_track_installation_with_callback";
-        String VISUAL_PROPERTIES = "visual_properties";
     }
 
     private DbParams(String packageName) {
