@@ -51,17 +51,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 设置远程配置请求地址
-     *
-     * @param remoteConfigUrl，远程配置请求地址
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setRemoteConfigUrl(String remoteConfigUrl) {
-        this.mRemoteConfigUrl = remoteConfigUrl;
-        return this;
-    }
-
-    /**
      * 设置数据上报地址
      *
      * @param serverUrl，数据上报地址
@@ -112,34 +101,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
      */
     public SAConfigOptions setMaxCacheSize(long maxCacheSize) {
         this.mMaxCacheSize = Math.max(16 * 1024 * 1024, maxCacheSize);
-        return this;
-    }
-
-    /**
-     * 设置远程配置请求最小间隔时长
-     *
-     * @param minRequestInterval 最小时长间隔，单位：小时，默认 24，合法区间在(0, 7*24] 之间
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setMinRequestInterval(int minRequestInterval) {
-        //设置最小时长间隔的合法区间为 0 到 7*24 小时
-        if (minRequestInterval > 0) {
-            this.mMinRequestInterval = Math.min(minRequestInterval, 7 * 24);
-        }
-        return this;
-    }
-
-    /**
-     * 设置远程配置请求最大间隔时长
-     *
-     * @param maxRequestInterval 最大时长间隔，单位：小时，默认 48，合法区间在(0, 7*24] 之间
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setMaxRequestInterval(int maxRequestInterval) {
-        //设置最大时长间隔合法区间为 0 到 7*24 小时
-        if (maxRequestInterval > 0) {
-            this.mMaxRequestInterval = Math.min(maxRequestInterval, 7 * 24);
-        }
         return this;
     }
 

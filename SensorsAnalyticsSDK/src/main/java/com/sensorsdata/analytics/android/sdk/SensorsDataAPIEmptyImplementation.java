@@ -48,11 +48,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void setServerUrl(String serverUrl, boolean isRequestRemoteConfig) {
-
-    }
-
-    @Override
     public void enableLog(boolean enable) {
 
     }

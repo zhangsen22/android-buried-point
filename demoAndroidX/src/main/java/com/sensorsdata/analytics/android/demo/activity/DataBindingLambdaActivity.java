@@ -47,7 +47,6 @@ public class DataBindingLambdaActivity extends BaseActivity {
         testCompoundButton();
         testDialog();
         testListViewItemClick();
-        testNavigationViewItemClick();
         testExpandListView();
         testRatingBar();
     }
@@ -125,12 +124,6 @@ public class DataBindingLambdaActivity extends BaseActivity {
         });
     }
 
-    private void testNavigationViewItemClick() {
-        findViewById(R.id.navigation).setOnClickListener(view -> {
-            Intent intent = new Intent(this, NavigationViewActivity.class);
-            startActivity(intent);
-        });
-    }
 
 
 }

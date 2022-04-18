@@ -30,20 +30,6 @@ import javax.net.ssl.SSLSocketFactory;
  * SDK 配置抽象类
  */
 abstract class AbstractSAConfigOptions {
-    /**
-     * 请求配置地址，默认从 ServerUrl 解析
-     */
-    public String mRemoteConfigUrl;
-
-    /**
-     * 远程配置请求最小间隔时长，单位：小时，默认 24
-     */
-    public int mMinRequestInterval = 24;
-
-    /**
-     * 远程配置请求最大间隔时长，单位：小时，默认 48
-     */
-    public int mMaxRequestInterval = 48;
 
     /**
      * 设置 SSLSocketFactory

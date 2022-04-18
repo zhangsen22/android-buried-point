@@ -195,9 +195,6 @@ public abstract class BaseSensorsDataSDKRemoteManager {
         boolean configV = enableConfigV;
         String serverUlr = mSensorsDataAPI.getServerUrl();
         String configOptionsRemoteUrl = null;
-        if (mSAConfigOptions != null) {
-            configOptionsRemoteUrl = mSAConfigOptions.mRemoteConfigUrl;
-        }
 
         if (!TextUtils.isEmpty(configOptionsRemoteUrl)
                 && Patterns.WEB_URL.matcher(configOptionsRemoteUrl).matches()) {

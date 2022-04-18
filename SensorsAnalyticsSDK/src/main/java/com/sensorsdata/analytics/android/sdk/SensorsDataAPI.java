@@ -23,28 +23,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
-import android.view.Window;
-
-import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
-import com.sensorsdata.analytics.android.sdk.remote.BaseSensorsDataSDKRemoteManager;
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
 import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
 import com.sensorsdata.analytics.android.sdk.util.JSONUtils;
 import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.util.TimeUtils;
-import com.sensorsdata.analytics.android.sdk.visual.property.VisualPropertiesManager;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -156,34 +147,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
         return getSDKInstance();
     }
 
-    /**
-     * 关闭 SDK
-     */
-    public static void disableSDK() {
-        SALog.i(TAG, "call static function disableSDK");
-        try {
-            final SensorsDataAPI sensorsDataAPI = sharedInstance();
-            if (sensorsDataAPI instanceof SensorsDataAPIEmptyImplementation ||
-                    getConfigOptions() == null ||
-                    getConfigOptions().isDisableSDK) {
-                return;
-            }
-            //禁止网络
-            if (sensorsDataAPI.isNetworkRequestEnable()) {
-                sensorsDataAPI.enableNetworkRequest(false);
-                isChangeEnableNetworkFlag = true;
-            } else {
-                isChangeEnableNetworkFlag = false;
-            }
-            //关闭网络监听
-            sensorsDataAPI.unregisterNetworkListener();
-            getConfigOptions().disableSDK(true);
-            //关闭日志
-            SALog.setDisableSDK(true);
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
 
     /**
      * 返回预置属性
@@ -768,21 +731,8 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void setServerUrl(String serverUrl) {
-        setServerUrl(serverUrl, false);
-    }
-
-    @Override
-    public void setServerUrl(final String serverUrl, boolean isRequestRemoteConfig) {
+    public void setServerUrl(final String serverUrl) {
         try {
-            //请求远程配置
-            if (isRequestRemoteConfig && mRemoteManager != null) {
-                try {
-                    mRemoteManager.requestRemoteConfig(BaseSensorsDataSDKRemoteManager.RandomTimeType.RandomTimeTypeWrite, false);
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
             mOriginServerUrl = serverUrl;
             if (TextUtils.isEmpty(serverUrl)) {
                 mServerUrl = serverUrl;

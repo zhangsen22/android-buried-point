@@ -22,10 +22,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.sensorsdata.analytics.android.demo.PopupMenuActivity
 import com.sensorsdata.analytics.android.demo.R
 import com.sensorsdata.analytics.android.demo.custom.HorizonRecyclerDivider
-import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils
 import kotlinx.android.synthetic.main.activity_test_list.*
 
 class TestMainActivity : AppCompatActivity() {
@@ -40,12 +38,7 @@ class TestMainActivity : AppCompatActivity() {
                 DataEntity("OnClick", ClickActivity::class.java, true),
                 DataEntity("Widget 采集测试", WidgetTestActivity::class.java, true),
                 DataEntity("ViewPager & Fragment 测试", FragmentActivity::class.java, true),
-                DataEntity("NavigationView", NavigationViewActivity::class.java, true),
                 DataEntity("Crash 测试", CrashTestActivity::class.java, true),
-                DataEntity("PopupMenu 测试", PopupMenuActivity::class.java, true),
-                DataEntity("黑名单白名单", BaseActivity::class.java, false),
-                DataEntity("Debug 模式", BaseActivity::class.java, false),
-                DataEntity("点击图 HeatMap", BaseActivity::class.java),
                 DataEntity("ListView 内嵌", InnerListTestActivity::class.java, true),
                 DataEntity("Lambda 点击事件", LambdaTestPageActivity::class.java, true)
         )

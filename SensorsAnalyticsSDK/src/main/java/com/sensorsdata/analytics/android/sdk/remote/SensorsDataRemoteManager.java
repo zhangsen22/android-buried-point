@@ -39,8 +39,7 @@ public class SensorsDataRemoteManager extends BaseSensorsDataSDKRemoteManager {
     private static final String SHARED_PREF_REQUEST_TIME_RANDOM = "sensorsdata.request.time.random";
     private static final String TAG = "SA.SensorsDataRemoteManager";
 
-    // 每次启动 App 时，最多尝试三次
-    private CountDownTimer mPullSDKConfigCountDownTimer;
+
     private final SAStoreManager mStorageManager;
     private volatile boolean mIsInit = true;
 
@@ -49,47 +48,6 @@ public class SensorsDataRemoteManager extends BaseSensorsDataSDKRemoteManager {
         super(sensorsDataAPI);
         mStorageManager = SAStoreManager.getInstance();
         SALog.i(TAG, "Construct a SensorsDataRemoteManager");
-    }
-
-    /**
-     * 是否发起随机请求
-     *
-     * @return false 代表不发，true 代表发送随机请求
-     */
-    private boolean isRequestValid() {
-        boolean isRequestValid = true;
-        try {
-            long lastRequestTime = mStorageManager.getLong(SHARED_PREF_REQUEST_TIME, 0);
-            int randomTime = mStorageManager.getInteger(SHARED_PREF_REQUEST_TIME_RANDOM, 0);
-            if (lastRequestTime != 0 && randomTime != 0) {
-                float requestInterval = SystemClock.elapsedRealtime() - lastRequestTime;
-                // 当前的时间减去上次请求的时间，为间隔时间，当间隔时间小于随机时间，则不请求后端
-                if (requestInterval > 0 && requestInterval / 1000 < randomTime * 3600) {
-                    isRequestValid = false;
-                }
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-        return isRequestValid;
-    }
-
-    /**
-     * 缓存远程控制随机时间
-     */
-    private void writeRemoteRequestRandomTime() {
-        if (mSAConfigOptions == null) {
-            return;
-        }
-        //默认情况下，随机请求时间为最小时间间隔
-        int randomTime = mSAConfigOptions.mMinRequestInterval;
-        long currentTime = SystemClock.elapsedRealtime();
-        //最大时间间隔大于最小时间间隔时，生成随机时间
-        if (mSAConfigOptions.mMaxRequestInterval > mSAConfigOptions.mMinRequestInterval) {
-            randomTime += new SecureRandom().nextInt(mSAConfigOptions.mMaxRequestInterval - mSAConfigOptions.mMinRequestInterval + 1);
-        }
-        mStorageManager.setLong(SHARED_PREF_REQUEST_TIME, currentTime);
-        mStorageManager.setInteger(SHARED_PREF_REQUEST_TIME_RANDOM, randomTime);
     }
 
     /**
@@ -113,9 +71,6 @@ public class SensorsDataRemoteManager extends BaseSensorsDataSDKRemoteManager {
         }
 
         switch (randomTimeType) {
-            case RandomTimeTypeWrite:
-                writeRemoteRequestRandomTime();
-                break;
             case RandomTimeTypeClean:
                 cleanRemoteRequestRandomTime();
                 break;
@@ -123,69 +78,11 @@ public class SensorsDataRemoteManager extends BaseSensorsDataSDKRemoteManager {
                 break;
         }
 
-        if (mPullSDKConfigCountDownTimer != null) {
-            mPullSDKConfigCountDownTimer.cancel();
-            mPullSDKConfigCountDownTimer = null;
-        }
-
-        mPullSDKConfigCountDownTimer = new CountDownTimer(90 * 1000, 30 * 1000) {
-            @Override
-            public void onTick(long l) {
-                requestRemoteConfig(enableConfigV, new HttpCallback.StringCallback() {
-                    @Override
-                    public void onFailure(int code, String errorMessage) {
-                        // 304 状态码为后端配置未更新，此时不需要重试
-                        // 205 状态码表示后端环境未同步配置，此时需要重试，代码不需要做特殊处理
-                        if (code == 304 || code == 404) {
-                            resetPullSDKConfigTimer();
-                        }
-                        SALog.i(TAG, "Remote request failed,responseCode is " + code +
-                                ",errorMessage is " + errorMessage);
-                    }
-
-                    @Override
-                    public void onResponse(String response) {
-                        resetPullSDKConfigTimer();
-                        if (!TextUtils.isEmpty(response)) {
-                            SensorsDataSDKRemoteConfig sdkRemoteConfig = toSDKRemoteConfig(response);
-                            try {
-                                if (mSensorsDataEncrypt != null) {
-                                    mSensorsDataEncrypt.saveSecretKey(sdkRemoteConfig.getSecretKey());
-                                }
-                            } catch (Exception e) {
-                                SALog.printStackTrace(e);
-                            }
-
-                            setSDKRemoteConfig(sdkRemoteConfig);
-                        }
-                        SALog.i(TAG, "Remote request was successful,response data is " + response);
-                    }
-
-                    @Override
-                    public void onAfter() {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFinish() {
-            }
-        };
-        mPullSDKConfigCountDownTimer.start();
     }
 
     @Override
     public void resetPullSDKConfigTimer() {
-        try {
-            if (mPullSDKConfigCountDownTimer != null) {
-                mPullSDKConfigCountDownTimer.cancel();
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        } finally {
-            mPullSDKConfigCountDownTimer = null;
-        }
+
     }
 
     /**
