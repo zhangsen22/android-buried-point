@@ -83,9 +83,6 @@ class TrackProfileSettingsActivity : BaseActivity() {
             R.id.track_view_onclick -> {
                 SensorsDataAPI.sharedInstance().trackViewAppClick(track_view_onclick)
             }
-            R.id.track_view_screen -> {
-                SensorsDataAPI.sharedInstance().trackViewScreen(this)
-            }
             else -> {
                 //no op
             }

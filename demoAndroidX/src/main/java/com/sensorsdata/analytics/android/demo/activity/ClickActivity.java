@@ -26,6 +26,7 @@ import androidx.databinding.DataBindingUtil;
 import com.sensorsdata.analytics.android.demo.R;
 import com.sensorsdata.analytics.android.demo.databinding.ActivityClickBinding;
 import com.sensorsdata.analytics.android.demo.entity.BindingEntity;
+import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackAppViewScreenUrl;
 import com.sensorsdata.analytics.android.sdk.SensorsDataTrackEvent;
 import com.sensorsdata.analytics.android.sdk.SensorsDataTrackViewOnClick;
@@ -45,9 +46,22 @@ public class ClickActivity extends BaseActivity{
     }
 
     private void initView() {
+        type1();
         type3();
         type5();
         type8();
+    }
+
+    /**
+     * 1. 手动开启浏览页面功能 activity / fragment
+     */
+    private void type1() {
+        findViewById(R.id.track_view_screen).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SensorsDataAPI.sharedInstance().trackViewScreen(ClickActivity.this);
+            }
+        });
     }
 
     /**
