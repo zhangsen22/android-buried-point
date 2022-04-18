@@ -33,7 +33,6 @@ public class SAStoreManager extends AbstractStoreManager {
     private static final String TAG = "SA.SAStoreManager";
     private static final String SP_SENSORS_DATA_API = "com.sensorsdata.analytics.android.sdk.SensorsDataAPI";
     private static final String SP_SENSORS_DATA = "sensorsdata";
-    private static final String SP_SENSORS_DATA_EXIT = "sensorsdata.exit";
     private final ArrayList<String> mAPIStoreKeys = new ArrayList<>();
 
     private SAStoreManager() {
