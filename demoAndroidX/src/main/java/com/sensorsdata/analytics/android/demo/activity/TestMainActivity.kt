@@ -36,11 +36,7 @@ class TestMainActivity : AppCompatActivity() {
         dataList = listOf(
                 DataEntity("track*, profile* 等接口调用", TrackProfileSettingsActivity::class.java, true),
                 DataEntity("OnClick", ClickActivity::class.java, true),
-                DataEntity("Widget 采集测试", WidgetTestActivity::class.java, true),
-                DataEntity("ViewPager & Fragment 测试", FragmentActivity::class.java, true),
-                DataEntity("Crash 测试", CrashTestActivity::class.java, true),
-                DataEntity("ListView 内嵌", InnerListTestActivity::class.java, true),
-                DataEntity("Lambda 点击事件", LambdaTestPageActivity::class.java, true)
+                DataEntity("Crash 测试", CrashTestActivity::class.java, true)
         )
         recyclerView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         recyclerView.addItemDecoration(HorizonRecyclerDivider(this, HorizonRecyclerDivider.VERTICAL_LIST))

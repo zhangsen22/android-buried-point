@@ -39,7 +39,6 @@ public class ClickActivity extends BaseActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_click);
         activityClickBinding = DataBindingUtil.setContentView(this, R.layout.activity_click);
         this.setTitle("设置点击方式");
         initView();

@@ -28,30 +28,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.TrackProfileSettingsActivity"/>
-        <activity android:name=".activity.WidgetTestActivity" />
-        <activity android:name=".activity.DataBindingLambdaActivity" />
-        <activity android:name=".activity.FragmentActivity" />
         <activity android:name=".activity.ClickActivity" />
-        <activity android:name=".activity.HorizonFragmentsActivity"/>
-        <activity android:name=".activity.VerticalFragmentsActivity"/>
-        <activity android:name=".activity.KotlinActivity" />
-        <activity android:name=".activity.TabAppFrgActivity" />
-        <activity android:name=".activity.TabFrgActivity" />
-        <activity android:name=".activity.VPAppFrgActivity" />
-        <activity android:name=".activity.VPFrgActivity" />
-        <activity android:name=".activity.VPVPFrgActivity" />
-        <activity android:name=".activity.TabVPFragActivity" />
         <activity android:name=".activity.CrashTestActivity" />
-        <activity android:name=".activity.VPViewActivity" />
-        <activity android:name=".activity.InnerListTestActivity" />
-        <activity android:name=".activity.VPParentFrgActivity" />
-        <activity android:name=".activity.TabParentFrgActivity" />
-        <activity android:name=".activity.TabAppParentFrgActivity" />
-        <activity android:name=".activity.VPAppParentFrgActivity" />
-        <activity android:name=".activity.TabParentFrgActivity1" />
-        <activity
-            android:name=".activity.LambdaTestPageActivity"
-            android:theme="@style/AppThemeNoBar" />
 
 
         <meta-data
