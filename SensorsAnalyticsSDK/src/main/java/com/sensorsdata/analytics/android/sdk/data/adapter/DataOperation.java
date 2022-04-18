@@ -49,11 +49,6 @@ abstract class DataOperation {
     abstract int insertData(Uri uri, JSONObject jsonObject);
 
     /**
-     * 保存数据
-     */
-    abstract int insertData(Uri uri, ContentValues contentValues);
-
-    /**
      * 查询数据
      */
     abstract String[] queryData(Uri uri, int limit);

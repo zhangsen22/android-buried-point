@@ -22,8 +22,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import android.text.TextUtils;
 
@@ -35,7 +33,6 @@ import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstStart;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallation;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallationWithCallback;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
@@ -53,7 +50,6 @@ import com.sensorsdata.analytics.android.sdk.util.NetworkUtils;
 import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.util.TimeUtils;
-import com.sensorsdata.analytics.android.sdk.util.ToastUtil;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 
 import org.json.JSONArray;
@@ -84,7 +80,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
     protected final PersistentSuperProperties mSuperProperties;
-    protected final PersistentFirstStart mFirstStart;
     protected final PersistentFirstDay mFirstDay;
     protected final PersistentFirstTrackInstallation mFirstTrackInstallation;
     protected final PersistentFirstTrackInstallationWithCallback mFirstTrackInstallationWithCallback;
@@ -118,7 +113,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         final String packageName = context.getApplicationContext().getPackageName();
         PersistentLoader.initLoader(context);
         mSuperProperties = (PersistentSuperProperties) PersistentLoader.loadPersistent(DbParams.PersistentName.SUPER_PROPERTIES);
-        mFirstStart = (PersistentFirstStart) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_START);
         mFirstTrackInstallation = (PersistentFirstTrackInstallation) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL);
         mFirstTrackInstallationWithCallback = (PersistentFirstTrackInstallationWithCallback) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL_CALLBACK);
         mFirstDay = (PersistentFirstDay) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_DAY);
@@ -154,7 +148,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mContext = null;
         mMessages = null;
         mSuperProperties = null;
-        mFirstStart = null;
         mFirstDay = null;
         mFirstTrackInstallation = null;
         mFirstTrackInstallationWithCallback = null;
@@ -744,7 +737,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 final Application app = (Application) mContext.getApplicationContext();
                 final SensorsDataActivityLifecycleCallbacks lifecycleCallbacks = new SensorsDataActivityLifecycleCallbacks();
-                mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks((SensorsDataAPI) this, mFirstStart, mFirstDay, mContext);
+                mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks((SensorsDataAPI) this, mFirstDay, mContext);
                 lifecycleCallbacks.addActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
                 SensorsDataExceptionHandler.addExceptionListener(mActivityLifecycleCallbacks);
                 FragmentTrackHelper.addFragmentCallbacks(new FragmentViewScreenCallbacks());

@@ -30,9 +30,7 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataActivityLifecycleCallbacks;
 import com.sensorsdata.analytics.android.sdk.SensorsDataExceptionHandler;
-import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstStart;
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
 import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
@@ -44,51 +42,20 @@ import java.util.Set;
 
 public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleCallbacks.SAActivityLifecycleCallbacks, SensorsDataExceptionHandler.SAExceptionListener {
     private static final String TAG = "SA.ActivityLifecycleCallbacks";
-    private static final String EVENT_TIME = "event_time";
-    private static final String EVENT_DURATION = "event_duration";
-    private static final String LIB_VERSION = "$lib_version";
-    private static final String APP_VERSION = "$app_version";
     private final SensorsDataAPI mSensorsDataInstance;
-    private final Context mContext;
-    private final PersistentFirstStart mFirstStart;
-    private final PersistentFirstDay mFirstDay;
-    private boolean resumeFromBackground = false;
-    private final DbAdapter mDbAdapter;
     private JSONObject activityProperty = new JSONObject();
     private final JSONObject endDataProperty = new JSONObject();
-    private JSONObject mDeepLinkProperty = new JSONObject();
-    private int mStartActivityCount;
-    private int mStartTimerCount;
-    private long mStartTime;
-    // $AppStart 事件的时间戳
-    private final String APP_START_TIME = "app_start_time";
-    // $AppEnd 事件属性
-    private final String APP_END_DATA = "app_end_data";
-    // App 是否重置标记位
-    private final String APP_RESET_STATE = "app_reset_state";
     private final String TIME = "time";
     private final String ELAPSE_TIME = "elapse_time";
     private Handler mHandler;
-    /* 兼容由于在魅族手机上退到后台后，线程会被休眠，导致 $AppEnd 无法触发，造成再次打开重复发送。*/
-    private long messageReceiveTime = 0L;
-    private final int MESSAGE_CODE_START = 100;
     private final int MESSAGE_CODE_STOP = 200;
-    private final int MESSAGE_CODE_TIMER = 300;
-    /**
-     * 打点时间间隔：2000 毫秒
-     */
-    private static final int TIME_INTERVAL = 2000;
-    private boolean mDataCollectState;
 
     private Set<Integer> hashSet = new HashSet<>();
 
-    public ActivityLifecycleCallbacks(SensorsDataAPI instance, PersistentFirstStart firstStart,
+    public ActivityLifecycleCallbacks(SensorsDataAPI instance,
                                       PersistentFirstDay firstDay, Context context) {
         this.mSensorsDataInstance = instance;
-        this.mFirstStart = firstStart;
-        this.mFirstDay = firstDay;
-        this.mDbAdapter = DbAdapter.getInstance();
-        this.mContext = context;
+
     }
 
     @Override
@@ -181,8 +148,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
     @Override
     public void uncaughtException(Thread t, Throwable e) {
 
-        // 注意这里要重置为 0，对于跨进程的情况，如果子进程崩溃，主进程但是没崩溃，造成统计个数异常，所以要重置为 0。
-        DbAdapter.getInstance().commitActivityCount(0);
     }
 
     void addActivity(Activity activity) {

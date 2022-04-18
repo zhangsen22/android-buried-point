@@ -23,16 +23,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 
-class SensorsDataDBHelper extends SQLiteOpenHelper {
+public class SensorsDataDBHelper extends SQLiteOpenHelper {
     private static final String TAG = "SA.SQLiteOpenHelper";
     private static final String CREATE_EVENTS_TABLE =
             String.format("CREATE TABLE %s (_id INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT NOT NULL, %s INTEGER NOT NULL);", DbParams.TABLE_EVENTS, DbParams.KEY_DATA, DbParams.KEY_CREATED_AT);
     private static final String EVENTS_TIME_INDEX =
             String.format("CREATE INDEX IF NOT EXISTS time_idx ON %s (%s);", DbParams.TABLE_EVENTS, DbParams.KEY_CREATED_AT);
-    private static final String CHANNEL_EVENT_PERSISTENT_TABLE = String.format("CREATE TABLE %s (%s TEXT PRIMARY KEY, %s INTEGER)",
-            DbParams.TABLE_CHANNEL_PERSISTENT, DbParams.KEY_CHANNEL_EVENT_NAME, DbParams.KEY_CHANNEL_RESULT);
 
-    SensorsDataDBHelper(Context context) {
+    public SensorsDataDBHelper(Context context) {
         super(context, DbParams.DATABASE_NAME, null, DbParams.DATABASE_VERSION);
     }
 
@@ -42,7 +40,6 @@ class SensorsDataDBHelper extends SQLiteOpenHelper {
 
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(EVENTS_TIME_INDEX);
-        db.execSQL(CHANNEL_EVENT_PERSISTENT_TABLE);
     }
 
     @Override
@@ -52,7 +49,6 @@ class SensorsDataDBHelper extends SQLiteOpenHelper {
         db.execSQL(String.format("DROP TABLE IF EXISTS %s", DbParams.TABLE_EVENTS));
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(EVENTS_TIME_INDEX);
-        db.execSQL(CHANNEL_EVENT_PERSISTENT_TABLE);
     }
 
     @Override

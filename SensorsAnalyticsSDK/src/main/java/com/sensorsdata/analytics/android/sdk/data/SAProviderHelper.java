@@ -22,94 +22,28 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
-import com.sensorsdata.analytics.android.sdk.data.persistent.LoginIdKeyPersistent;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentRemoteSDKConfig;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
-import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
-import com.sensorsdata.analytics.android.sdk.data.persistent.UserIdentityPersistent;
-
-import java.io.File;
 
 class SAProviderHelper {
     private SQLiteOpenHelper mDbHelper;
-    private PersistentRemoteSDKConfig persistentRemoteSDKConfig;
-    private LoginIdKeyPersistent mLoginIdKeyPersistent;
-    private UserIdentityPersistent mUserIdsPersistent;
     private Context mContext;
     private boolean isDbWritable = true;
-    private boolean mIsFlushDataState = false;
-    private int startActivityCount = 0;
 
     public SAProviderHelper(Context context, SQLiteOpenHelper dbHelper) {
         try {
             this.mDbHelper = dbHelper;
             this.mContext = context;
             PersistentLoader.initLoader(context);
-            persistentRemoteSDKConfig = (PersistentRemoteSDKConfig) PersistentLoader.loadPersistent(DbParams.PersistentName.REMOTE_CONFIG);
-            mUserIdsPersistent = (UserIdentityPersistent) PersistentLoader.loadPersistent(DbParams.PersistentName.PERSISTENT_USER_ID);
-            mLoginIdKeyPersistent = (LoginIdKeyPersistent) PersistentLoader.loadPersistent(DbParams.PersistentName.PERSISTENT_LOGIN_ID_KEY);
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
-    }
-
-    /**
-     * 迁移数据，并删除老的数据库
-     *
-     * @param context Context
-     * @param packageName 包名
-     */
-    public void migratingDB(final Context context, final String packageName) {
-        try {
-            boolean isMigrating = AppInfoUtils.getAppInfoBundle(context).getBoolean("com.sensorsdata.analytics.android.EnableMigratingDB", true);
-            if (!isMigrating) {
-                return;
-            }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        File oldDatabase = context.getDatabasePath(packageName);
-                        if (oldDatabase.exists()) {
-                            final OldBDatabaseHelper oldBDatabaseHelper = new OldBDatabaseHelper(context, packageName);
-                            final SQLiteDatabase database = getWritableDatabase();
-                            if (database != null) {
-                                final ContentValues cv = new ContentValues();
-                                oldBDatabaseHelper.getAllEvents(database, new QueryEventsListener() {
-                                    @Override
-                                    public void insert(String data, String keyCreated) {
-                                        cv.put(DbParams.KEY_DATA, data);
-                                        cv.put(DbParams.KEY_CREATED_AT, keyCreated);
-                                        database.insert(DbParams.TABLE_EVENTS, "_id", cv);
-                                        cv.clear();
-                                    }
-                                });
-                            }
-                        }
-                        if (isDbWritable) {
-                            context.deleteDatabase(packageName);
-                        }
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
-                }
-            }).start();
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    interface QueryEventsListener {
-        void insert(String data, String keyCreated);
     }
 
     /**
@@ -121,15 +55,6 @@ class SAProviderHelper {
     public void appendUri(UriMatcher uriMatcher, String authority) {
         try {
             uriMatcher.addURI(authority, DbParams.TABLE_EVENTS, URI_CODE.EVENTS);
-            uriMatcher.addURI(authority, DbParams.TABLE_ACTIVITY_START_COUNT, URI_CODE.ACTIVITY_START_COUNT);
-            uriMatcher.addURI(authority, DbParams.TABLE_CHANNEL_PERSISTENT, URI_CODE.CHANNEL_PERSISTENT);
-            uriMatcher.addURI(authority, DbParams.PersistentName.SUB_PROCESS_FLUSH_DATA, URI_CODE.FLUSH_DATA);
-            uriMatcher.addURI(authority, DbParams.TABLE_FIRST_PROCESS_START, URI_CODE.FIRST_PROCESS_START);
-            uriMatcher.addURI(authority, DbParams.TABLE_DATA_DISABLE_SDK, URI_CODE.DISABLE_SDK);
-            uriMatcher.addURI(authority, DbParams.PersistentName.REMOTE_CONFIG, URI_CODE.REMOTE_CONFIG);
-            uriMatcher.addURI(authority, DbParams.PersistentName.PERSISTENT_USER_ID, URI_CODE.USER_IDENTITY_ID);
-            uriMatcher.addURI(authority, DbParams.PersistentName.PERSISTENT_LOGIN_ID_KEY, URI_CODE.LOGIN_ID_KEY);
-            uriMatcher.addURI(authority, DbParams.PUSH_ID_KEY, URI_CODE.PUSH_ID_KEY);
         } catch (Exception ex) {
             SALog.printStackTrace(ex);
         }
@@ -181,61 +106,6 @@ class SAProviderHelper {
     }
 
     /**
-     * 插入渠道信息
-     *
-     * @param uri Uri
-     * @param values 数据
-     * @return Uri
-     */
-    public Uri insertChannelPersistent(Uri uri, ContentValues values) {
-        try {
-            SQLiteDatabase database = getWritableDatabase();
-            if (database == null || !values.containsKey(DbParams.KEY_CHANNEL_EVENT_NAME)) {
-                return uri;
-            }
-            long d = database.insertWithOnConflict(DbParams.TABLE_CHANNEL_PERSISTENT, null, values, SQLiteDatabase.CONFLICT_REPLACE);
-            return ContentUris.withAppendedId(uri, d);
-        } catch (Exception exception) {
-            SALog.printStackTrace(exception);
-        }
-        return uri;
-    }
-
-    /**
-     * insert 处理
-     *
-     * @param code Uri code
-     * @param uri Uri
-     * @param values ContentValues
-     */
-    public void insertPersistent(int code, Uri uri, ContentValues values) {
-        try {
-            switch (code) {
-                case URI_CODE.ACTIVITY_START_COUNT:
-                    startActivityCount = values.getAsInteger(DbParams.TABLE_ACTIVITY_START_COUNT);
-                    break;
-                case URI_CODE.FLUSH_DATA:
-                    mIsFlushDataState = values.getAsBoolean(DbParams.PersistentName.SUB_PROCESS_FLUSH_DATA);
-                    break;
-                case URI_CODE.REMOTE_CONFIG:
-                    persistentRemoteSDKConfig.commit(values.getAsString(DbParams.PersistentName.REMOTE_CONFIG));
-                    break;
-                case URI_CODE.LOGIN_ID_KEY:
-                    mLoginIdKeyPersistent.commit(values.getAsString(DbParams.PersistentName.PERSISTENT_LOGIN_ID_KEY));
-                    break;
-                case URI_CODE.PUSH_ID_KEY:
-                    SAStoreManager.getInstance().setString(values.getAsString(DbParams.PUSH_ID_KEY),
-                            values.getAsString(DbParams.PUSH_ID_VALUE));
-                    break;
-                default:
-                    break;
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
      * 查询数据
      *
      * @param tableName 表名
@@ -261,53 +131,6 @@ class SAProviderHelper {
             SALog.printStackTrace(e);
         }
         return cursor;
-    }
-
-    /**
-     * query 处理
-     *
-     * @param code Uri code
-     * @return Cursor
-     */
-    public Cursor queryPersistent(int code, Uri uri) {
-        try {
-            String column = null;
-            Object data = null;
-            switch (code) {
-                case URI_CODE.ACTIVITY_START_COUNT:
-                    data = startActivityCount;
-                    column = DbParams.TABLE_ACTIVITY_START_COUNT;
-                    break;
-                case URI_CODE.FLUSH_DATA:
-                    data = mIsFlushDataState ? 1 : 0;
-                    column = DbParams.PersistentName.SUB_PROCESS_FLUSH_DATA;
-                    break;
-                case URI_CODE.REMOTE_CONFIG:
-                    data = persistentRemoteSDKConfig.get();
-                    break;
-                case URI_CODE.USER_IDENTITY_ID:
-                    data = mUserIdsPersistent.get();
-                    column = DbParams.PersistentName.PERSISTENT_USER_ID;
-                    break;
-                case URI_CODE.LOGIN_ID_KEY:
-                    data = mLoginIdKeyPersistent.get();
-                    column = DbParams.PersistentName.PERSISTENT_LOGIN_ID_KEY;
-                    break;
-                case URI_CODE.PUSH_ID_KEY:
-                    data = SAStoreManager.getInstance().getString(uri.getQueryParameter(DbParams.PUSH_ID_KEY), "");
-                    column = DbParams.PUSH_ID_KEY;
-                    break;
-                default:
-                    break;
-            }
-
-            MatrixCursor matrixCursor = new MatrixCursor(new String[]{column});
-            matrixCursor.addRow(new Object[]{data});
-            return matrixCursor;
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return null;
     }
 
     /**
@@ -344,19 +167,5 @@ class SAProviderHelper {
      */
     public interface URI_CODE {
         int EVENTS = 1;
-        int ACTIVITY_START_COUNT = 2;
-        int APP_START_TIME = 3;
-        int APP_EXIT_DATA = 4;
-        int APP_PAUSED_TIME = 5;
-        int SESSION_INTERVAL_TIME = 6;
-        int LOGIN_ID = 7;
-        int CHANNEL_PERSISTENT = 8;
-        int FLUSH_DATA = 9;
-        int FIRST_PROCESS_START = 10;
-        int DISABLE_SDK = 11;
-        int REMOTE_CONFIG = 12;
-        int USER_IDENTITY_ID = 13;
-        int LOGIN_ID_KEY = 14;
-        int PUSH_ID_KEY = 15;
     }
 }

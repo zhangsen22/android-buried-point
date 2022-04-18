@@ -51,8 +51,6 @@ public class SensorsDataContentProvider extends ContentProvider {
                 dbHelper = new SensorsDataDBHelper(context);
                 mProviderHelper = new SAProviderHelper(context, dbHelper);
                 mProviderHelper.appendUri(uriMatcher, packageName + ".SensorsDataContentProvider");
-                /* 迁移数据，并删除老的数据库 */
-                mProviderHelper.migratingDB(context, packageName);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
@@ -67,8 +65,6 @@ public class SensorsDataContentProvider extends ContentProvider {
             int code = uriMatcher.match(uri);
             if (SAProviderHelper.URI_CODE.EVENTS == code) {
                 return mProviderHelper.deleteEvents(selection, selectionArgs);
-            } else if (code == SAProviderHelper.URI_CODE.PUSH_ID_KEY) {
-                return mProviderHelper.removeSP(uri.getQueryParameter(DbParams.REMOVE_SP_KEY));
             }
             //目前逻辑不处理其他 Code
         } catch (Exception e) {
@@ -92,10 +88,6 @@ public class SensorsDataContentProvider extends ContentProvider {
             int code = uriMatcher.match(uri);
             if (code == SAProviderHelper.URI_CODE.EVENTS) {
                 return mProviderHelper.insertEvent(uri, values);
-            } else if (code == SAProviderHelper.URI_CODE.CHANNEL_PERSISTENT) {
-                return mProviderHelper.insertChannelPersistent(uri, values);
-            } else {
-                mProviderHelper.insertPersistent(code, uri, values);
             }
             return uri;
         } catch (Exception e) {
@@ -136,10 +128,6 @@ public class SensorsDataContentProvider extends ContentProvider {
             int code = uriMatcher.match(uri);
             if (code == SAProviderHelper.URI_CODE.EVENTS) {
                 cursor = mProviderHelper.queryByTable(DbParams.TABLE_EVENTS, projection, selection, selectionArgs, sortOrder);
-            } else if (code == SAProviderHelper.URI_CODE.CHANNEL_PERSISTENT) {
-                cursor = mProviderHelper.queryByTable(DbParams.TABLE_CHANNEL_PERSISTENT, projection, selection, selectionArgs, sortOrder);
-            } else {
-                cursor = mProviderHelper.queryPersistent(code, uri);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

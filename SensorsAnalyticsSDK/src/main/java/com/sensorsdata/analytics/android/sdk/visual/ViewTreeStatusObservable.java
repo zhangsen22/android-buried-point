@@ -17,8 +17,6 @@
 
 package com.sensorsdata.analytics.android.sdk.visual;
 
-
-import android.app.Activity;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
@@ -27,19 +25,11 @@ import android.view.ViewParent;
 import android.view.ViewTreeObserver.OnGlobalFocusChangeListener;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
-
-import com.sensorsdata.analytics.android.sdk.AopConstants;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.util.ViewUtil;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 import com.sensorsdata.analytics.android.sdk.visual.util.Dispatcher;
-
-import org.json.JSONObject;
-
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrollChangedListener, OnGlobalFocusChangeListener {
@@ -112,28 +102,6 @@ public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrol
         return viewNode;
     }
 
-    public ViewNode getViewNode(WeakReference<View> reference, String elementPath, String elementPosition, String screenName) {
-        ViewNode viewNode = null;
-        try {
-            viewNode = mViewNodesHashMap.get(generateKey(elementPath, elementPosition, screenName));
-            // ViewTree 中不存在，需要主动遍历
-            if (viewNode == null) {
-                View rootView = null;
-                if (reference != null && reference.get() != null) {
-                    rootView = reference.get().getRootView();
-                }
-
-                if (rootView != null) {
-                    traverseNode(rootView);
-                }
-                viewNode = mViewNodesHashMap.get(generateKey(elementPath, elementPosition, screenName));
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return viewNode;
-    }
-
     private void traverseNode() {
         mViewNodesHashMap.clear();
         mViewNodesWithHashCode.clear();
@@ -156,39 +124,6 @@ public class ViewTreeStatusObservable implements OnGlobalLayoutListener, OnScrol
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
-    }
-
-    public List<View> getCurrentWebView() {
-        try {
-            if (mWebViewHashMap.size() == 0) {
-                traverseNode();
-            }
-            if (mWebViewHashMap.size() > 0) {
-                List<View> list = new ArrayList<>();
-                for (ViewNode viewNode : mWebViewHashMap.values()) {
-                    WeakReference<View> reference = viewNode.getView();
-                    if (reference != null && reference.get() != null) {
-                        list.add(reference.get());
-                    }
-                }
-                return list;
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return null;
-    }
-
-    private String generateKey(String elementPath, String elementPosition, String screenName) {
-        StringBuilder key = new StringBuilder();
-        key.append(elementPath);
-        if (!TextUtils.isEmpty(elementPosition)) {
-            key.append(elementPosition);
-        }
-        if (!TextUtils.isEmpty(screenName)) {
-            key.append(screenName);
-        }
-        return key.toString();
     }
 
     private void traverseNode(final View view, final SparseArray<ViewNode> sparseArray, final HashMap<String, ViewNode> hashMap, final HashMap<String, ViewNode> webViewHashMap) {

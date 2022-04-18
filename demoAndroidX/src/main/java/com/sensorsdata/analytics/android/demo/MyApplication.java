@@ -37,9 +37,8 @@ public class MyApplication extends Application {
      * 初始化 Sensors Analytics SDK
      */
     private void initSensorsDataAPI() {
-        SAConfigOptions configOptions = new SAConfigOptions(SA_SERVER_URL);
-        // 打开自动采集, 并指定追踪哪些 AutoTrack 事件
-        configOptions.enableTrackAppCrash();
-        SensorsDataAPI.startWithConfigOptions(this, configOptions);
+        SensorsDataAPI.startWithConfigOptions(this, new SAConfigOptions(SA_SERVER_URL)
+                .enableTrackAppCrash()
+        );
     }
 }

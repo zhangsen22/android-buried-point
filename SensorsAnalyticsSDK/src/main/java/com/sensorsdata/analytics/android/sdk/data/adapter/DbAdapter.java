@@ -17,24 +17,15 @@
 
 package com.sensorsdata.analytics.android.sdk.data.adapter;
 
-import android.content.ContentValues;
 import android.content.Context;
-
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentRemoteSDKConfig;
 import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
-import com.sensorsdata.analytics.android.sdk.util.Base64Coder;
-
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DbAdapter {
     private static DbAdapter instance;
     private final DbParams mDbParams;
     private DataOperation mTrackEventOperation;
-    private DataOperation mPersistentOperation;
-
     private DbAdapter(Context context, String packageName, SensorsDataEncrypt sensorsDataEncrypt) {
         mDbParams = DbParams.getInstance(packageName);
         if (sensorsDataEncrypt != null) {
@@ -42,7 +33,6 @@ public class DbAdapter {
         } else {
             mTrackEventOperation = new EventDataOperation(context.getApplicationContext());
         }
-        mPersistentOperation = new PersistentDataOperation(context.getApplicationContext());
     }
 
     public static DbAdapter getInstance(Context context, String packageName,
@@ -92,202 +82,6 @@ public class DbAdapter {
     public int cleanupEvents(String last_id) {
         mTrackEventOperation.deleteData(mDbParams.getEventUri(), last_id);
         return mTrackEventOperation.queryDataCount(mDbParams.getEventUri());
-    }
-
-    /**
-     * 保存启动的页面个数
-     *
-     * @param activityCount 页面个数
-     */
-    public void commitActivityCount(int activityCount) {
-        try {
-            mPersistentOperation.insertData(mDbParams.getActivityStartCountUri(), new JSONObject().put(DbParams.VALUE, activityCount));
-        } catch (JSONException e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 获取存储的页面个数
-     *
-     * @return 存储的页面个数
-     */
-    public int getActivityCount() {
-        String[] values = mPersistentOperation.queryData(mDbParams.getActivityStartCountUri(), 1);
-        if (values != null && values.length > 0) {
-            return Integer.parseInt(values[0]);
-        }
-        return 0;
-    }
-
-    /**
-     * 保存子进程上报数据的状态
-     *
-     * @param flushState 上报状态
-     */
-    public void commitSubProcessFlushState(boolean flushState) {
-        try {
-            mPersistentOperation.insertData(mDbParams.getSubProcessUri(), new JSONObject().put(DbParams.VALUE, flushState));
-        } catch (JSONException e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 获取子进程上报数据状态
-     *
-     * @return 上报状态
-     */
-    public boolean isSubProcessFlushing() {
-        try {
-            String[] values = mPersistentOperation.queryData(mDbParams.getSubProcessUri(), 1);
-            if (values != null && values.length > 0) {
-                return Integer.parseInt(values[0]) == 1;
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-        return true;
-    }
-
-    /**
-     * 存储 identities
-     *
-     * @param identities ID 标识
-     */
-    public void commitIdentities(String identities) {
-        try {
-            final String encodeIdentities = "Base64:" + Base64Coder.encodeString(identities);
-            mPersistentOperation.insertData(mDbParams.getUserIdentities(), new JSONObject().put(DbParams.VALUE, encodeIdentities));
-        } catch (JSONException e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 获取 identities
-     *
-     * @return ID 标识
-     */
-    public String getIdentities() {
-        try {
-            String[] values = mPersistentOperation.queryData(mDbParams.getUserIdentities(), 1);
-            if (values != null && values.length > 0) {
-                return decodeIdentities(values[0]);
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-        return null;
-    }
-
-    public static String decodeIdentities(String identities) {
-        if (identities == null) {
-            return null;
-        }
-        return Base64Coder.decodeString(identities.substring(identities.indexOf(":") + 1));
-    }
-
-    /**
-     * 存储 LoginId
-     *
-     * @param loginIdKey 登录 Id
-     */
-    public void commitLoginIdKey(String loginIdKey) {
-        try {
-            mPersistentOperation.insertData(mDbParams.getLoginIdKeyUri(), new JSONObject().put(DbParams.VALUE, loginIdKey));
-        } catch (JSONException e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 获取 LoginIdKey
-     *
-     * @return LoginIdKey
-     */
-    public String getLoginIdKey() {
-        try {
-            String[] values = mPersistentOperation.queryData(mDbParams.getLoginIdKeyUri(), 1);
-            if (values != null && values.length > 0) {
-                return values[0];
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return "";
-    }
-
-    /**
-     * 保存远程控制下发字段
-     *
-     * @param config 下发字段
-     */
-    public void commitRemoteConfig(String config) {
-        try {
-            mPersistentOperation.insertData(mDbParams.getRemoteConfigUri(), new JSONObject().put(DbParams.VALUE, config));
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-    }
-
-    /**
-     * 获取远程控制下发字段
-     *
-     * @return 下发字段
-     */
-    public String getRemoteConfig() {
-        try {
-            String[] values = mPersistentOperation.queryData(mDbParams.getRemoteConfigUri(), 1);
-            if (values != null && values.length > 0) {
-                return values[0];
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return "";
-    }
-
-    /**
-     * 获取远程控制下发字段，从当前进程读取
-     *
-     * @return 下发字段
-     */
-    public String getRemoteConfigFromLocal() {
-        try {
-            PersistentRemoteSDKConfig persistentRemoteSDKConfig = (PersistentRemoteSDKConfig) PersistentLoader.loadPersistent(DbParams.PersistentName.REMOTE_CONFIG);
-            return persistentRemoteSDKConfig == null ? "" : persistentRemoteSDKConfig.get();
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return "";
-    }
-
-    public void commitPushID(String key, String pushId) {
-        try {
-            JSONObject jsonObject = new JSONObject().put(DbParams.PUSH_ID_KEY, key).put(DbParams.PUSH_ID_VALUE, pushId);
-            mPersistentOperation.insertData(mDbParams.getPushIdUri(), jsonObject);
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-    }
-
-
-    public String getPushId(String key) {
-        try {
-            String[] values = mPersistentOperation.queryData(mDbParams.getPushIdUri().buildUpon().appendQueryParameter(DbParams.PUSH_ID_KEY, key).build(), 1);
-            if (values != null && values.length > 0) {
-                return values[0];
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return "";
-    }
-
-
-    public void removePushId(String key) {
-        mPersistentOperation.deleteData(mDbParams.getPushIdUri(), key);
     }
 
     /**

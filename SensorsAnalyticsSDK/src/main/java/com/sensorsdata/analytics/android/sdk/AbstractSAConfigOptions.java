@@ -160,14 +160,4 @@ abstract class AbstractSAConfigOptions {
     public boolean isDisableDeviceId() {
         return this.mDisableDeviceId;
     }
-
-    /**
-     * 广告渠道请求 url
-     * 目前为 deferred deepLink 请求 url
-     */
-    String mCustomADChannelUrl;
-
-    public String getCustomADChannelUrl(){
-        return mCustomADChannelUrl;
-    }
 }

@@ -229,7 +229,6 @@ class AnalyticsMessages {
             }
 
             if (eventsData == null) {
-                DbAdapter.getInstance().commitSubProcessFlushState(false);
                 return;
             }
 

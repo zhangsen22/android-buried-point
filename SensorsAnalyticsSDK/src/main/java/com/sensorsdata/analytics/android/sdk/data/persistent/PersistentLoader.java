@@ -46,28 +46,16 @@ public class PersistentLoader {
             return null;
         }
         switch (persistentKey) {
-            case DbParams.PersistentName.APP_END_DATA:
-                return new PersistentAppEndData();
-            case DbParams.PersistentName.DISTINCT_ID:
-                return new PersistentDistinctId(context);
             case DbParams.PersistentName.FIRST_DAY:
                 return new PersistentFirstDay();
             case DbParams.PersistentName.FIRST_INSTALL:
                 return new PersistentFirstTrackInstallation();
             case DbParams.PersistentName.FIRST_INSTALL_CALLBACK:
                 return new PersistentFirstTrackInstallationWithCallback();
-            case DbParams.PersistentName.FIRST_START:
-                return new PersistentFirstStart();
-            case DbParams.PersistentName.REMOTE_CONFIG:
-                return new PersistentRemoteSDKConfig();
             case DbParams.PersistentName.SUPER_PROPERTIES:
                 return new PersistentSuperProperties();
             case DbParams.PersistentName.VISUAL_PROPERTIES:
                 return new PersistentVisualConfig();
-            case DbParams.PersistentName.PERSISTENT_USER_ID:
-                return new UserIdentityPersistent();
-            case DbParams.PersistentName.PERSISTENT_LOGIN_ID_KEY:
-                return new LoginIdKeyPersistent();
             default:
                 return null;
         }

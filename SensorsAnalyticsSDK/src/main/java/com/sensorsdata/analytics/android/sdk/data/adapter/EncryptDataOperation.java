@@ -59,19 +59,6 @@ class EncryptDataOperation extends DataOperation {
     }
 
     @Override
-    int insertData(Uri uri, ContentValues contentValues) {
-        try {
-            if (deleteDataLowMemory(uri) != 0) {
-                return DbParams.DB_OUT_OF_MEMORY_ERROR;
-            }
-            contentResolver.insert(uri, contentValues);
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return 0;
-    }
-
-    @Override
     String[] queryData(Uri uri, int limit) {
         Cursor cursor = null;
         String data = null;
