@@ -21,12 +21,12 @@ import android.net.Uri;
 
 public class DbParams {
     /* 数据库中的表名 */
-    public static final String TABLE_EVENTS = "events";
+    public static final String TABLE_EVENTS = "analytics_events";
     public static final int DB_OUT_OF_MEMORY_ERROR = -2;
     /* 数据库名称 */
-    public static final String DATABASE_NAME = "sensorsdata";
+    public static final String DATABASE_NAME = "pinefiele_db";
     /* 数据库版本号 */
-    public static final int DATABASE_VERSION = 5;
+    public static final int DATABASE_VERSION = 1;
     /* Event 表字段 */
     public static final String KEY_DATA = "data";
     public static final String KEY_CREATED_AT = "created_at";
