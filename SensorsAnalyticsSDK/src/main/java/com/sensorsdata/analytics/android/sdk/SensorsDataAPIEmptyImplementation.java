@@ -33,11 +33,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public JSONObject getPresetProperties() {
-        return new JSONObject();
-    }
-
-    @Override
     public String getServerUrl() {
         return null;
     }
@@ -105,26 +100,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     public void trackInternal(final String eventName, final JSONObject properties) {
 
-    }
-
-    @Override
-    public String getLastScreenUrl() {
-        return null;
-    }
-
-    @Override
-    public void clearReferrerWhenAppEnd() {
-
-    }
-
-    @Override
-    public void clearLastScreenUrl() {
-
-    }
-
-    @Override
-    public JSONObject getLastScreenTrackProperties() {
-        return new JSONObject();
     }
 
     @Override

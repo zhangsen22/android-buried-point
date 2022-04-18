@@ -101,45 +101,6 @@ public class SAContextManager {
             SALog.printStackTrace(ex);
         }
     }
-
-    /**
-     * 获取预置属性信息
-     *
-     * @return 预置属性信息
-     */
-    public JSONObject getPresetProperties() {
-        JSONObject properties = new JSONObject();
-        try {
-            setupDeviceInfo();
-            properties.put("$app_version", mDeviceInfo.get("$app_version"));
-            properties.put("$lib", "Android");
-            properties.put("$lib_version", mDeviceInfo.get("$lib_version"));
-            properties.put("$manufacturer", mDeviceInfo.get("$manufacturer"));
-            properties.put("$model", mDeviceInfo.get("$model"));
-            properties.put("$brand", mDeviceInfo.get("$brand"));
-            properties.put("$os", mDeviceInfo.get("$os"));
-            properties.put("$os_version", mDeviceInfo.get("$os_version"));
-            properties.put("$screen_height", mDeviceInfo.get("$screen_height"));
-            properties.put("$screen_width", mDeviceInfo.get("$screen_width"));
-            String networkType = NetworkUtils.networkType(mContext);
-            properties.put("$wifi", "WIFI".equals(networkType));
-            properties.put("$network_type", networkType);
-            properties.put("$carrier", mDeviceInfo.get("$carrier"));
-            properties.put("$app_id", mDeviceInfo.get("$app_id"));
-            properties.put("$timezone_offset", mDeviceInfo.get("$timezone_offset"));
-            if (mDeviceInfo.containsKey("$anonymization_id")) {
-                properties.put("$anonymization_id", mDeviceInfo.get("$anonymization_id"));
-            }
-            if (mDeviceInfo.containsKey("$device_id")) {
-                properties.put("$device_id", mDeviceInfo.get("$device_id"));
-            }
-            properties.put("$app_name", mDeviceInfo.get("$app_name"));
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return properties;
-    }
-
     /**
      * 获取并配置 App 的一些基本属性
      */

@@ -46,7 +46,6 @@ public abstract class BaseSensorsDataSDKRemoteManager {
     protected Context mContext;
     protected SAConfigOptions mSAConfigOptions;
     protected SensorsDataEncrypt mSensorsDataEncrypt;
-    protected boolean mDisableDefaultRemoteConfig;
 
     protected static SensorsDataSDKRemoteConfig mSDKRemoteConfig;
     protected SensorsDataAPI mSensorsDataAPI;
@@ -56,7 +55,6 @@ public abstract class BaseSensorsDataSDKRemoteManager {
         this.mContext = sensorsDataAPI.getContext();
         this.mSAConfigOptions = sensorsDataAPI.getConfigOptions();
         this.mSensorsDataEncrypt = sensorsDataAPI.getSensorsDataEncrypt();
-        this.mDisableDefaultRemoteConfig = sensorsDataAPI.isDisableDefaultRemoteConfig();
     }
 
     public abstract void requestRemoteConfig(RandomTimeType randomTimeType, final boolean enableConfigV);

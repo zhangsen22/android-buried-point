@@ -36,13 +36,9 @@ import java.util.Set;
  */
 public final class SAPresetPropertyPlugin extends SAPropertyPlugin {
     private final Context mContext;
-    private final boolean mDisableTrackDeviceId;
-    private final boolean mDisableAndroidId;
 
-    public SAPresetPropertyPlugin(Context context, boolean disableTrackDeviceId, boolean disableAndroidId) {
+    public SAPresetPropertyPlugin(Context context) {
         this.mContext = context;
-        this.mDisableTrackDeviceId = disableTrackDeviceId;
-        this.mDisableAndroidId = disableAndroidId;
     }
 
     @Override
@@ -79,13 +75,7 @@ public final class SAPresetPropertyPlugin extends SAPropertyPlugin {
         properties.put("$app_id", AppInfoUtils.getProcessName(mContext));
         properties.put("$app_name", AppInfoUtils.getAppName(mContext));
         String mAndroidId = SensorsDataUtils.getAndroidID(mContext);
-        if (!mDisableTrackDeviceId && !TextUtils.isEmpty(mAndroidId)) {
-            if (mDisableAndroidId) {
-                properties.put("$anonymization_id", Base64Coder.encodeString(mAndroidId));
-            } else {
-                properties.put("$device_id", mAndroidId);
-            }
-        }
+        properties.put("$device_id", mAndroidId);
     }
 
     @Override

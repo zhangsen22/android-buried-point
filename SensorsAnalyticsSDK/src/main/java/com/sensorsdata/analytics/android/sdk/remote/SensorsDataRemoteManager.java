@@ -65,11 +65,6 @@ public class SensorsDataRemoteManager extends BaseSensorsDataSDKRemoteManager {
             return;
         }
 
-        if (mDisableDefaultRemoteConfig) {
-            SALog.i(TAG, "disableDefaultRemoteConfig is true");
-            return;
-        }
-
         switch (randomTimeType) {
             case RandomTimeTypeClean:
                 cleanRemoteRequestRandomTime();

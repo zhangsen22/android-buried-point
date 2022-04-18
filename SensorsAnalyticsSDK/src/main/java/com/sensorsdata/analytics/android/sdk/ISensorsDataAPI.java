@@ -25,12 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 public interface ISensorsDataAPI{
-    /**
-     * 返回预置属性
-     *
-     * @return JSONObject 预置属性
-     */
-    JSONObject getPresetProperties();
 
     /**
      * 获取当前 serverUrl
@@ -153,30 +147,6 @@ public interface ISensorsDataAPI{
      * @param eventName 事件的名称
      */
     void track(String eventName);
-
-    /**
-     * 获取 LastScreenUrl
-     *
-     * @return String
-     */
-    String getLastScreenUrl();
-
-    /**
-     * App 退出或进到后台时清空 referrer，默认情况下不清空
-     */
-    void clearReferrerWhenAppEnd();
-
-    /**
-     * 清除 LastScreenUrl
-     */
-    void clearLastScreenUrl();
-
-    /**
-     * 获取 LastScreenTrackProperties
-     *
-     * @return JSONObject
-     */
-    JSONObject getLastScreenTrackProperties();
 
     /**
      * Track 进入页面事件 ($AppViewScreen)，该接口需要在 properties 中手动设置 $screen_name 和 $title 属性。

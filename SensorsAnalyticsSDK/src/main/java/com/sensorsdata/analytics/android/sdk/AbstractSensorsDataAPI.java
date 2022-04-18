@@ -102,19 +102,10 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected boolean mSDKConfigInit;
     /* Debug 模式选项 */
     protected SensorsDataAPI.DebugMode mDebugMode = SensorsDataAPI.DebugMode.DEBUG_OFF;
-    /* 上个页面的 Url */
-    protected String mLastScreenUrl;
-    /* 上个页面的 Title */
-    protected String mReferrerScreenTitle;
     /* 当前页面的 Title */
     protected String mCurrentScreenTitle;
-    protected JSONObject mLastScreenTrackProperties;
     /* 是否请求网络 */
     protected boolean mEnableNetworkRequest = true;
-    protected boolean mClearReferrerWhenAppEnd = false;
-    protected boolean mDisableDefaultRemoteConfig = false;
-    protected boolean mDisableTrackDeviceId = false;
-    protected static boolean isChangeEnableNetworkFlag = false;
     // Session 时长
     protected TrackTaskManager mTrackTaskManager;
     protected TrackTaskManagerThread mTrackTaskManagerThread;
@@ -167,7 +158,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     }
 
     private void registerDefaultPropertiesPlugin() {
-        SensorsDataPropertyPluginManager.getInstance().registerPropertyPlugin(new SAPresetPropertyPlugin(mContext, mDisableTrackDeviceId, mSAConfigOptions.isDisableDeviceId()));
+        SensorsDataPropertyPluginManager.getInstance().registerPropertyPlugin(new SAPresetPropertyPlugin(mContext));
     }
 
     protected AbstractSensorsDataAPI() {
@@ -293,10 +284,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
     public SensorsDataEncrypt getSensorsDataEncrypt() {
         return mSensorsDataEncrypt;
-    }
-
-    public boolean isDisableDefaultRemoteConfig() {
-        return mDisableDefaultRemoteConfig;
     }
 
     /**
@@ -457,9 +444,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                         sendProperties);
 
                 if (eventType.isTrack()) {
-                    if (mReferrerScreenTitle != null) {
-                        sendProperties.put("$referrer_title", mReferrerScreenTitle);
-                    }
 
                     // 当前网络状况
                     String networkType = NetworkUtils.networkType(mContext);
@@ -564,15 +548,9 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         SHOW_DEBUG_INFO_VIEW = configBundle.getBoolean("com.sensorsdata.analytics.android.ShowDebugInfoView",
                 true);
 
-        this.mDisableDefaultRemoteConfig = configBundle.getBoolean("com.sensorsdata.analytics.android.DisableDefaultRemoteConfig",
-                false);
-
         if (mSAConfigOptions.isDataCollectEnable) {
             mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
         }
-
-        this.mDisableTrackDeviceId = configBundle.getBoolean("com.sensorsdata.analytics.android.DisableTrackDeviceId",
-                false);
     }
 
     protected void applySAConfigOptions() {

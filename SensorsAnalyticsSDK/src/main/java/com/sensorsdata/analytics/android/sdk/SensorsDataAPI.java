@@ -141,23 +141,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
 
-    /**
-     * 返回预置属性
-     *
-     * @return JSONObject 预置属性
-     */
-    @Override
-    public JSONObject getPresetProperties() {
-        JSONObject properties = new JSONObject();
-        try {
-            properties = mSAContextManager.getPresetProperties();
-            properties.put("$is_first_day", isFirstDay(System.currentTimeMillis()));
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-        return properties;
-    }
-
     @Override
     public void enableLog(boolean enable) {
         SALog.setEnableLog(enable);
@@ -268,28 +251,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public String getLastScreenUrl() {
-        return mLastScreenUrl;
-    }
-
-    @Override
-    public void clearReferrerWhenAppEnd() {
-        mClearReferrerWhenAppEnd = true;
-    }
-
-    @Override
-    public void clearLastScreenUrl() {
-        if (mClearReferrerWhenAppEnd) {
-            mLastScreenUrl = null;
-        }
-    }
-
-    @Override
-    public JSONObject getLastScreenTrackProperties() {
-        return mLastScreenTrackProperties;
-    }
-
-    @Override
     @Deprecated
     public void trackViewScreen(final String url, final JSONObject properties) {
         try {
@@ -301,13 +262,7 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                         if (!TextUtils.isEmpty(url)) {// || cloneProperties != null
                             String currentUrl = url;
                             JSONObject trackProperties = new JSONObject();
-                            mLastScreenTrackProperties = cloneProperties;
 
-                            if (mLastScreenUrl != null) {
-                                trackProperties.put("$referrer", mLastScreenUrl);
-                            }
-
-                            mReferrerScreenTitle = mCurrentScreenTitle;
                             if (cloneProperties != null) {
                                 if (cloneProperties.has("$title")) {
                                     mCurrentScreenTitle = cloneProperties.getString("$title");
@@ -319,7 +274,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                                 }
                             }
                             trackProperties.put("$url", currentUrl);
-                            mLastScreenUrl = currentUrl;
                             if (cloneProperties != null) {
                                 SensorsDataUtils.mergeJSONObject(cloneProperties, trackProperties);
                             }
