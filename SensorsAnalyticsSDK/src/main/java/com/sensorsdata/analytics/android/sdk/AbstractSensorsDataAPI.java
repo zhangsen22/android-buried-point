@@ -48,8 +48,6 @@ import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.listener.SAEventListener;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPresetPropertyPlugin;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SensorsDataPropertyPluginManager;
-import com.sensorsdata.analytics.android.sdk.remote.BaseSensorsDataSDKRemoteManager;
-import com.sensorsdata.analytics.android.sdk.remote.SensorsDataRemoteManager;
 import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
 import com.sensorsdata.analytics.android.sdk.util.JSONUtils;
 import com.sensorsdata.analytics.android.sdk.util.NetworkUtils;
@@ -59,7 +57,6 @@ import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.util.TimeUtils;
 import com.sensorsdata.analytics.android.sdk.util.ToastUtil;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
-import com.sensorsdata.analytics.android.sdk.visual.property.VisualPropertiesManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -67,11 +64,9 @@ import org.json.JSONObject;
 
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -113,7 +108,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
     protected SAStoreManager mStoreManager;
     SensorsDataEncrypt mSensorsDataEncrypt;
-    BaseSensorsDataSDKRemoteManager mRemoteManager;
     /**
      * 标记是否已经采集了带有插件版本号的事件
      */
@@ -141,9 +135,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             initSAConfig(mSAConfigOptions.mServerUrl, packageName);
             mSAContextManager = new SAContextManager(mContext);
             mMessages = AnalyticsMessages.getInstance(mContext, (SensorsDataAPI) this);
-            mRemoteManager = new SensorsDataRemoteManager((SensorsDataAPI) this);
-            //先从缓存中读取 SDKConfig
-            mRemoteManager.applySDKConfigFromCache();
 
             registerLifecycleCallbacks();
             if (SALog.isLogEnabled()) {
@@ -185,37 +176,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         if (SALog.isLogEnabled()) {
             SALog.i(TAG, "SDK init success by：" + activity.getClass().getName());
         }
-    }
-
-    /**
-     * 返回采集控制是否关闭了 SDK
-     *
-     * @return true：关闭；false：没有关闭
-     */
-    private static boolean isSDKDisabledByRemote() {
-        boolean isSDKDisabled = SensorsDataRemoteManager.isSDKDisabledByRemote();
-        if (isSDKDisabled) {
-            SALog.i(TAG, "remote config: SDK is disabled");
-        }
-        return isSDKDisabled;
-    }
-
-    /**
-     * SDK 事件回调监听，目前用于弹窗业务
-     *
-     * @param eventListener 事件监听
-     */
-    public void addEventListener(SAEventListener eventListener) {
-        mSAContextManager.addEventListener(eventListener);
-    }
-
-    /**
-     * 移除 SDK 事件回调监听
-     *
-     * @param eventListener 事件监听
-     */
-    public void removeEventListener(SAEventListener eventListener) {
-        mSAContextManager.removeEventListener(eventListener);
     }
 
     public static SAConfigOptions getConfigOptions() {
@@ -272,14 +232,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             SALog.setDebug(true);
             setServerUrl(mOriginServerUrl);
         }
-    }
-
-    public BaseSensorsDataSDKRemoteManager getRemoteManager() {
-        return mRemoteManager;
-    }
-
-    public void setRemoteManager(BaseSensorsDataSDKRemoteManager remoteManager) {
-        this.mRemoteManager = remoteManager;
     }
 
     public SensorsDataEncrypt getSensorsDataEncrypt() {
@@ -428,11 +380,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
             if (eventType.isTrack()) {
                 SADataHelper.assertEventName(eventName);
-                //如果在线控制禁止了事件，则不触发
-                if (!TextUtils.isEmpty(eventName) && mRemoteManager != null &&
-                        mRemoteManager.ignoreEvent(eventName)) {
-                    return;
-                }
             }
 
             try {
