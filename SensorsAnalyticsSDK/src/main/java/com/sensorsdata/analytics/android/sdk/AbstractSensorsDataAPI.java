@@ -476,36 +476,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    private void showDebugModeWarning() {
-        try {
-            if (mDebugMode == SensorsDataAPI.DebugMode.DEBUG_OFF) {
-                return;
-            }
-            if (TextUtils.isEmpty(mServerUrl)) {
-                return;
-            }
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    String info = null;
-                    if (mDebugMode == SensorsDataAPI.DebugMode.DEBUG_ONLY) {
-                        info = "现在您打开了 SensorsData SDK 的 'DEBUG_ONLY' 模式，此模式下只校验数据但不导入数据，数据出错时会以 Toast 的方式提示开发者，请上线前一定使用 DEBUG_OFF 模式。";
-                    } else if (mDebugMode == SensorsDataAPI.DebugMode.DEBUG_AND_TRACK) {
-                        info = "现在您打开了神策 SensorsData SDK 的 'DEBUG_AND_TRACK' 模式，此模式下校验数据并且导入数据，数据出错时会以 Toast 的方式提示开发者，请上线前一定使用 DEBUG_OFF 模式。";
-                    }
-                    CharSequence appName = AppInfoUtils.getAppName(mContext);
-                    if (!TextUtils.isEmpty(appName)) {
-                        info = String.format(Locale.CHINA, "%s：%s", appName, info);
-                    }
-                    ToastUtil.showLong(mContext, info);
-                }
-            });
-        } catch (Exception e) {
-            com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-        }
-    }
-
     /**
      * @param eventName 事件名
      * @param eventProperties 事件属性
@@ -551,37 +521,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                 if (properties.has("$lib_detail")) {
                     libDetail = properties.getString("$lib_detail");
                     properties.remove("$lib_detail");
-                }
-            } catch (Exception e) {
-                SALog.printStackTrace(e);
-            }
-            try {
-                // 单独处理 $AppStart 和 $AppEnd 的时间戳
-                if ("$AppEnd".equals(eventName)) {
-                    long appEndTime = properties.optLong("event_time");
-                    // 退出时间戳不合法不使用，2000 为打点间隔时间戳
-                    if (appEndTime > 2000) {
-                        eventTime = appEndTime;
-                    }
-                    String appEnd_lib_version = properties.optString("$lib_version");
-                    appEnd_app_version = properties.optString("$app_version");
-                    if (!TextUtils.isEmpty(appEnd_lib_version)) {
-                        lib_version = appEnd_lib_version;
-                    } else {
-                        properties.remove("$lib_version");
-                    }
-
-                    if (TextUtils.isEmpty(appEnd_app_version)) {
-                        properties.remove("$app_version");
-                    }
-
-                    properties.remove("event_time");
-                } else if ("$AppStart".equals(eventName)) {
-                    long appStartTime = properties.optLong("event_time");
-                    if (appStartTime > 0) {
-                        eventTime = appStartTime;
-                    }
-                    properties.remove("event_time");
                 }
             } catch (Exception e) {
                 SALog.printStackTrace(e);
