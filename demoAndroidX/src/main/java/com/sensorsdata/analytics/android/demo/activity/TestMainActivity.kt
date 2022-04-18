@@ -41,7 +41,6 @@ class TestMainActivity : AppCompatActivity() {
                 DataEntity("Widget 采集测试", WidgetTestActivity::class.java, true),
                 DataEntity("ViewPager & Fragment 测试", FragmentActivity::class.java, true),
                 DataEntity("NavigationView", NavigationViewActivity::class.java, true),
-                DataEntity("ViewScreen", ViewScreenActivity::class.java, true),
                 DataEntity("Crash 测试", CrashTestActivity::class.java, true),
                 DataEntity("PopupMenu 测试", PopupMenuActivity::class.java, true),
                 DataEntity("Dialog", DialogActivity::class.java, true),

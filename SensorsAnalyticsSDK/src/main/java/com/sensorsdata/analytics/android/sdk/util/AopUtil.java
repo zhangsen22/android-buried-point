@@ -41,7 +41,6 @@ import android.widget.ToggleButton;
 import com.sensorsdata.analytics.android.sdk.AopConstants;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.ScreenAutoTracker;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.visual.ViewTreeStatusObservable;
 import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
@@ -230,20 +229,6 @@ public class AopUtil {
         try {
             String screenName = null;
             String title = null;
-            if (fragment instanceof ScreenAutoTracker) {
-                ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) fragment;
-                JSONObject trackProperties = screenAutoTracker.getTrackProperties();
-                if (trackProperties != null) {
-                    if (trackProperties.has(AopConstants.SCREEN_NAME)) {
-                        screenName = trackProperties.optString(AopConstants.SCREEN_NAME);
-                    }
-
-                    if (trackProperties.has(AopConstants.TITLE)) {
-                        title = trackProperties.optString(AopConstants.TITLE);
-                    }
-                    SensorsDataUtils.mergeJSONObject(trackProperties, properties);
-                }
-            }
             boolean isTitleNull = TextUtils.isEmpty(title);
             boolean isScreenNameNull = TextUtils.isEmpty(screenName);
             isTitleNull = TextUtils.isEmpty(title);
@@ -311,14 +296,6 @@ public class AopUtil {
             if (!TextUtils.isEmpty(activityTitle)) {
                 propertyJSON.put(AopConstants.TITLE, activityTitle);
             }
-
-            if (activity instanceof ScreenAutoTracker) {
-                ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) activity;
-                JSONObject trackProperties = screenAutoTracker.getTrackProperties();
-                if (trackProperties != null) {
-                    SensorsDataUtils.mergeJSONObject(trackProperties, propertyJSON);
-                }
-            }
         } catch (Exception ex) {
             com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(ex);
             return new JSONObject();
@@ -339,18 +316,6 @@ public class AopUtil {
             String activityTitle = AopUtil.getActivityTitle(activity);
             if (!TextUtils.isEmpty(activityTitle)) {
                 propertyJSON.put(AopConstants.TITLE, activityTitle);
-            }
-            if (activity instanceof ScreenAutoTracker) {
-                ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) activity;
-                JSONObject trackProperties = screenAutoTracker.getTrackProperties();
-                if (trackProperties != null) {
-                    if (trackProperties.has(AopConstants.SCREEN_NAME)) {
-                        propertyJSON.put(AopConstants.SCREEN_NAME, trackProperties.optString(AopConstants.SCREEN_NAME));
-                    }
-                    if (trackProperties.has(AopConstants.TITLE)) {
-                        propertyJSON.put(AopConstants.TITLE, trackProperties.optString(AopConstants.TITLE));
-                    }
-                }
             }
         } catch (Exception ex) {
             com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(ex);

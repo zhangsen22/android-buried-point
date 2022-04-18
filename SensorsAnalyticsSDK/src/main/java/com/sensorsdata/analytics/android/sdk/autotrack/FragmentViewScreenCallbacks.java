@@ -29,10 +29,8 @@ import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 
-import com.sensorsdata.analytics.android.sdk.AopConstants;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.ScreenAutoTracker;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
 import com.sensorsdata.analytics.android.sdk.util.FragmentCacheUtil;
@@ -161,13 +159,6 @@ public class FragmentViewScreenCallbacks implements SAFragmentLifecycleCallbacks
         try {
             JSONObject properties = new JSONObject();
             AopUtil.getScreenNameAndTitleFromFragment(properties, fragment, null);
-            if (fragment instanceof ScreenAutoTracker) {
-                ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) fragment;
-                JSONObject otherProperties = screenAutoTracker.getTrackProperties();
-                if (otherProperties != null) {
-                    SensorsDataUtils.mergeJSONObject(otherProperties, properties);
-                }
-            }
             JSONObject eventProperties = SADataHelper.appendLibMethodAutoTrack(properties);
             SensorsDataAPI.sharedInstance().trackViewScreen(SensorsDataUtils.getScreenUrl(fragment), eventProperties);
         } catch (Exception e) {

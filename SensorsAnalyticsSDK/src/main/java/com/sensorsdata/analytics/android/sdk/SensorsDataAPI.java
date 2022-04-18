@@ -466,13 +466,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                         properties.put(AopConstants.TITLE, title);
                     }
                     properties.put("$screen_name", screenName);
-                    if (fragment instanceof ScreenAutoTracker) {
-                        ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) fragment;
-                        JSONObject otherProperties = screenAutoTracker.getTrackProperties();
-                        if (otherProperties != null) {
-                            SensorsDataUtils.mergeJSONObject(otherProperties, properties);
-                        }
-                    }
                     trackViewScreen(SensorsDataUtils.getScreenUrl(fragment), properties);
                 } catch (Exception e) {
                     com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);

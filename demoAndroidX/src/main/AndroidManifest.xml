@@ -30,7 +30,6 @@
         <activity android:name=".activity.TrackProfileSettingsActivity"/>
         <activity android:name=".activity.WidgetTestActivity" />
         <activity android:name=".activity.DataBindingLambdaActivity" />
-        <activity android:name=".activity.ViewScreenActivity" />
         <activity android:name=".activity.FragmentActivity" />
         <activity android:name=".activity.ClickActivity" />
         <activity android:name=".activity.HorizonFragmentsActivity"/>

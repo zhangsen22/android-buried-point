@@ -27,7 +27,6 @@ import android.os.Message;
 import android.os.SystemClock;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.ScreenAutoTracker;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataActivityLifecycleCallbacks;
 import com.sensorsdata.analytics.android.sdk.SensorsDataExceptionHandler;
@@ -109,13 +108,6 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
             buildScreenProperties(activity);
                 JSONObject properties = new JSONObject();
                 SensorsDataUtils.mergeJSONObject(activityProperty, properties);
-                if (activity instanceof ScreenAutoTracker) {
-                    ScreenAutoTracker screenAutoTracker = (ScreenAutoTracker) activity;
-                    JSONObject otherProperties = screenAutoTracker.getTrackProperties();
-                    if (otherProperties != null) {
-                        SensorsDataUtils.mergeJSONObject(otherProperties, properties);
-                    }
-                }
                 JSONObject eventProperties = SADataHelper.appendLibMethodAutoTrack(properties);
                 mSensorsDataInstance.trackViewScreen(SensorsDataUtils.getScreenUrl(activity), eventProperties);
 
