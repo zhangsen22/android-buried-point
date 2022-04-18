@@ -40,7 +40,6 @@
         <activity android:name=".activity.VPAppFrgActivity" />
         <activity android:name=".activity.VPFrgActivity" />
         <activity android:name=".activity.VPVPFrgActivity" />
-        <activity android:name=".activity.DialogActivity" />
         <activity android:name=".activity.TabVPFragActivity" />
         <activity android:name=".activity.NavigationViewActivity" />
         <activity android:name=".activity.CrashTestActivity" />

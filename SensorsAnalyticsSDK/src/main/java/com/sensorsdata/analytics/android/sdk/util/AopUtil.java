@@ -507,7 +507,6 @@ public class AopUtil {
 
     /**
      * properties 注入点击事件信息
-     * 属性的优先级为：预置属性低于 {@link ScreenAutoTracker#getTrackProperties()} 低于
      * {@link SensorsDataAPI#trackViewAppClick(View, JSONObject)}
      *
      * @param view 点击的 view
