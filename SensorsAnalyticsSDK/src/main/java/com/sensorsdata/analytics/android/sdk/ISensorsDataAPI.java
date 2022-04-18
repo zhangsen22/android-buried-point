@@ -341,8 +341,4 @@ public interface ISensorsDataAPI{
      */
     void startTrackThread();
 
-    /**
-     * 开启数据采集
-     */
-    void enableDataCollect();
 }

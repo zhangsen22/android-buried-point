@@ -33,10 +33,8 @@ import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallation;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstTrackInstallationWithCallback;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentSuperProperties;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
 import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
@@ -79,9 +77,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected final Context mContext;
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
-    protected final PersistentSuperProperties mSuperProperties;
     protected final PersistentFirstDay mFirstDay;
-    protected final PersistentFirstTrackInstallation mFirstTrackInstallation;
     protected final PersistentFirstTrackInstallationWithCallback mFirstTrackInstallationWithCallback;
     private Map<String, Object> mDeviceInfo;
     /* SensorsAnalytics 地址 */
@@ -112,8 +108,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         setDebugMode(debugMode);
         final String packageName = context.getApplicationContext().getPackageName();
         PersistentLoader.initLoader(context);
-        mSuperProperties = (PersistentSuperProperties) PersistentLoader.loadPersistent(DbParams.PersistentName.SUPER_PROPERTIES);
-        mFirstTrackInstallation = (PersistentFirstTrackInstallation) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL);
         mFirstTrackInstallationWithCallback = (PersistentFirstTrackInstallationWithCallback) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_INSTALL_CALLBACK);
         mFirstDay = (PersistentFirstDay) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_DAY);
         try {
@@ -147,9 +141,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected AbstractSensorsDataAPI() {
         mContext = null;
         mMessages = null;
-        mSuperProperties = null;
         mFirstDay = null;
-        mFirstTrackInstallation = null;
         mFirstTrackInstallationWithCallback = null;
         mSensorsDataEncrypt = null;
     }
@@ -291,12 +283,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             libProperties.put("$lib_method", "code");
             addKeyIfExist(libProperties, "$app_version");
 
-            JSONObject superProperties = mSuperProperties.get();
-            if (superProperties != null) {
-                if (superProperties.has("$app_version")) {
-                    libProperties.put("$app_version", superProperties.get("$app_version"));
-                }
-            }
 
             StackTraceElement[] trace = (new Exception()).getStackTrace();
             if (trace.length > 1) {
@@ -542,14 +528,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             addKeyIfExist(libProperties, "$app_version");
         } else {
             libProperties.put("$app_version", appEnd_app_version);
-        }
-
-        //update lib $app_version from super properties
-        JSONObject superProperties = mSuperProperties.get();
-        if (superProperties != null) {
-            if (superProperties.has("$app_version")) {
-                libProperties.put("$app_version", superProperties.get("$app_version"));
-            }
         }
 
         final JSONObject dataObj = new JSONObject();

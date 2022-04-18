@@ -27,7 +27,6 @@ public class DbParams {
     public static final String DATABASE_NAME = "sensorsdata";
     /* 数据库版本号 */
     public static final int DATABASE_VERSION = 5;
-    public static final String TABLE_DATA_COLLECT = "data_collect";
     /* Event 表字段 */
     public static final String KEY_DATA = "data";
     public static final String KEY_CREATED_AT = "created_at";
@@ -37,19 +36,16 @@ public class DbParams {
     /* 删除所有数据 */
     static final String DB_DELETE_ALL = "DB_DELETE_ALL";
     private static DbParams instance;
-    private final Uri mUri, mDataCollectUri;
+    private final Uri mUri;
 
     public interface PersistentName {
         String FIRST_DAY = "first_day";
-        String FIRST_INSTALL = "first_track_installation";
         String FIRST_INSTALL_CALLBACK = "first_track_installation_with_callback";
-        String SUPER_PROPERTIES = "super_properties";
         String VISUAL_PROPERTIES = "visual_properties";
     }
 
     private DbParams(String packageName) {
         mUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_EVENTS);
-        mDataCollectUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_DATA_COLLECT);
     }
 
     public static DbParams getInstance(String packageName) {
@@ -73,13 +69,5 @@ public class DbParams {
      */
     Uri getEventUri() {
         return mUri;
-    }
-    /**
-     * 开启数据采集 Uri
-     *
-     * @return Uri
-     */
-    public Uri getDataCollectUri() {
-        return mDataCollectUri;
     }
 }

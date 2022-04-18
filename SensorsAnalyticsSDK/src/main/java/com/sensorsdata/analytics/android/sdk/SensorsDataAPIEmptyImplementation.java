@@ -247,11 +247,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void enableDataCollect() {
-
-    }
-
-    @Override
     int getFlushNetworkPolicy() {
         return 0;
     }

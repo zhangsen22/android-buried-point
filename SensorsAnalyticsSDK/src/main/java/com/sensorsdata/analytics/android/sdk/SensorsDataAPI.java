@@ -462,37 +462,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    @Deprecated
-    public void enableDataCollect() {
-        try {
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    if (!mSAConfigOptions.isDataCollectEnable) {
-                        mContext.getContentResolver().notifyChange(DbParams.getInstance().getDataCollectUri(), null);
-                    }
-                    mSAConfigOptions.isDataCollectEnable = true;
-                    // 同意合规时重新判断当前进程是否主进程
-                    mIsMainProcess = AppInfoUtils.isMainProcess(mContext, null);
-                    mTrackTaskManager.setDataCollectEnable(true);
-                    // 同意合规时更新首日首次
-                    if (mFirstDay.get() == null) {
-                        mFirstDay.commit(TimeUtils.formatTime(System.currentTimeMillis(), TimeUtils.YYYY_MM_DD));
-                    }
-                    try {
-                        TrackMonitor.getInstance().callEnableDataCollect();
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
-                }
-            });
-            flush();
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-    }
-
-    @Override
     public void deleteAll() {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override

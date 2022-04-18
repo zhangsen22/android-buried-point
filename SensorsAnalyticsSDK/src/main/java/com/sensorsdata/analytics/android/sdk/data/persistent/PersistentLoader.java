@@ -48,12 +48,8 @@ public class PersistentLoader {
         switch (persistentKey) {
             case DbParams.PersistentName.FIRST_DAY:
                 return new PersistentFirstDay();
-            case DbParams.PersistentName.FIRST_INSTALL:
-                return new PersistentFirstTrackInstallation();
             case DbParams.PersistentName.FIRST_INSTALL_CALLBACK:
                 return new PersistentFirstTrackInstallationWithCallback();
-            case DbParams.PersistentName.SUPER_PROPERTIES:
-                return new PersistentSuperProperties();
             case DbParams.PersistentName.VISUAL_PROPERTIES:
                 return new PersistentVisualConfig();
             default:
