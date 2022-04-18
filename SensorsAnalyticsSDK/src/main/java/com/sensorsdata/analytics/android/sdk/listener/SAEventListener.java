@@ -26,23 +26,4 @@ public interface SAEventListener {
      */
     void trackEvent(JSONObject jsonObject);
 
-    /**
-     * 登录回调接口
-     */
-    void login();
-
-    /**
-     * 登出回调接口
-     */
-    void logout();
-
-    /**
-     * identify 接口回调
-     */
-    void identify();
-
-    /**
-     * resetAnonymousId 接口回调
-     */
-    void resetAnonymousId();
 }

@@ -196,17 +196,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 指定哪些 Activity/Fragment 不采集页面停留时长
-     * 指定 Activity/Fragment 的格式为：****.class
-     *
-     * @param ignoreList activity/Fragment 列表
-     */
-    public SAConfigOptions ignorePageLeave(List<Class<?>> ignoreList) {
-        mIgnorePageLeave = ignoreList;
-        return this;
-    }
-
-    /**
      * 注册自定义加密插件
      *
      * @param encryptListener 自定义加密实现接口
@@ -245,17 +234,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
      */
     public SAConfigOptions disableDeviceId() {
         this.mDisableDeviceId = true;
-        return this;
-    }
-
-    /**
-     * 设置 DeepLink 请求 url
-     *
-     * @param url 请求 URL 地址
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions setCustomAdChannelUrl(String url) {
-        this.mCustomADChannelUrl = url;
         return this;
     }
 
