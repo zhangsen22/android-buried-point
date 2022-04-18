@@ -237,16 +237,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void startTrackThread() {
-
-    }
-
-    @Override
-    public void stopTrackThread() {
-
-    }
-
-    @Override
     int getFlushNetworkPolicy() {
         return 0;
     }
