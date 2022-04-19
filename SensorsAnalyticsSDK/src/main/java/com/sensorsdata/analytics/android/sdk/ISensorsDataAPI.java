@@ -171,21 +171,6 @@ public interface ISensorsDataAPI{
     void trackViewScreen(Object fragment);
 
     /**
-     * Track 控件点击事件 ($AppClick)
-     *
-     * @param view View
-     */
-    void trackViewAppClick(View view);
-
-    /**
-     * Track 控件点击事件 ($AppClick)
-     *
-     * @param view View
-     * @param properties 事件属性
-     */
-    void trackViewAppClick(View view, JSONObject properties);
-
-    /**
      * 将所有本地缓存的日志发送到 Sensors Analytics.
      */
     void flush();
@@ -240,12 +225,6 @@ public interface ISensorsDataAPI{
      */
     void profileAppend(String property, Set<String> values);
 
-    /**
-     * 删除用户的一个 Profile
-     *
-     * @param property 属性名称
-     */
-    void profileUnset(String property);
     /**
      * 更新 GPS 位置信息
      *

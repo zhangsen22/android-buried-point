@@ -385,30 +385,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void trackViewAppClick(View view) {
-        trackViewAppClick(view, null);
-    }
-
-    @Override
-    public void trackViewAppClick(final View view, JSONObject properties) {
-        if (view == null) {
-            return;
-        }
-        try {
-            JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);
-            if (cloneProperties == null) {
-                cloneProperties = new JSONObject();
-            }
-            if (AopUtil.injectClickInfo(view, cloneProperties, true)) {
-                Activity activity = AopUtil.getActivityFromContext(view.getContext(), view);
-                trackInternal(null, cloneProperties, AopUtil.addViewPathProperties(activity, view, cloneProperties));
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
     public void flush() {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
@@ -518,20 +494,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
                     final JSONObject properties = new JSONObject();
                     properties.put(property, append_values);
                     trackEvent(EventType.PROFILE_APPEND, null, properties);
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void profileUnset(final String property) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackEvent(EventType.PROFILE_UNSET, null, new JSONObject().put(property, true));
                 } catch (Exception e) {
                     com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
                 }

@@ -34,7 +34,6 @@ class TestMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_list)
         dataList = listOf(
-                DataEntity("track*, profile* 等接口调用", TrackProfileSettingsActivity::class.java, true),
                 DataEntity("OnClick", ClickActivity::class.java, true),
                 DataEntity("Crash 测试", CrashTestActivity::class.java, true)
         )

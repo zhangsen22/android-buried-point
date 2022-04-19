@@ -118,16 +118,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void trackViewAppClick(View view) {
-
-    }
-
-    @Override
-    public void trackViewAppClick(View view, JSONObject properties) {
-
-    }
-
-    @Override
     public void flush() {
 
     }
@@ -170,11 +160,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     @Override
     public void profileAppend(String property, Set<String> values) {
-
-    }
-
-    @Override
-    public void profileUnset(String property) {
 
     }
 
