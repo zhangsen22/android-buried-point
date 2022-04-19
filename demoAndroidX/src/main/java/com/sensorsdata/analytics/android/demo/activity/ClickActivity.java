@@ -26,6 +26,7 @@ import androidx.databinding.DataBindingUtil;
 import com.sensorsdata.analytics.android.demo.R;
 import com.sensorsdata.analytics.android.demo.databinding.ActivityClickBinding;
 import com.sensorsdata.analytics.android.demo.entity.BindingEntity;
+import com.sensorsdata.analytics.android.sdk.PropertyBuilder;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackAppViewScreenUrl;
 import com.sensorsdata.analytics.android.sdk.SensorsDataTrackEvent;
@@ -46,6 +47,7 @@ public class ClickActivity extends BaseActivity{
 
     private void initView() {
         type1();
+        type2();
         type3();
         type5();
         type8();
@@ -64,7 +66,22 @@ public class ClickActivity extends BaseActivity{
     }
 
     /**
-     * 3. View.OnClickListener 的实现类方式。
+     * 2. 手动自定义一个事件并且带参数
+     */
+    private void type2() {
+        findViewById(R.id.track_a_event).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SensorsDataAPI.sharedInstance(ClickActivity.this).track("你好",
+                        PropertyBuilder.newInstance()
+                                .append("Pricevvv", 100)
+                                .append("Namevvv", "Apple").toJSONObject());
+            }
+        });
+    }
+
+    /**
+     * 3. 通过注解自定义一个事件并且支持带参数
      */
     @SensorsDataTrackEvent(eventName = "someEventName", properties = "{provider:测试}")
     private void type3() {
@@ -72,7 +89,7 @@ public class ClickActivity extends BaseActivity{
     }
 
     /**
-     * 5. lambda 方式。
+     * 5. lambda 方式的点击事件。
      */
     @SensorsDataTrackViewOnClick
     private void type5() {
@@ -80,7 +97,7 @@ public class ClickActivity extends BaseActivity{
     }
 
     /**
-     * 8. dataBinding 方式。
+     * 8. dataBinding 方式的点击事件。
      */
     private void type8() {
         BindingEntity bindingEntity = new BindingEntity("dataBinding点击");

@@ -16,16 +16,6 @@
         android:layout_height="20dp" />
 
     <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/track_a_event"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="产生一个自定义事件"
-        android:textAllCaps="false" />
-
-
-    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/profile_set_btn"
         style="@style/NormalButtonStyle"
         android:layout_width="wrap_content"

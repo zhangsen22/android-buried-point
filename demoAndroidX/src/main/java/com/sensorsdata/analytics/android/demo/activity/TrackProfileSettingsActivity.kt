@@ -47,13 +47,6 @@ class TrackProfileSettingsActivity : BaseActivity() {
     @SensorsDataTrackViewOnClick
     fun doOnClick(view: View) {
         when (view.id) {
-            //产生一个自定义事件
-            R.id.track_a_event -> {
-                SensorsDataAPI.sharedInstance(this).track("ViewProduct",
-                        PropertyBuilder.newInstance()
-                                .append("ProductPrice", 100)
-                                .append("ProductName", "Apple").toJSONObject())
-            }
 
             //设置用户profile
             R.id.profile_set_btn -> {
