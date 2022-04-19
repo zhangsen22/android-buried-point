@@ -225,41 +225,6 @@ public interface ISensorsDataAPI{
     void profileSet(String property, Object value);
 
     /**
-     * 首次设置用户的一个或多个 Profile。
-     * 与profileSet接口不同的是，如果之前存在，则忽略，否则，新创建
-     *
-     * @param properties 属性列表
-     */
-    void profileSetOnce(JSONObject properties);
-
-    /**
-     * 首次设置用户的一个 Profile
-     * 与profileSet接口不同的是，如果之前存在，则忽略，否则，新创建
-     *
-     * @param property 属性名称
-     * @param value 属性的值，值的类型只允许为
-     * {@link String}, {@link Number}, {@link java.util.Date}, {@link Boolean}, {@link org.json.JSONArray}
-     */
-    void profileSetOnce(String property, Object value);
-
-    /**
-     * 给一个或多个数值类型的 Profile 增加一个数值。只能对数值型属性进行操作，若该属性
-     * 未设置，则添加属性并设置默认值为 0
-     *
-     * @param properties 一个或多个属性集合
-     */
-    void profileIncrement(Map<String, ? extends Number> properties);
-
-    /**
-     * 给一个数值类型的 Profile 增加一个数值。只能对数值型属性进行操作，若该属性
-     * 未设置，则添加属性并设置默认值为 0
-     *
-     * @param property 属性名称
-     * @param value 属性的值，值的类型只允许为 {@link Number}
-     */
-    void profileIncrement(String property, Number value);
-
-    /**
      * 给一个列表类型的 Profile 增加一个元素
      *
      * @param property 属性名称
@@ -281,12 +246,6 @@ public interface ISensorsDataAPI{
      * @param property 属性名称
      */
     void profileUnset(String property);
-
-    /**
-     * 删除用户所有 Profile
-     */
-    void profileDelete();
-
     /**
      * 更新 GPS 位置信息
      *

@@ -48,15 +48,10 @@ class TrackProfileSettingsActivity : BaseActivity() {
     fun doOnClick(view: View) {
         when (view.id) {
             //修改profile
-            R.id.profile_increment_btn -> {
-                SensorsDataAPI.sharedInstance(this).profileIncrement("money", 2)
-            }
             R.id.profile_append -> {
                 SensorsDataAPI.sharedInstance(this).profileAppend("likesport", "sport" + Random().nextInt(100))
             }
-            R.id.profile_delete -> {
-                SensorsDataAPI.sharedInstance().profileDelete()
-            }
+
             R.id.item_set -> {
                 SensorsDataAPI.sharedInstance().itemSet("itemType", "itemId", PropertyBuilder
                         .newInstance().append("item", "item").toJSONObject())

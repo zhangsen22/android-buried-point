@@ -15,34 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="20dp" />
 
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/profile_increment_btn"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="Profile Increment"
-        android:textAllCaps="false" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/profile_delete"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="Profile Delete"
-        android:textAllCaps="false" />
-
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/other_test"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="Other Test"
-        android:textAllCaps="false" />
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/profile_append"
         style="@style/NormalButtonStyle"

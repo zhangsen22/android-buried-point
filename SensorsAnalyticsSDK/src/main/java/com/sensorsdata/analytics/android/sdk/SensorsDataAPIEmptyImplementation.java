@@ -164,26 +164,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void profileSetOnce(JSONObject properties) {
-
-    }
-
-    @Override
-    public void profileSetOnce(String property, Object value) {
-
-    }
-
-    @Override
-    public void profileIncrement(Map<String, ? extends Number> properties) {
-
-    }
-
-    @Override
-    public void profileIncrement(String property, Number value) {
-
-    }
-
-    @Override
     public void profileAppend(String property, String value) {
 
     }
@@ -195,11 +175,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     @Override
     public void profileUnset(String property) {
-
-    }
-
-    @Override
-    public void profileDelete() {
 
     }
 

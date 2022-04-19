@@ -488,67 +488,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void profileSetOnce(final JSONObject properties) {
-        try {
-            final JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        trackEvent(EventType.PROFILE_SET_ONCE, null, cloneProperties);
-                    } catch (Exception e) {
-                        com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void profileSetOnce(final String property, final Object value) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackEvent(EventType.PROFILE_SET_ONCE, null, new JSONObject().put(property, value));
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void profileIncrement(final Map<String, ? extends Number> properties) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackEvent(EventType.PROFILE_INCREMENT, null, new JSONObject(properties));
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void profileIncrement(final String property, final Number value) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackEvent(EventType.PROFILE_INCREMENT, null, new JSONObject().put(property, value));
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
     public void profileAppend(final String property, final String value) {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
@@ -593,20 +532,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
             public void run() {
                 try {
                     trackEvent(EventType.PROFILE_UNSET, null, new JSONObject().put(property, true));
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void profileDelete() {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackEvent(EventType.PROFILE_DELETE, null, null);
                 } catch (Exception e) {
                     com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
                 }
