@@ -15,15 +15,6 @@
         android:layout_width="match_parent"
         android:layout_height="20dp" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/profile_set_btn"
-        style="@style/NormalButtonStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="doOnClick"
-        android:text="ProfileSet"
-        android:textAllCaps="false" />
-
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/profile_increment_btn"

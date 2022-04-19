@@ -49,6 +49,7 @@ public class ClickActivity extends BaseActivity{
         type1();
         type2();
         type3();
+        type4();
         type5();
         type8();
     }
@@ -86,6 +87,21 @@ public class ClickActivity extends BaseActivity{
     @SensorsDataTrackEvent(eventName = "someEventName", properties = "{provider:测试}")
     private void type3() {
 
+    }
+
+    /**
+     * 4. 手动自定义一个profile并且带参数
+     */
+    private void type4() {
+        findViewById(R.id.profile_set_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SensorsDataAPI.sharedInstance(ClickActivity.this).profileSet(PropertyBuilder.newInstance()
+                        .append("name", "this is username")
+                        .append("schoolAddress", "this is an address")
+                        .append("money", 100).toJSONObject());
+            }
+        });
     }
 
     /**

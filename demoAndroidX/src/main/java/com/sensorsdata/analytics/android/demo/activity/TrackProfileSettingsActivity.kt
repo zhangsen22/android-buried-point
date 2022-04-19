@@ -47,14 +47,6 @@ class TrackProfileSettingsActivity : BaseActivity() {
     @SensorsDataTrackViewOnClick
     fun doOnClick(view: View) {
         when (view.id) {
-
-            //设置用户profile
-            R.id.profile_set_btn -> {
-                SensorsDataAPI.sharedInstance(this).profileSet(PropertyBuilder.newInstance()
-                        .append("name", "this is username")
-                        .append("schoolAddress", "this is an address")
-                        .append("money", 100).toJSONObject())
-            }
             //修改profile
             R.id.profile_increment_btn -> {
                 SensorsDataAPI.sharedInstance(this).profileIncrement("money", 2)
