@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.demo.observer;
+package com.sensorsdata.analytics.android.demo.activity;
 
 import android.app.Activity;
 import android.app.Application;
@@ -23,8 +23,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ViewTreeObserver;
-
-import com.sensorsdata.analytics.android.demo.utils.FragmentPageManager;
 
 import java.lang.ref.WeakReference;
 

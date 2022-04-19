@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".activity.TestMainActivity"
+            android:name=".activity.ClickActivity"
             android:exported="true"
             android:launchMode="singleTask">
             <intent-filter>
@@ -27,10 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.TrackProfileSettingsActivity"/>
-        <activity android:name=".activity.ClickActivity" />
-        <activity android:name=".activity.CrashTestActivity" />
-
 
         <meta-data
             android:name="com.sensorsdata.analytics.android.EnableLogging"

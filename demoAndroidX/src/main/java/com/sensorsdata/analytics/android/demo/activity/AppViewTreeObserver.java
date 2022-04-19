@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.demo.observer;
+package com.sensorsdata.analytics.android.demo.activity;
 
 import android.util.Log;
 import android.view.View;
-
-import com.sensorsdata.analytics.android.demo.utils.FragmentPageManager;
 
 public class AppViewTreeObserver implements android.view.ViewTreeObserver.OnGlobalLayoutListener, android.view.ViewTreeObserver.OnScrollChangedListener, android.view.ViewTreeObserver.OnGlobalFocusChangeListener {
 

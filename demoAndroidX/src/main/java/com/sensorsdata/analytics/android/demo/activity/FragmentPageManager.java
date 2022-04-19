@@ -15,15 +15,13 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.demo.utils;
+package com.sensorsdata.analytics.android.demo.activity;
 
 import android.app.Activity;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.view.View;
-
-import com.sensorsdata.analytics.android.demo.observer.AppActivityLifecycleCallbacks;
 
 import java.lang.ref.WeakReference;
 import java.util.LinkedHashMap;

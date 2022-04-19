@@ -25,7 +25,6 @@ import androidx.databinding.DataBindingUtil;
 
 import com.sensorsdata.analytics.android.demo.R;
 import com.sensorsdata.analytics.android.demo.databinding.ActivityClickBinding;
-import com.sensorsdata.analytics.android.demo.entity.BindingEntity;
 import com.sensorsdata.analytics.android.sdk.PropertyBuilder;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackAppViewScreenUrl;
@@ -58,6 +57,7 @@ public class ClickActivity extends BaseActivity{
         type7();
         type8();
         type9();
+        type10();
     }
 
     /**
@@ -171,6 +171,18 @@ public class ClickActivity extends BaseActivity{
             @Override
             public void onClick(View v) {
                 SensorsDataAPI.sharedInstance().itemDelete("itemType", "itemId");
+            }
+        });
+    }
+
+    /**
+     * 10. 上报crash
+     */
+    private void type10() {
+        findViewById(R.id.crash).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int a = 1 / 0;
             }
         });
     }

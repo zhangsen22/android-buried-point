@@ -6,7 +6,7 @@
 
         <variable
             name="Data"
-            type="com.sensorsdata.analytics.android.demo.entity.BindingEntity" />
+            type="com.sensorsdata.analytics.android.demo.activity.BindingEntity" />
 
         <variable
             name="clickListener"
@@ -43,48 +43,6 @@
                     android:text="Lambda点击(目前加不加注解都会hook)" />
             </androidx.cardview.widget.CardView>
 
-            <!--<androidx.cardview.widget.CardView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:layout_marginTop="10dp"-->
-            <!--android:layout_marginRight="10dp"-->
-            <!--app:cardBackgroundColor="#ffffff"-->
-            <!--app:cardCornerRadius="3dp"-->
-            <!--app:cardElevation="1dp"-->
-            <!--app:cardUseCompatPadding="true"-->
-            <!--app:contentPadding="2dp">-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_click_6"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:gravity="center"-->
-            <!--android:text="方式6(ButterKnife)" />-->
-            <!--</androidx.cardview.widget.CardView>-->
-
-
-            <!--<androidx.cardview.widget.CardView-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:layout_marginTop="10dp"-->
-            <!--android:layout_marginRight="10dp"-->
-            <!--app:cardBackgroundColor="#ffffff"-->
-            <!--app:cardCornerRadius="3dp"-->
-            <!--app:cardElevation="1dp"-->
-            <!--app:cardUseCompatPadding="true"-->
-            <!--app:contentPadding="2dp">-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/tv_click_7"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="50dp"-->
-            <!--android:gravity="center"-->
-            <!--android:text="方式7(RxView.clicks)" />-->
-            <!--</androidx.cardview.widget.CardView>-->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -231,6 +189,28 @@
                     android:layout_height="50dp"
                     android:gravity="center"
                     android:text="手动删除公共属性" />
+            </androidx.cardview.widget.CardView>
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                app:cardBackgroundColor="#ffffff"
+                app:cardCornerRadius="3dp"
+                app:cardElevation="1dp"
+                app:cardUseCompatPadding="true"
+                app:contentPadding="2dp">
+
+                <TextView
+                    android:id="@+id/crash"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="crash埋点统计" />
             </androidx.cardview.widget.CardView>
 
         </LinearLayout>

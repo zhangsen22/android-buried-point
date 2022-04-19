@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.demo.entity;
+package com.sensorsdata.analytics.android.demo.activity;
 
 public class BindingEntity {
 

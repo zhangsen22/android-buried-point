@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.demo.utils;
+package com.sensorsdata.analytics.android.demo.activity;
 
 import android.util.Log;
 import android.util.SparseArray;
