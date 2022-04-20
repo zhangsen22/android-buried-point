@@ -309,25 +309,6 @@ public abstract class AbstractStoreManager {
         }
     }
 
-    public boolean isExists(final String key) {
-        mLock.lock();
-        try {
-            if (TextUtils.isEmpty(key)) {
-                return false;
-            }
-            for (StorePlugin plugin : mStorePluginList) {
-                if (plugin.isExists(plugin.type() + key)) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            SALog.i(TAG, "isExists failed,key = " + key, e);
-        } finally {
-            mLock.unlock();
-        }
-        return false;
-    }
-
     protected boolean isRegisterPlugin(Context context, String name) {
         try {
             File SPFile = new File("data/data/" + context.getPackageName() + "/shared_prefs", name + ".xml");

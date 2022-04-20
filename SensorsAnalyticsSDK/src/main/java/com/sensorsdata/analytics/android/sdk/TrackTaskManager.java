@@ -21,7 +21,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class TrackTaskManager {
     private static TrackTaskManager trackTaskManager;
-    private boolean mDataCollectEnable = true;
     /**
      * 请求线程队列
      */
@@ -46,11 +45,7 @@ public class TrackTaskManager {
 
     void addTrackEventTask(Runnable trackEvenTask) {
         try {
-            if (mDataCollectEnable) {
-                mTrackEventTasks.put(trackEvenTask);
-            } else {
                 mTrackEventTasksCache.put(trackEvenTask);
-            }
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
@@ -72,11 +67,8 @@ public class TrackTaskManager {
 
     Runnable takeTrackEventTask() {
         try {
-            if (mDataCollectEnable) {
-                return mTrackEventTasks.take();
-            } else {
                 return mTrackEventTasksCache.take();
-            }
+
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
@@ -85,11 +77,8 @@ public class TrackTaskManager {
 
     Runnable pollTrackEventTask() {
         try {
-            if (mDataCollectEnable) {
-                return mTrackEventTasks.poll();
-            } else {
                 return mTrackEventTasksCache.poll();
-            }
+
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
@@ -98,28 +87,5 @@ public class TrackTaskManager {
 
     boolean isEmpty(){
         return mTrackEventTasks.isEmpty();
-    }
-
-    void setDataCollectEnable(boolean isDataCollectEnable) {
-        this.mDataCollectEnable = isDataCollectEnable;
-        try {
-            if (isDataCollectEnable) {
-                mTrackEventTasksCache.put(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-            } else {
-                mTrackEventTasks.put(new Runnable() {
-                    @Override
-                    public void run() {
-
-                    }
-                });
-            }
-        } catch (InterruptedException e) {
-            SALog.printStackTrace(e);
-        }
     }
 }

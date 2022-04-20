@@ -157,11 +157,6 @@ class SAProviderHelper {
         return mContext.getDatabasePath(DbParams.DATABASE_NAME).exists();
     }
 
-    public int removeSP(String key) {
-        SAStoreManager.getInstance().remove(key);
-        return 1;
-    }
-
     /**
      * URI 对应的 Code
      */
