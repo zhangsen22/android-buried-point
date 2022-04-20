@@ -191,30 +191,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
         return this;
     }
 
-    /**
-     * 注册自定义插件，适用于 SP 加密
-     *
-     * @param plugin 自定义插件
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions registerStorePlugin(StorePlugin plugin) {
-        if (mStorePlugins == null) {
-            mStorePlugins = new ArrayList<>();
-        }
-        mStorePlugins.add(plugin);
-        return this;
-    }
-
-    /**
-     * 将 $device_id 修改为 $anonymization_id
-     *
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions disableDeviceId() {
-        this.mDisableDeviceId = true;
-        return this;
-    }
-
     @Override
     protected SAConfigOptions clone() {
         SAConfigOptions copyObject = this;

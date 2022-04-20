@@ -104,7 +104,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         try {
             mSAConfigOptions = configOptions.clone();
             mStoreManager = SAStoreManager.getInstance();
-            mStoreManager.registerPlugins(mSAConfigOptions.getStorePlugins(), mContext);
+            mStoreManager.registerPlugins(mContext);
             mStoreManager.upgrade();
             mTrackTaskManager = TrackTaskManager.getInstance();
             mTrackTaskManagerThread = new TrackTaskManagerThread();

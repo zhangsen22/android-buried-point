@@ -82,11 +82,6 @@ abstract class AbstractSAConfigOptions {
     List<SAEncryptListener> mEncryptors = new ArrayList<>();
 
     /**
-     * 自定义加密插件
-     */
-    List<StorePlugin> mStorePlugins;
-
-    /**
      * 开启采集页面停留时长
      */
     protected boolean mIsTrackPageLeave = false;
@@ -136,10 +131,6 @@ abstract class AbstractSAConfigOptions {
      */
     public List<SAEncryptListener> getEncryptors() {
         return mEncryptors;
-    }
-
-    public List<StorePlugin> getStorePlugins() {
-        return mStorePlugins;
     }
 
     /**
