@@ -168,23 +168,6 @@ public class SADataHelper {
         }
     }
 
-    /**
-     * 校验属性
-     * @param property 属性
-     * @return String
-     */
-    public static String assertPropertyValue(String property) {
-        if (property == null) {
-            SALog.i(TAG, "Property value is empty or null");
-            return property;
-        }
-
-        if (property.length() > MAX_LENGTH_1024) {
-            SALog.i(TAG, property + "'s length is longer than " + MAX_LENGTH_1024);
-        }
-        return property;
-    }
-
     public static JSONObject appendLibMethodAutoTrack(JSONObject jsonObject) {
         if (jsonObject == null) {
             jsonObject = new JSONObject();

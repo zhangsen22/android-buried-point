@@ -51,12 +51,8 @@ public class ClickActivity extends BaseActivity{
         type1();
         type2();
         type3();
-        type4();
         type5();
-        type6();
-        type7();
         type8();
-        type9();
         type10();
     }
 
@@ -96,56 +92,11 @@ public class ClickActivity extends BaseActivity{
     }
 
     /**
-     * 4. 手动自定义一个profile并且带参数
-     */
-    private void type4() {
-        findViewById(R.id.profile_set_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SensorsDataAPI.sharedInstance(ClickActivity.this).profileSet(PropertyBuilder.newInstance()
-                        .append("name", "this is username")
-                        .append("schoolAddress", "this is an address")
-                        .append("money", 100).toJSONObject());
-            }
-        });
-    }
-
-    /**
      * 5. lambda 方式的点击事件。
      */
     @SensorsDataTrackViewOnClick
     private void type5() {
         findViewById(R.id.tv_click_5).setOnClickListener(v -> Toast.makeText(ClickActivity.this, "方式5(Lambda)", Toast.LENGTH_SHORT).show());
-    }
-
-    /**
-     * 6. 手动自定义一个profile并且带数组参数
-     */
-    private void type6() {
-        findViewById(R.id.profile_append).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Set<String> movies = new HashSet<String>();
-                movies.add("Sicario");
-                movies.add("Love Letter");
-
-                // 设定用户观影列表属性，设定后属性 "Movies" 为: ["Sicario", "Love Letter"]
-                SensorsDataAPI.sharedInstance().profileAppend("Movies", movies);
-            }
-        });
-    }
-
-    /**
-     * 7. 手动添加公共属性
-     */
-    private void type7() {
-        findViewById(R.id.item_set).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SensorsDataAPI.sharedInstance().itemSet("itemType", "itemId", PropertyBuilder
-                        .newInstance().append("item", "item").toJSONObject());
-            }
-        });
     }
 
     /**
@@ -159,18 +110,6 @@ public class ClickActivity extends BaseActivity{
             @SensorsDataTrackViewOnClick
             public void onClick(View v) {
                 Toast.makeText(ClickActivity.this, "方式8(dataBinding)", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    /**
-     * 9. 手动删除公共属性
-     */
-    private void type9() {
-        findViewById(R.id.item_delete).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SensorsDataAPI.sharedInstance().itemDelete("itemType", "itemId");
             }
         });
     }

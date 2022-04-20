@@ -69,16 +69,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public int getFlushInterval() {
-        return 15 * 1000;
-    }
-
-    @Override
-    public void setFlushInterval(int flushInterval) {
-
-    }
-
-    @Override
     public int getFlushBulkSize() {
         return 100;
     }
@@ -127,11 +117,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     }
 
-    @Override
-    public void flushScheduled() {
-
-    }
-
 
     @Override
     public void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack) {
@@ -144,51 +129,8 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void profileSet(JSONObject properties) {
-
-    }
-
-    @Override
-    public void profileSet(String property, Object value) {
-
-    }
-
-    @Override
-    public void profileAppend(String property, String value) {
-
-    }
-
-    @Override
-    public void profileAppend(String property, Set<String> values) {
-
-    }
-
-    @Override
     public void setDebugMode(DebugMode debugMode) {
 
-    }
-
-    @Override
-    public void setGPSLocation(double latitude, double longitude) {
-
-    }
-
-    @Override
-    public void setGPSLocation(double latitude, double longitude, String coordinate) {
-
-    }
-
-    @Override
-    public void clearGPSLocation() {
-
-    }
-
-    @Override
-    public void itemSet(String itemType, String itemId, JSONObject properties) {
-    }
-
-    @Override
-    public void itemDelete(String itemType, String itemId) {
     }
 
     @Override

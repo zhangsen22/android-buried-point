@@ -47,11 +47,6 @@ abstract class AbstractSAConfigOptions {
     boolean mEnableTrackAppCrash;
 
     /**
-     * 两次数据发送的最小时间间隔，单位毫秒
-     */
-    int mFlushInterval;
-
-    /**
      * 本地缓存日志的最大条目数
      */
     int mFlushBulkSize;

@@ -65,7 +65,6 @@ class AnalyticsMessages {
     private static final String TAG = "SA.AnalyticsMessages";
     private static final int FLUSH_QUEUE = 3;
     private static final int DELETE_ALL = 4;
-    private static final int FLUSH_SCHEDULE = 5;
     private static final Map<Context, AnalyticsMessages> S_INSTANCES = new HashMap<>();
     private final Worker mWorker;
     private final Context mContext;
@@ -140,9 +139,6 @@ class AnalyticsMessages {
                     if (type.equals("track_signup") || ret > mSensorsDataAPI
                             .getFlushBulkSize()) {
                         mWorker.runMessage(m);
-                    } else {
-                        final int interval = mSensorsDataAPI.getFlushInterval();
-                        mWorker.runMessageOnce(m, interval);
                     }
                 }
             }
@@ -157,17 +153,6 @@ class AnalyticsMessages {
             m.what = FLUSH_QUEUE;
 
             mWorker.runMessage(m);
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    void flushScheduled() {
-        try {
-            final Message m = Message.obtain();
-            m.what = FLUSH_SCHEDULE;
-
-            mWorker.runMessageOnce(m, mSensorsDataAPI.getFlushInterval());
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
@@ -471,19 +456,6 @@ class AnalyticsMessages {
             }
         }
 
-        void runMessageOnce(Message msg, long delay) {
-            synchronized (mHandlerLock) {
-                // We died under suspicious circumstances. Don't try to send any more events.
-                if (mHandler == null) {
-                    SALog.i(TAG, "Dead worker dropping a message: " + msg.what);
-                } else {
-                    if (!mHandler.hasMessages(msg.what)) {
-                        mHandler.sendMessageDelayed(msg, delay);
-                    }
-                }
-            }
-        }
-
         private class AnalyticsMessageHandler extends Handler {
 
             AnalyticsMessageHandler(Looper looper) {
@@ -501,9 +473,6 @@ class AnalyticsMessages {
                         } catch (Exception e) {
                             SALog.printStackTrace(e);
                         }
-                    } else if (msg.what == FLUSH_SCHEDULE) {
-                        flushScheduled();
-                        sendData();
                     } else {
                         SALog.i(TAG, "Unexpected message received by SensorsData worker: " + msg);
                     }

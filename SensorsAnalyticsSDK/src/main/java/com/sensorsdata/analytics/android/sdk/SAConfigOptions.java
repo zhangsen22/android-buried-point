@@ -72,17 +72,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 设置两次数据发送的最小时间间隔，最小值 5 秒
-     *
-     * @param flushInterval 时间间隔，单位毫秒
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setFlushInterval(int flushInterval) {
-        this.mFlushInterval = Math.max(5 * 1000, flushInterval);
-        return this;
-    }
-
-    /**
      * 设置本地缓存日志的最大条目数
      *
      * @param flushBulkSize 缓存数目

@@ -90,9 +90,7 @@ public interface ISensorsDataAPI{
     void setFlushNetworkPolicy(int networkType);
 
     /**
-     * 两次数据发送的最小时间间隔，单位毫秒
-     * 默认值为 15 * 1000 毫秒
-     * 在每次调用 track、signUp 以及 profileSet 等接口的时候，都会检查如下条件，以判断是否向服务器上传数据:
+     * 以判断是否向服务器上传数据:
      * 1. 是否是 WIFI/3G/4G 网络条件
      * 2. 是否满足发送条件之一:
      * 1) 与上次发送的时间间隔是否大于 flushInterval
@@ -102,14 +100,7 @@ public interface ISensorsDataAPI{
      *
      * @return 返回时间间隔，单位毫秒
      */
-    int getFlushInterval();
 
-    /**
-     * 设置两次数据发送的最小时间间隔
-     *
-     * @param flushInterval 时间间隔，单位毫秒
-     */
-    void setFlushInterval(int flushInterval);
 
     /**
      * 返回本地缓存日志的最大条目数
@@ -181,11 +172,6 @@ public interface ISensorsDataAPI{
     void flushSync();
 
     /**
-     * 以轮询形式将所有本地缓存的日志发送到 Sensors Analytics.
-     */
-    void flushScheduled();
-
-    /**
      * 设置 track 事件回调
      *
      * @param trackEventCallBack track 事件回调接口
@@ -193,80 +179,8 @@ public interface ISensorsDataAPI{
     void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack);
 
     /**
-     * 设置用户的一个或多个 Profile。
-     * Profile如果存在，则覆盖；否则，新创建。
-     *
-     * @param properties 属性列表
-     */
-    void profileSet(JSONObject properties);
-
-    /**
-     * 设置用户的一个 Profile，如果之前存在，则覆盖，否则，新创建
-     *
-     * @param property 属性名称
-     * @param value 属性的值，值的类型只允许为
-     * {@link String}, {@link Number}, {@link java.util.Date}, {@link Boolean}, {@link org.json.JSONArray}
-     */
-    void profileSet(String property, Object value);
-
-    /**
-     * 给一个列表类型的 Profile 增加一个元素
-     *
-     * @param property 属性名称
-     * @param value 新增的元素
-     */
-    void profileAppend(String property, String value);
-
-    /**
-     * 给一个列表类型的 Profile 增加一个或多个元素
-     *
-     * @param property 属性名称
-     * @param values 新增的元素集合
-     */
-    void profileAppend(String property, Set<String> values);
-
-    /**
-     * 更新 GPS 位置信息
-     *
-     * @param latitude 纬度
-     * @param longitude 经度
-     */
-    void setGPSLocation(double latitude, double longitude);
-
-    /**
-     * 更新 GPS 位置信息及对应坐标系
-     *
-     * @param latitude 纬度
-     * @param longitude 经度
-     * @param coordinate 坐标系，坐标系类型请参照 {@link SensorsDataGPSLocation.CoordinateType}
-     */
-    void setGPSLocation(double latitude, double longitude, final String coordinate);
-
-    /**
-     * 清除 GPS 位置信息
-     */
-    void clearGPSLocation();
-
-    /**
      * 删除本地缓存的全部事件
      */
     void deleteAll();
-
-    /**
-     * 设置 item
-     *
-     * @param itemType item 类型
-     * @param itemId item ID
-     * @param properties item 相关属性
-     */
-    void itemSet(String itemType, String itemId, JSONObject properties);
-
-    /**
-     * 删除 item
-     *
-     * @param itemType item 类型
-     * @param itemId item ID
-     */
-    void itemDelete(String itemType, String itemId);
 
 }

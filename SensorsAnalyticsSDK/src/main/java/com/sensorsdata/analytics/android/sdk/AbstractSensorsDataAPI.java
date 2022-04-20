@@ -70,7 +70,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected static final Map<Context, SensorsDataAPI> sInstanceMap = new HashMap<>();
     static boolean mIsMainProcess = false;
     static boolean SHOW_DEBUG_INFO_VIEW = true;
-    protected static SensorsDataGPSLocation mGPSLocation;
     /* 远程配置 */
     protected static SAConfigOptions mSAConfigOptions;
     protected final Context mContext;
@@ -122,7 +121,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             registerLifecycleCallbacks();
             if (SALog.isLogEnabled()) {
                 SALog.i(TAG, String.format(Locale.CHINA, "Initialized the instance of Sensors Analytics SDK with server"
-                        + " url '%s', flush interval %d ms, debugMode: %s", mServerUrl, mSAConfigOptions.mFlushInterval, debugMode));
+                        + " url '%s', flush interval %d ms, debugMode: %s", mServerUrl, debugMode));
             }
             SensorsDataUtils.initUniAppStatus();
         } catch (Throwable ex) {
@@ -338,15 +337,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                     sendProperties.put("$wifi", "WIFI".equals(networkType));
                     sendProperties.put("$network_type", networkType);
 
-                    // GPS
-                    try {
-                        if (mGPSLocation != null) {
-                            mGPSLocation.toJSON(sendProperties);
-                        }
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
-
                 } else {
                     if (!eventType.isProfile()) {
                         return;
@@ -417,11 +407,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         setServerUrl(serverURL);
         if (mSAConfigOptions.mEnableTrackAppCrash) {
             SensorsDataExceptionHandler.enableAppCrash();
-        }
-
-        if (mSAConfigOptions.mFlushInterval == 0) {
-            mSAConfigOptions.setFlushInterval(configBundle.getInt("com.sensorsdata.analytics.android.FlushInterval",
-                    15000));
         }
 
         if (mSAConfigOptions.mFlushBulkSize == 0) {

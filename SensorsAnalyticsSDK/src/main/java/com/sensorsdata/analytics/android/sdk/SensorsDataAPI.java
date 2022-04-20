@@ -166,16 +166,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public int getFlushInterval() {
-        return mSAConfigOptions.mFlushInterval;
-    }
-
-    @Override
-    public void setFlushInterval(int flushInterval) {
-        mSAConfigOptions.setFlushInterval(flushInterval);
-    }
-
-    @Override
     public int getFlushBulkSize() {
         return mSAConfigOptions.mFlushBulkSize;
     }
@@ -186,48 +176,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
             SALog.i(TAG, "The value of flushBulkSize is invalid");
         }
         mSAConfigOptions.setFlushBulkSize(flushBulkSize);
-    }
-
-    @Override
-    public void setGPSLocation(final double latitude, final double longitude) {
-        setGPSLocation(latitude, longitude, null);
-    }
-
-    @Override
-    public void setGPSLocation(final double latitude, final double longitude, final String coordinate) {
-        try {
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if (mGPSLocation == null) {
-                            mGPSLocation = new SensorsDataGPSLocation();
-                        }
-                        mGPSLocation.setLatitude((long) (latitude * Math.pow(10, 6)));
-                        mGPSLocation.setLongitude((long) (longitude * Math.pow(10, 6)));
-                        mGPSLocation.setCoordinate(SADataHelper.assertPropertyValue(coordinate));
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void clearGPSLocation() {
-        try {
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    mGPSLocation = null;
-                }
-            });
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
     }
 
     @Override
@@ -407,15 +355,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void flushScheduled() {
-        try {
-            mMessages.flushScheduled();
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
     public void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack) {
         mTrackEventCallBack = trackEventCallBack;
     }
@@ -426,77 +365,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
             @Override
             public void run() {
                 mMessages.deleteAll();
-            }
-        });
-    }
-
-    @Override
-    public void profileSet(final JSONObject properties) {
-        try {
-            final JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        trackEvent(EventType.PROFILE_SET, null, cloneProperties);
-                    } catch (Exception e) {
-                        com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void profileSet(final String property, final Object value) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackEvent(EventType.PROFILE_SET, null, new JSONObject().put(property, value));
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void profileAppend(final String property, final String value) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final JSONArray append_values = new JSONArray();
-                    append_values.put(value);
-                    final JSONObject properties = new JSONObject();
-                    properties.put(property, append_values);
-                    trackEvent(EventType.PROFILE_APPEND, null, properties);
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    @Override
-    public void profileAppend(final String property, final Set<String> values) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final JSONArray append_values = new JSONArray();
-                    for (String value : values) {
-                        append_values.put(value);
-                    }
-                    final JSONObject properties = new JSONObject();
-                    properties.put(property, append_values);
-                    trackEvent(EventType.PROFILE_APPEND, null, properties);
-                } catch (Exception e) {
-                    com.sensorsdata.analytics.android.sdk.SALog.printStackTrace(e);
-                }
             }
         });
     }
@@ -558,30 +426,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
         }
     }
 
-    @Override
-    public void itemSet(final String itemType, final String itemId, final JSONObject properties) {
-        try {
-            final JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    trackItemEvent(itemType, itemId, EventType.ITEM_SET.getEventType(), System.currentTimeMillis(), cloneProperties);
-                }
-            });
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
-
-    @Override
-    public void itemDelete(final String itemType, final String itemId) {
-        mTrackTaskManager.addTrackEventTask(new Runnable() {
-            @Override
-            public void run() {
-                trackItemEvent(itemType, itemId, EventType.ITEM_DELETE.getEventType(), System.currentTimeMillis(), null);
-            }
-        });
-    }
     /**
      * 不能动位置，因为 SF 反射获取使用
      *

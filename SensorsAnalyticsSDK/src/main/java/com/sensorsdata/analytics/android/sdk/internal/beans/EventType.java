@@ -22,10 +22,6 @@ public enum EventType {
     TRACK_SIGNUP("track_signup", true, false),
     TRACK_ID_BIND("track_id_bind", true, false),
     TRACK_ID_UNBIND("track_id_unbind", true, false),
-    PROFILE_SET("profile_set", false, true),
-    PROFILE_APPEND("profile_append", false, true),
-    ITEM_SET("item_set", false, false),
-    ITEM_DELETE("item_delete", false, false),
     DEFAULT("default", false, false),
 
     /**
