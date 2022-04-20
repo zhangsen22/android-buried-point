@@ -67,11 +67,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     }
 
-    @Override
-    public void track(String eventName) {
-
-    }
-
     public void trackInternal(final String eventName, final JSONObject properties) {
 
     }

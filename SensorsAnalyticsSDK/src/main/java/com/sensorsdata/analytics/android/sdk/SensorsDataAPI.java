@@ -172,11 +172,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void track(final String eventName) {
-        track(eventName, null);
-    }
-
-    @Override
     @Deprecated
     public void trackViewScreen(final String url, final JSONObject properties) {
         try {

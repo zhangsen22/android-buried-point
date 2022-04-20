@@ -111,12 +111,6 @@ public interface ISensorsDataAPI{
      */
     void track(String eventName, JSONObject properties);
 
-    /**
-     * 与 {@link #track(String, JSONObject)} 类似，无事件属性
-     *
-     * @param eventName 事件的名称
-     */
-    void track(String eventName);
 
     /**
      * Track 进入页面事件 ($AppViewScreen)，该接口需要在 properties 中手动设置 $screen_name 和 $title 属性。
