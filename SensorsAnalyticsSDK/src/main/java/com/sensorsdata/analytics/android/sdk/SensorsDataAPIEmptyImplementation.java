@@ -53,17 +53,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public long getMaxCacheSize() {
-        // 返回默认值
-        return 32 * 1024 * 1024;
-    }
-
-    @Override
-    public void setMaxCacheSize(long maxCacheSize) {
-
-    }
-
-    @Override
     public void setFlushNetworkPolicy(int networkType) {
 
     }

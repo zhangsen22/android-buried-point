@@ -143,16 +143,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public long getMaxCacheSize() {
-        return mSAConfigOptions.mMaxCacheSize;
-    }
-
-    @Override
-    public void setMaxCacheSize(long maxCacheSize) {
-        mSAConfigOptions.setMaxCacheSize(maxCacheSize);
-    }
-
-    @Override
     public void setFlushNetworkPolicy(int networkType) {
         mSAConfigOptions.setNetworkTypePolicy(networkType);
     }

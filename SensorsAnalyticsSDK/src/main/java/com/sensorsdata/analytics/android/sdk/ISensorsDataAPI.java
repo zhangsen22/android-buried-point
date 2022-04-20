@@ -48,20 +48,6 @@ public interface ISensorsDataAPI{
     void enableLog(boolean enable);
 
     /**
-     * 获取本地缓存上限制
-     *
-     * @return 字节
-     */
-    long getMaxCacheSize();
-
-    /**
-     * 设置本地缓存上限值，单位 byte，默认为 32MB：32 * 1024 * 1024，最小 16MB：16 * 1024 * 1024，若小于 16MB，则按 16MB 处理。
-     *
-     * @param maxCacheSize 单位 byte
-     */
-    void setMaxCacheSize(long maxCacheSize);
-
-    /**
      * 是否是开启 debug 模式
      *
      * @return true：是，false：不是

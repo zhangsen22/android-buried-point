@@ -140,18 +140,18 @@ abstract class DataOperation {
         return 0;
     }
 
-    private long getMaxCacheSize(Context context) {
-        try {
-            return SensorsDataAPI.sharedInstance(context).getMaxCacheSize();
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-            return 32 * 1024 * 1024;
-        }
+    /**
+     * 本地缓存上限值，单位 byte，默认为 32MB：32 * 1024 * 1024
+     */
+    long mMaxCacheSize = 32 * 1024 * 1024L;
+
+    private long getMaxCacheSize() {
+        return mMaxCacheSize;
     }
 
     private boolean belowMemThreshold() {
         if (mDatabaseFile.exists()) {
-            return mDatabaseFile.length() >= getMaxCacheSize(mContext);
+            return mDatabaseFile.length() >= getMaxCacheSize();
         }
         return false;
     }

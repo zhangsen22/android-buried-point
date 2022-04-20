@@ -318,10 +318,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             SensorsDataExceptionHandler.enableAppCrash();
         }
 
-        if (mSAConfigOptions.mMaxCacheSize == 0) {
-            mSAConfigOptions.setMaxCacheSize(32 * 1024 * 1024L);
-        }
-
         mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
     }
 

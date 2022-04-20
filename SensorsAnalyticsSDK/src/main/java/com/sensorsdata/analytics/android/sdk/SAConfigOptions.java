@@ -62,17 +62,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 设置本地缓存上限值，单位 byte，默认为 32MB：32 * 1024 * 1024，最小 16MB：16 * 1024 * 1024，若小于 16MB，则按 16MB 处理。
-     *
-     * @param maxCacheSize 单位 byte
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setMaxCacheSize(long maxCacheSize) {
-        this.mMaxCacheSize = Math.max(16 * 1024 * 1024, maxCacheSize);
-        return this;
-    }
-
-    /**
      * 是否打印日志
      *
      * @param enableLog 是否开启打印日志
