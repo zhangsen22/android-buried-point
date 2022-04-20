@@ -38,11 +38,6 @@ abstract class AbstractSAConfigOptions {
     int mFlushBulkSize = 100;
 
     /**
-     * 本地缓存上限值，单位 byte，默认为 32MB：32 * 1024 * 1024
-     */
-    long mMaxCacheSize = 32 * 1024 * 1024L;
-
-    /**
      * 是否开启打印日志
      */
     boolean mLogEnabled;
