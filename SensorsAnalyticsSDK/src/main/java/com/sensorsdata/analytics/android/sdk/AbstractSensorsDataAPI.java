@@ -278,11 +278,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
     protected void trackEvent(final EventType eventType, String eventName, final JSONObject properties) {
         try {
-            if (!TextUtils.isEmpty(eventName)) {
-                if (eventName.endsWith("_SATimer") && eventName.length() > 45) {// Timer 计时交叉计算拼接的字符串长度 45
-                    eventName = eventName.substring(0, eventName.length() - 45);
-                }
-            }
 
             if (eventType.isTrack()) {
                 SADataHelper.assertEventName(eventName);
