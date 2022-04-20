@@ -31,8 +31,6 @@ import com.sensorsdata.analytics.android.sdk.autotrack.FragmentPageLeaveCallback
 import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
-import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
@@ -75,7 +73,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected final Context mContext;
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
-    protected final PersistentFirstDay mFirstDay;
     private Map<String, Object> mDeviceInfo;
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
@@ -105,7 +102,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         setDebugMode(debugMode);
         final String packageName = context.getApplicationContext().getPackageName();
         PersistentLoader.initLoader(context);
-        mFirstDay = (PersistentFirstDay) PersistentLoader.loadPersistent(DbParams.PersistentName.FIRST_DAY);
         try {
             mSAConfigOptions = configOptions.clone();
             mStoreManager = SAStoreManager.getInstance();
@@ -137,7 +133,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected AbstractSensorsDataAPI() {
         mContext = null;
         mMessages = null;
-        mFirstDay = null;
         mSensorsDataEncrypt = null;
     }
 
@@ -229,7 +224,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     }
 
     protected boolean isFirstDay(long eventTime) {
-        String firstDay = mFirstDay.get();
+        String firstDay = null;
         if (firstDay == null) {
             return true;
         }

@@ -37,19 +37,4 @@ public class PersistentLoader {
         }
         return instance;
     }
-
-    public static PersistentIdentity<?> loadPersistent(String persistentKey) {
-        if (instance == null) {
-            throw new RuntimeException("you should call 'PersistentLoader.initLoader(Context)' first");
-        }
-        if (TextUtils.isEmpty(persistentKey)) {
-            return null;
-        }
-        switch (persistentKey) {
-            case DbParams.PersistentName.FIRST_DAY:
-                return new PersistentFirstDay();
-            default:
-                return null;
-        }
-    }
 }

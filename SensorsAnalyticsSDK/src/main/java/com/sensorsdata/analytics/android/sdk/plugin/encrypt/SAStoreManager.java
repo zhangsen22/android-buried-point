@@ -83,9 +83,6 @@ public class SAStoreManager extends AbstractStoreManager {
         registerPlugin(new DefaultStorePlugin(context, SP_SENSORS_DATA_API) {
             @Override
             public List<String> storeKeys() {
-                if (mAPIStoreKeys.isEmpty()) {
-                    initAPIKeys();
-                }
                 return mAPIStoreKeys;
             }
         });
@@ -104,17 +101,4 @@ public class SAStoreManager extends AbstractStoreManager {
         });
     }
 
-    /**
-     * 动态构建，防止后续维护遗忘
-     */
-    private void initAPIKeys() {
-        try {
-            Field[] fields = DbParams.PersistentName.class.getDeclaredFields();
-            for (Field field : fields) {
-                mAPIStoreKeys.add((String) field.get(null));
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-    }
 }

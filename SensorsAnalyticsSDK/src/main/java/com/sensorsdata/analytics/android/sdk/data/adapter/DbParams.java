@@ -38,10 +38,6 @@ public class DbParams {
     private static DbParams instance;
     private final Uri mUri;
 
-    public interface PersistentName {
-        String FIRST_DAY = "first_day";
-    }
-
     private DbParams(String packageName) {
         mUri = Uri.parse("content://" + packageName + ".SensorsDataContentProvider/" + TABLE_EVENTS);
     }
