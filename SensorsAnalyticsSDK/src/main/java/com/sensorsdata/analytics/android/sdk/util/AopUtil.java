@@ -515,7 +515,7 @@ public class AopUtil {
             return false;
         }
         try {
-            if (!ViewUtil.isTrackEvent(view, isFromUser)) {
+            if (!isFromUser) {
                 return false;
             }
             Context context = view.getContext();
