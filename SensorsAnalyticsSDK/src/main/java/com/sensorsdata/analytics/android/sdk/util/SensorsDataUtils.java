@@ -37,7 +37,6 @@ import android.view.View;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAutoTrackAppViewScreenUrl;
-import com.sensorsdata.analytics.android.sdk.visual.snap.SnapCache;
 
 import org.json.JSONObject;
 
@@ -270,13 +269,6 @@ public final class SensorsDataUtils {
 
     static String getToolbarTitle(Activity activity) {
         try {
-            String canonicalName = SnapCache.getInstance().getCanonicalName(activity.getClass());
-            if ("com.tencent.connect.common.AssistActivity".equals(canonicalName)) {
-                if (!TextUtils.isEmpty(activity.getTitle())) {
-                    return activity.getTitle().toString();
-                }
-                return null;
-            }
             ActionBar actionBar = null;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 actionBar = activity.getActionBar();
@@ -326,47 +318,6 @@ public final class SensorsDataUtils {
             }
         }
         return appCompatActivityClass;
-    }
-
-    /**
-     * 尝试读取页面 title
-     *
-     * @param properties JSONObject
-     * @param activity   Activity
-     */
-    public static void getScreenNameAndTitleFromActivity(JSONObject properties, Activity activity) {
-        if (activity == null || properties == null) {
-            return;
-        }
-
-        try {
-            properties.put("$screen_name", activity.getClass().getCanonicalName());
-
-            String activityTitle = null;
-            if (!TextUtils.isEmpty(activity.getTitle())) {
-                activityTitle = activity.getTitle().toString();
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                String toolbarTitle = getToolbarTitle(activity);
-                if (!TextUtils.isEmpty(toolbarTitle)) {
-                    activityTitle = toolbarTitle;
-                }
-            }
-
-            if (TextUtils.isEmpty(activityTitle)) {
-                PackageManager packageManager = activity.getPackageManager();
-                if (packageManager != null) {
-                    ActivityInfo activityInfo = packageManager.getActivityInfo(activity.getComponentName(), 0);
-                    activityTitle = activityInfo.loadLabel(packageManager).toString();
-                }
-            }
-            if (!TextUtils.isEmpty(activityTitle)) {
-                properties.put("$title", activityTitle);
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
     }
 
     public static void mergeJSONObject(final JSONObject source, JSONObject dest) {

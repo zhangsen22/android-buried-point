@@ -41,10 +41,7 @@ import android.widget.ToggleButton;
 import com.sensorsdata.analytics.android.sdk.AopConstants;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
-import com.sensorsdata.analytics.android.sdk.visual.snap.SnapCache;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Method;
@@ -68,131 +65,6 @@ public class AopUtil {
         add("androidx##cardview##widget");
         add("com##google##android##material");
     }};
-
-    public static String traverseView(StringBuilder stringBuilder, ViewGroup root) {
-        try {
-            if (stringBuilder == null) {
-                stringBuilder = new StringBuilder();
-            }
-
-            if (root == null) {
-                return stringBuilder.toString();
-            }
-
-            final int childCount = root.getChildCount();
-            for (int i = 0; i < childCount; ++i) {
-                final View child = root.getChildAt(i);
-                if (child == null) {
-                    continue;
-                }
-                if (child.getVisibility() != View.VISIBLE) {
-                    continue;
-                }
-
-                if (child instanceof ViewGroup) {
-                    traverseView(stringBuilder, (ViewGroup) child);
-                } else {
-
-                    String viewText = getViewText(child);
-                    if (!TextUtils.isEmpty(viewText)) {
-                        stringBuilder.append(viewText);
-                        stringBuilder.append("-");
-                    }
-                }
-            }
-            return stringBuilder.toString();
-        } catch (Throwable e) {
-            SALog.d(TAG, e.getMessage());
-            return stringBuilder != null ? stringBuilder.toString() : "";
-        }
-    }
-
-    public static String getViewText(View child) {
-        if (child == null || child instanceof EditText) {
-            return "";
-        }
-
-        String text = SnapCache.getInstance().getViewText(child);
-        if (text != null) {
-            return text;
-        }
-
-        try {
-            Class<?> switchCompatClass = null;
-            try {
-                switchCompatClass = ReflectUtil.getClassByName("android.support.v7.widget.SwitchCompat");
-            } catch (Exception e) {
-                //ignored
-            }
-
-            if (switchCompatClass == null) {
-                try {
-                    switchCompatClass = ReflectUtil.getClassByName("androidx.appcompat.widget.SwitchCompat");
-                } catch (Exception e) {
-                    //ignored
-                }
-            }
-
-            CharSequence viewText = null;
-
-            if (child instanceof CheckBox) {
-                CheckBox checkBox = (CheckBox) child;
-                viewText = checkBox.getText();
-            } else if (switchCompatClass != null && switchCompatClass.isInstance(child)) {
-                CompoundButton switchCompat = (CompoundButton) child;
-                Method method;
-                if (switchCompat.isChecked()) {
-                    method = child.getClass().getMethod("getTextOn");
-                } else {
-                    method = child.getClass().getMethod("getTextOff");
-                }
-                viewText = (String) method.invoke(child);
-            } else if (child instanceof RadioButton) {
-                RadioButton radioButton = (RadioButton) child;
-                viewText = radioButton.getText();
-            } else if (child instanceof ToggleButton) {
-                ToggleButton toggleButton = (ToggleButton) child;
-                boolean isChecked = toggleButton.isChecked();
-                if (isChecked) {
-                    viewText = toggleButton.getTextOn();
-                } else {
-                    viewText = toggleButton.getTextOff();
-                }
-            } else if (child instanceof Button) {
-                Button button = (Button) child;
-                viewText = button.getText();
-            } else if (child instanceof CheckedTextView) {
-                CheckedTextView textView = (CheckedTextView) child;
-                viewText = textView.getText();
-            } else if (child instanceof TextView) {
-                TextView textView = (TextView) child;
-                Object object = ReflectUtil.findField(new String[]{"androidx.appcompat.widget.AppCompatTextView"}, textView, "mPrecomputedTextFuture");
-                if (object == null) {
-                    viewText = textView.getText();
-                }
-            } else if (child instanceof ImageView) {
-                ImageView imageView = (ImageView) child;
-                if (!TextUtils.isEmpty(imageView.getContentDescription())) {
-                    viewText = imageView.getContentDescription().toString();
-                }
-            } else {
-                viewText = child.getContentDescription();
-            }
-
-
-            if ((viewText == null || viewText.equals("")) && child instanceof TextView) {
-                viewText = ((TextView) child).getHint();
-            }
-            if (viewText != null) {
-                text = viewText.toString();
-                SnapCache.getInstance().setViewText(child, text);
-                return text;
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-        return "";
-    }
 
     public static Activity getActivityFromContext(Context context, View view) {
         Activity activity = null;
@@ -363,58 +235,6 @@ public class AopUtil {
         }
 
         return viewName;
-    }
-
-    /**
-     * 通过反射判断类的类型
-     *
-     * @param view 判断类型的 viewGroup
-     * @return viewType
-     */
-    public static String getViewGroupTypeByReflect(View view) {
-        Class<?> compatClass;
-        String viewType = SnapCache.getInstance().getCanonicalName(view.getClass());
-        compatClass = ReflectUtil.getClassByName("android.support.v7.widget.CardView");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "CardView");
-        }
-        compatClass = ReflectUtil.getClassByName("androidx.cardview.widget.CardView");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "CardView");
-        }
-        compatClass = ReflectUtil.getClassByName("android.support.design.widget.NavigationView");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "NavigationView");
-        }
-        compatClass = ReflectUtil.getClassByName("com.google.android.material.navigation.NavigationView");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "NavigationView");
-        }
-        return viewType;
-    }
-
-    /**
-     * 通过反射判断类的类型
-     *
-     * @param view 判断类型的 view
-     * @return viewType
-     */
-    public static String getViewTypeByReflect(View view) {
-        Class<?> compatClass;
-        String viewType = SnapCache.getInstance().getCanonicalName(view.getClass());
-        compatClass = ReflectUtil.getClassByName("android.widget.Switch");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "Switch");
-        }
-        compatClass = ReflectUtil.getClassByName("android.support.v7.widget.SwitchCompat");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "SwitchCompat");
-        }
-        compatClass = ReflectUtil.getClassByName("androidx.appcompat.widget.SwitchCompat");
-        if (compatClass != null && compatClass.isInstance(view)) {
-            return getViewType(viewType, "SwitchCompat");
-        }
-        return viewType;
     }
 
     /**

@@ -263,10 +263,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                     sendProperties.put("$wifi", "WIFI".equals(networkType));
                     sendProperties.put("$network_type", networkType);
 
-                } else {
-                    if (!eventType.isProfile()) {
-                        return;
-                    }
                 }
 
                 trackEventInternal(eventType, eventName, properties, sendProperties);
@@ -394,7 +390,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         dataObj.put("lib", libProperties);
 
-        if (eventType == EventType.TRACK || eventType == EventType.TRACK_ID_BIND || eventType == EventType.TRACK_ID_UNBIND) {
+        if (eventType == EventType.TRACK) {
             dataObj.put("event", eventName);
             //是否首日访问
             sendProperties.put("$is_first_day", isFirstDay(eventTime));

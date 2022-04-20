@@ -18,24 +18,15 @@
 package com.sensorsdata.analytics.android.sdk.internal.beans;
 
 public enum EventType {
-    TRACK("track", true, false),
-    TRACK_ID_BIND("track_id_bind", true, false),
-    TRACK_ID_UNBIND("track_id_unbind", true, false),
-    DEFAULT("default", false, false),
-
-    /**
-     * 特殊枚举对象用于标记所有事件类型，不可用于触发事件设置类型
-     */
-    ALL("all", false, false);
+    TRACK("track", true),
+    DEFAULT("default", false);
 
     private String eventType;
     private boolean track;
-    private boolean profile;
 
-    EventType(String eventType, boolean isTrack, boolean isProfile) {
+    EventType(String eventType, boolean isTrack) {
         this.eventType = eventType;
         this.track = isTrack;
-        this.profile = isProfile;
     }
 
     public String getEventType() {
@@ -46,7 +37,4 @@ public enum EventType {
         return track;
     }
 
-    public boolean isProfile() {
-        return profile;
-    }
 }
