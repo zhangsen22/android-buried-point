@@ -139,17 +139,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 设置 SSLSocketFactory，HTTPS 请求连接时需要使用
-     *
-     * @param SSLSocketFactory 证书
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions setSSLSocketFactory(SSLSocketFactory SSLSocketFactory) {
-        this.mSSLSocketFactory = SSLSocketFactory;
-        return this;
-    }
-
-    /**
      * 是否开启页面停留时长
      *
      * @param isTrackPageLeave 是否开启页面停留时长

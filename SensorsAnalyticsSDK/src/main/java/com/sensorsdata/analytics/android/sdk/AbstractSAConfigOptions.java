@@ -17,24 +17,17 @@
 
 package com.sensorsdata.analytics.android.sdk;
 
-import com.sensorsdata.analytics.android.sdk.plugin.encrypt.StorePlugin;
 import com.sensorsdata.analytics.android.sdk.encrypt.IPersistentSecretKey;
 import com.sensorsdata.analytics.android.sdk.encrypt.SAEncryptListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.net.ssl.SSLSocketFactory;
 
 /**
  * SDK 配置抽象类
  */
 abstract class AbstractSAConfigOptions {
-
-    /**
-     * 设置 SSLSocketFactory
-     */
-    public SSLSocketFactory mSSLSocketFactory;
 
     /**
      * 数据上报服务器地址

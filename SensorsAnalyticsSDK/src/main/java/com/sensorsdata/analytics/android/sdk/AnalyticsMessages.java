@@ -267,11 +267,7 @@ class AnalyticsMessages {
                 SALog.i(TAG, String.format("can not connect %s, it shouldn't happen", url.toString()), null);
                 return;
             }
-            SAConfigOptions configOptions = SensorsDataAPI.getConfigOptions();
-            if (configOptions != null && configOptions.mSSLSocketFactory != null
-                    && connection instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) connection).setSSLSocketFactory(configOptions.mSSLSocketFactory);
-            }
+
             connection.setInstanceFollowRedirects(false);
             if (mSensorsDataAPI.getDebugMode() == SensorsDataAPI.DebugMode.DEBUG_ONLY) {
                 connection.addRequestProperty("Dry-Run", "true");
