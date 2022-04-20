@@ -74,11 +74,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
     }
 
     @Override
-    public void setFlushBulkSize(int flushBulkSize) {
-
-    }
-
-    @Override
     public void track(String eventName, JSONObject properties) {
 
     }

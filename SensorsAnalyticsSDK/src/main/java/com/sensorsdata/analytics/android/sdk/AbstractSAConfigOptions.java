@@ -35,7 +35,7 @@ abstract class AbstractSAConfigOptions {
     /**
      * 本地缓存日志的最大条目数
      */
-    int mFlushBulkSize;
+    int mFlushBulkSize = 100;
 
     /**
      * 本地缓存上限值，单位 byte，默认为 32MB：32 * 1024 * 1024

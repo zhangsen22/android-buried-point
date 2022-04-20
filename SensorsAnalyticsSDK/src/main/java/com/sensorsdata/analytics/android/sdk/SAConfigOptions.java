@@ -62,17 +62,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 设置本地缓存日志的最大条目数
-     *
-     * @param flushBulkSize 缓存数目
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions setFlushBulkSize(int flushBulkSize) {
-        this.mFlushBulkSize = Math.max(50, flushBulkSize);
-        return this;
-    }
-
-    /**
      * 设置本地缓存上限值，单位 byte，默认为 32MB：32 * 1024 * 1024，最小 16MB：16 * 1024 * 1024，若小于 16MB，则按 16MB 处理。
      *
      * @param maxCacheSize 单位 byte

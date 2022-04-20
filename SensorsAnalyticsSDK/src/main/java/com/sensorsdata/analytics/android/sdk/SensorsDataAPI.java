@@ -167,14 +167,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void setFlushBulkSize(int flushBulkSize) {
-        if (flushBulkSize < 0) {
-            SALog.i(TAG, "The value of flushBulkSize is invalid");
-        }
-        mSAConfigOptions.setFlushBulkSize(flushBulkSize);
-    }
-
-    @Override
     public void track(final String eventName, final JSONObject properties) {
         try {
             final JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);

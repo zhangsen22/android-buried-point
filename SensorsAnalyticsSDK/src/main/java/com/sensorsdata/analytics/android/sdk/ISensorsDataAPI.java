@@ -118,13 +118,6 @@ public interface ISensorsDataAPI{
     int getFlushBulkSize();
 
     /**
-     * 设置本地缓存日志的最大条目数，最小 50 条
-     *
-     * @param flushBulkSize 缓存数目
-     */
-    void setFlushBulkSize(int flushBulkSize);
-
-    /**
      * 调用 track 接口，追踪一个带有属性的事件
      *
      * @param eventName 事件的名称

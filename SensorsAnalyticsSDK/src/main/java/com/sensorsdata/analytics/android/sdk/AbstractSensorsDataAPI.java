@@ -325,11 +325,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             SensorsDataExceptionHandler.enableAppCrash();
         }
 
-        if (mSAConfigOptions.mFlushBulkSize == 0) {
-            mSAConfigOptions.setFlushBulkSize(configBundle.getInt("com.sensorsdata.analytics.android.FlushBulkSize",
-                    100));
-        }
-
         if (mSAConfigOptions.mMaxCacheSize == 0) {
             mSAConfigOptions.setMaxCacheSize(32 * 1024 * 1024L);
         }
