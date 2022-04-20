@@ -73,7 +73,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected final Context mContext;
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
-    private Map<String, Object> mDeviceInfo;
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
     protected String mOriginServerUrl;
@@ -164,6 +163,12 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         properties.put("$app_name", AppInfoUtils.getAppName(mContext));
         String mAndroidId = SensorsDataUtils.getAndroidID(mContext);
         properties.put("$device_id", mAndroidId);
+        JSONArray libPluginVersion = getPluginVersion();
+        if(libPluginVersion != null)
+        properties.put("$lib_plugin_version", libPluginVersion);
+        //$anonymization_id 防止用户自定义事件以及公共属性可能会加 $device_id 属性，导致覆盖 sdk 原始的 $device_id 属性值
+        properties.put("$anonymization_id", "$anonymization_id");
+
     }
 
     protected AbstractSensorsDataAPI() {
@@ -402,7 +407,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     private void trackEventInternal(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) throws JSONException, InvalidDataException {
         String libDetail = null;
         String lib_version = VERSION;
-        String appEnd_app_version = null;
         long eventTime = System.currentTimeMillis();
         JSONObject libProperties = new JSONObject();
         if (null != properties) {
@@ -434,11 +438,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         libProperties.put("$lib", "Android");
         libProperties.put("$lib_version", lib_version);
-        if (TextUtils.isEmpty(appEnd_app_version)) {
-            addKeyIfExist(libProperties, "$app_version");
-        } else {
-            libProperties.put("$app_version", appEnd_app_version);
-        }
 
         final JSONObject dataObj = new JSONObject();
 
@@ -504,36 +503,11 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         libProperties.put("$lib_detail", libDetail);
 
         if (eventType.isTrack()) {
-            if (mSAConfigOptions.isDisableDeviceId()) {
-                //防止用户自定义事件以及公共属性可能会加 $device_id 属性，导致覆盖 sdk 原始的 $device_id 属性值
-                if (sendProperties.has("$anonymization_id")) {//由于 profileSet 等类型事件没有 $device_id 属性，故加此判断
-                    addKeyIfExist(sendProperties, "$anonymization_id");
-                }
-                sendProperties.remove("$device_id");
-            } else {
-                if (sendProperties.has("$device_id")) {
-                    addKeyIfExist(sendProperties, "$device_id");
-                }
-                sendProperties.remove("$anonymization_id");
-            }
 
             boolean isEnterDb = isEnterDb(eventName, sendProperties);
             if (!isEnterDb) {
                 SALog.d(TAG, eventName + " event can not enter database");
                 return;
-            }
-            if (!isTrackEventWithPluginVersion && !sendProperties.has("$lib_plugin_version")) {
-                JSONArray libPluginVersion = getPluginVersion();
-                if (libPluginVersion == null) {
-                    isTrackEventWithPluginVersion = true;
-                } else {
-                    try {
-                        sendProperties.put("$lib_plugin_version", libPluginVersion);
-                        isTrackEventWithPluginVersion = true;
-                    } catch (Exception e) {
-                        SALog.printStackTrace(e);
-                    }
-                }
             }
         }
         SADataHelper.assertPropertyTypes(sendProperties);
@@ -596,31 +570,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
-        }
-    }
-
-    /**
-     * 从 DeviceInfo 中添加指定 Key
-     *
-     * @param jsonObject JSONObject
-     * @param key 指定 Key
-     */
-    public void addKeyIfExist(JSONObject jsonObject, String key) {
-        try {
-            setupDeviceInfo();
-            if (mDeviceInfo != null && mDeviceInfo.containsKey(key)) {
-                jsonObject.put(key, mDeviceInfo.get(key));
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-    }
-    /**
-     * 获取并配置 App 的一些基本属性
-     */
-    private void setupDeviceInfo() {
-        if (mDeviceInfo == null || mDeviceInfo.isEmpty()) {
-            mDeviceInfo = Collections.unmodifiableMap(SensorsDataPropertyPluginManager.getInstance().getPropertiesByPlugin(SAPresetPropertyPlugin.class));
         }
     }
 
