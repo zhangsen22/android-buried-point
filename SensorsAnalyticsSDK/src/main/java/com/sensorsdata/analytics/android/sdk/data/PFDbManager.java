@@ -22,23 +22,23 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 
 import org.json.JSONObject;
 
-public class DbAdapter {
-    private static DbAdapter instance;
-    private final DbParams mDbParams;
-    private DataOperation mTrackEventOperation;
-    private DbAdapter(Context context, String packageName) {
-        mDbParams = DbParams.getInstance(packageName);
-        mTrackEventOperation = new EventDataOperation(context.getApplicationContext());
+public class PFDbManager {
+    private static PFDbManager instance;
+    private final PFDbParams mPFDbParams;
+    private PFDataOperation mTrackEventOperation;
+    private PFDbManager(Context context, String packageName) {
+        mPFDbParams = PFDbParams.getInstance(packageName);
+        mTrackEventOperation = new PFEventDataOperation(context.getApplicationContext());
     }
 
-    public static DbAdapter getInstance(Context context, String packageName) {
+    public static PFDbManager getInstance(Context context, String packageName) {
         if (instance == null) {
-            instance = new DbAdapter(context, packageName);
+            instance = new PFDbManager(context, packageName);
         }
         return instance;
     }
 
-    public static DbAdapter getInstance() {
+    public static PFDbManager getInstance() {
         if (instance == null) {
             throw new IllegalStateException("The static method getInstance(Context context, String packageName) should be called before calling getInstance()");
         }
@@ -54,9 +54,9 @@ public class DbAdapter {
      * on failure
      */
     public int addJSON(JSONObject j) {
-        int code = mTrackEventOperation.insertData(mDbParams.getEventUri(), j);
+        int code = mTrackEventOperation.insertData(mPFDbParams.getEventUri(), j);
         if (code == 0) {
-            return mTrackEventOperation.queryDataCount(mDbParams.getEventUri());
+            return mTrackEventOperation.queryDataCount(mPFDbParams.getEventUri());
         }
         return code;
     }
@@ -65,7 +65,7 @@ public class DbAdapter {
      * Removes all events from table
      */
     public void deleteAllEvents() {
-        mTrackEventOperation.deleteData(mDbParams.getEventUri(), DbParams.DB_DELETE_ALL);
+        mTrackEventOperation.deleteData(mPFDbParams.getEventUri(), PFDbParams.DB_DELETE_ALL);
     }
 
     /**
@@ -75,8 +75,8 @@ public class DbAdapter {
      * @return the number of rows in the table
      */
     public int cleanupEvents(String last_id) {
-        mTrackEventOperation.deleteData(mDbParams.getEventUri(), last_id);
-        return mTrackEventOperation.queryDataCount(mDbParams.getEventUri());
+        mTrackEventOperation.deleteData(mPFDbParams.getEventUri(), last_id);
+        return mTrackEventOperation.queryDataCount(mPFDbParams.getEventUri());
     }
 
     /**
@@ -88,7 +88,7 @@ public class DbAdapter {
      */
     public String[] generateDataString(String tableName, int limit) {
         try {
-            return mTrackEventOperation.queryData(mDbParams.getEventUri(), limit);
+            return mTrackEventOperation.queryData(mPFDbParams.getEventUri(), limit);
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }

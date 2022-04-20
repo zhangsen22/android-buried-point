@@ -25,8 +25,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 
-import com.sensorsdata.analytics.android.sdk.data.DbAdapter;
-import com.sensorsdata.analytics.android.sdk.data.DbParams;
+import com.sensorsdata.analytics.android.sdk.data.PFDbManager;
+import com.sensorsdata.analytics.android.sdk.data.PFDbParams;
 import com.sensorsdata.analytics.android.sdk.exceptions.ConnectErrorException;
 import com.sensorsdata.analytics.android.sdk.exceptions.DebugModeException;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
@@ -65,7 +65,7 @@ class AnalyticsMessages {
     private static final Map<Context, AnalyticsMessages> S_INSTANCES = new HashMap<>();
     private final Worker mWorker;
     private final Context mContext;
-    private final DbAdapter mDbAdapter;
+    private final PFDbManager mPFDbManager;
     private SensorsDataAPI mSensorsDataAPI;
 
     /**
@@ -73,7 +73,7 @@ class AnalyticsMessages {
      */
     private AnalyticsMessages(final Context context, SensorsDataAPI sensorsDataAPI) {
         mContext = context;
-        mDbAdapter = DbAdapter.getInstance();
+        mPFDbManager = PFDbManager.getInstance();
         mWorker = new Worker();
         mSensorsDataAPI = sensorsDataAPI;
     }
@@ -114,8 +114,8 @@ class AnalyticsMessages {
 
     void enqueueEventMessage(final String type, final JSONObject eventJson) {
         try {
-            synchronized (mDbAdapter) {
-                int ret = mDbAdapter.addJSON(eventJson);
+            synchronized (mPFDbManager) {
+                int ret = mPFDbManager.addJSON(eventJson);
                 if (ret < 0) {
                     String error = "Failed to enqueue the event: " + eventJson;
                     if (mSensorsDataAPI.isDebugMode()) {
@@ -129,13 +129,15 @@ class AnalyticsMessages {
                 m.what = FLUSH_QUEUE;
 
                 if (mSensorsDataAPI.isDebugMode() || ret ==
-                        DbParams.DB_OUT_OF_MEMORY_ERROR) {
+                        PFDbParams.DB_OUT_OF_MEMORY_ERROR) {
                     mWorker.runMessage(m);
                 } else {
                     // track_signup 立即发送
-                    if (ret > mSensorsDataAPI
-                            .getFlushBulkSize()) {
+                    if (ret > mSensorsDataAPI.getFlushBulkSize()) {
                         mWorker.runMessage(m);
+                    }else {
+                        final int interval = 0;//设置两次数据发送的最小时间间隔，最小值 5 秒
+                        mWorker.runMessageOnce(m, interval);
                     }
                 }
             }
@@ -201,12 +203,12 @@ class AnalyticsMessages {
         while (count > 0) {
             boolean deleteEvents = true;
             String[] eventsData;
-            synchronized (mDbAdapter) {
+            synchronized (mPFDbManager) {
                 if (mSensorsDataAPI.isDebugMode()) {
                     /* debug 模式下服务器只允许接收 1 条数据 */
-                    eventsData = mDbAdapter.generateDataString(DbParams.TABLE_EVENTS, 1);
+                    eventsData = mPFDbManager.generateDataString(PFDbParams.TABLE_EVENTS, 1);
                 } else {
-                    eventsData = mDbAdapter.generateDataString(DbParams.TABLE_EVENTS, 50);
+                    eventsData = mPFDbManager.generateDataString(PFDbParams.TABLE_EVENTS, 50);
                 }
             }
 
@@ -221,7 +223,7 @@ class AnalyticsMessages {
 
             try {
                 String data = rawMessage;
-                if (DbParams.GZIP_DATA_EVENT.equals(gzip)) {
+                if (PFDbParams.GZIP_DATA_EVENT.equals(gzip)) {
                     data = encodeData(rawMessage);
                 }
 
@@ -242,7 +244,7 @@ class AnalyticsMessages {
             } finally {
                 boolean isDebugMode = mSensorsDataAPI.isDebugMode();
                 if (deleteEvents || isDebugMode) {
-                    count = mDbAdapter.cleanupEvents(lastId);
+                    count = mPFDbManager.cleanupEvents(lastId);
                     SALog.i(TAG, String.format(Locale.CHINA, "Events flushed. [left = %d]", count));
                 } else {
                     count = 0;
@@ -441,6 +443,19 @@ class AnalyticsMessages {
             }
         }
 
+        void runMessageOnce(Message msg, long delay) {
+            synchronized (mHandlerLock) {
+                // We died under suspicious circumstances. Don't try to send any more events.
+                if (mHandler == null) {
+                    SALog.i(TAG, "Dead worker dropping a message: " + msg.what);
+                } else {
+                    if (!mHandler.hasMessages(msg.what)) {
+                        mHandler.sendMessageDelayed(msg, delay);
+                    }
+                }
+            }
+        }
+
         private class AnalyticsMessageHandler extends Handler {
 
             AnalyticsMessageHandler(Looper looper) {
@@ -454,7 +469,7 @@ class AnalyticsMessages {
                         sendData();
                     } else if (msg.what == DELETE_ALL) {
                         try {
-                            mDbAdapter.deleteAllEvents();
+                            mPFDbManager.deleteAllEvents();
                         } catch (Exception e) {
                             SALog.printStackTrace(e);
                         }

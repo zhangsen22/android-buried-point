@@ -22,15 +22,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
 
-public class SensorsDataDBHelper extends SQLiteOpenHelper {
-    private static final String TAG = "SA.SQLiteOpenHelper";
+public class PFSQLiteOpenHelper extends SQLiteOpenHelper {
+    private static final String TAG = "PF.SQLiteOpenHelper";
     private static final String CREATE_EVENTS_TABLE =
-            String.format("CREATE TABLE %s (_id INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT NOT NULL, %s INTEGER NOT NULL);", DbParams.TABLE_EVENTS, DbParams.KEY_DATA, DbParams.KEY_CREATED_AT);
+            String.format("CREATE TABLE %s (_id INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT NOT NULL, %s INTEGER NOT NULL);", PFDbParams.TABLE_EVENTS, PFDbParams.KEY_DATA, PFDbParams.KEY_CREATED_AT);
     private static final String EVENTS_TIME_INDEX =
-            String.format("CREATE INDEX IF NOT EXISTS time_idx ON %s (%s);", DbParams.TABLE_EVENTS, DbParams.KEY_CREATED_AT);
+            String.format("CREATE INDEX IF NOT EXISTS time_idx ON %s (%s);", PFDbParams.TABLE_EVENTS, PFDbParams.KEY_CREATED_AT);
 
-    public SensorsDataDBHelper(Context context) {
-        super(context, DbParams.DATABASE_NAME, null, DbParams.DATABASE_VERSION);
+    public PFSQLiteOpenHelper(Context context) {
+        super(context, PFDbParams.DATABASE_NAME, null, PFDbParams.DATABASE_VERSION);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class SensorsDataDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        SALog.i(TAG, "Upgrading app, replacing Sensors Analytics DB");
+        SALog.i(TAG, "Upgrading app, replacing PF Analytics DB");
 
-        db.execSQL(String.format("DROP TABLE IF EXISTS %s", DbParams.TABLE_EVENTS));
+        db.execSQL(String.format("DROP TABLE IF EXISTS %s", PFDbParams.TABLE_EVENTS));
         db.execSQL(CREATE_EVENTS_TABLE);
         db.execSQL(EVENTS_TIME_INDEX);
     }

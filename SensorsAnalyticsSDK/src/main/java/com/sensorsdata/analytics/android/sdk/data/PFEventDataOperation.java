@@ -28,22 +28,22 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 
 import org.json.JSONObject;
 
-class EventDataOperation extends DataOperation {
+class PFEventDataOperation extends PFDataOperation {
 
-    EventDataOperation(Context context) {
+    PFEventDataOperation(Context context) {
         super(context);
-        TAG = "EventDataOperation";
+        TAG = "PFEventDataOperation";
     }
 
     @Override
     int insertData(Uri uri, JSONObject jsonObject) {
         try {
             if (deleteDataLowMemory(uri) != 0) {
-                return DbParams.DB_OUT_OF_MEMORY_ERROR;
+                return PFDbParams.DB_OUT_OF_MEMORY_ERROR;
             }
             ContentValues cv = new ContentValues();
-            cv.put(DbParams.KEY_DATA, jsonObject.toString() + "\t" + jsonObject.toString().hashCode());
-            cv.put(DbParams.KEY_CREATED_AT, System.currentTimeMillis());
+            cv.put(PFDbParams.KEY_DATA, jsonObject.toString() + "\t" + jsonObject.toString().hashCode());
+            cv.put(PFDbParams.KEY_CREATED_AT, System.currentTimeMillis());
             contentResolver.insert(uri, cv);
         } catch (Throwable e) {
             SALog.d(TAG, e.getMessage());
@@ -57,7 +57,7 @@ class EventDataOperation extends DataOperation {
         String data = null;
         String last_id = null;
         try {
-            cursor = contentResolver.query(uri, null, null, null, DbParams.KEY_CREATED_AT + " ASC LIMIT " + limit);
+            cursor = contentResolver.query(uri, null, null, null, PFDbParams.KEY_CREATED_AT + " ASC LIMIT " + limit);
             if (cursor != null) {
                 StringBuilder dataBuilder = new StringBuilder();
                 final String flush_time = ",\"_flush_time\":";
@@ -70,7 +70,7 @@ class EventDataOperation extends DataOperation {
                         last_id = cursor.getString(cursor.getColumnIndexOrThrow("_id"));
                     }
                     try {
-                        keyData = cursor.getString(cursor.getColumnIndexOrThrow(DbParams.KEY_DATA));
+                        keyData = cursor.getString(cursor.getColumnIndexOrThrow(PFDbParams.KEY_DATA));
                         keyData = parseData(keyData);
                         if (!TextUtils.isEmpty(keyData)) {
                             dataBuilder.append(keyData, 0, keyData.length() - 1)
@@ -85,7 +85,7 @@ class EventDataOperation extends DataOperation {
                 data = dataBuilder.toString();
             }
         } catch (final SQLiteException e) {
-            SALog.i(TAG, "Could not pull records for SensorsData out of database events. Waiting to send.", e);
+            SALog.i(TAG, "Could not pull records for pinefiele_db out of database events. Waiting to send.", e);
             last_id = null;
             data = null;
         } finally {
@@ -95,7 +95,7 @@ class EventDataOperation extends DataOperation {
         }
 
         if (last_id != null) {
-            return new String[]{last_id, data, DbParams.GZIP_DATA_EVENT};
+            return new String[]{last_id, data, PFDbParams.GZIP_DATA_EVENT};
         }
         return null;
     }

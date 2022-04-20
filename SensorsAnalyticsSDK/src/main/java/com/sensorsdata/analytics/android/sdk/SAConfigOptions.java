@@ -16,7 +16,6 @@
  */
 
 package com.sensorsdata.analytics.android.sdk;
-import android.text.TextUtils;
 
 public final class SAConfigOptions extends AbstractSAConfigOptions implements Cloneable {
 

@@ -27,10 +27,10 @@ import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import com.sensorsdata.analytics.android.sdk.SALog;
 
-public class SensorsDataContentProvider extends ContentProvider {
+public class PFDataContentProvider extends ContentProvider {
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-    private SensorsDataDBHelper dbHelper;
-    private SAProviderHelper mProviderHelper;
+    private PFSQLiteOpenHelper dbHelper;
+    private PFProviderHelper mProviderHelper;
 
     @Override
     public boolean onCreate() {
@@ -42,11 +42,11 @@ public class SensorsDataContentProvider extends ContentProvider {
                 try {
                     packageName = context.getApplicationContext().getPackageName();
                 } catch (UnsupportedOperationException e) {
-                    packageName = "com.sensorsdata.analytics.android.sdk.test";
+                    packageName = "com.pinefield.analytics";
                 }
-                dbHelper = new SensorsDataDBHelper(context);
-                mProviderHelper = new SAProviderHelper(context, dbHelper);
-                mProviderHelper.appendUri(uriMatcher, packageName + ".SensorsDataContentProvider");
+                dbHelper = new PFSQLiteOpenHelper(context);
+                mProviderHelper = new PFProviderHelper(context, dbHelper);
+                mProviderHelper.appendUri(uriMatcher, packageName + ".PFDataContentProvider");
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
@@ -59,7 +59,7 @@ public class SensorsDataContentProvider extends ContentProvider {
         int deletedCounts = 0;
         try {
             int code = uriMatcher.match(uri);
-            if (SAProviderHelper.URI_CODE.EVENTS == code) {
+            if (PFProviderHelper.URI_CODE.EVENTS == code) {
                 return mProviderHelper.deleteEvents(selection, selectionArgs);
             }
             //目前逻辑不处理其他 Code
@@ -82,7 +82,7 @@ public class SensorsDataContentProvider extends ContentProvider {
         }
         try {
             int code = uriMatcher.match(uri);
-            if (code == SAProviderHelper.URI_CODE.EVENTS) {
+            if (code == PFProviderHelper.URI_CODE.EVENTS) {
                 return mProviderHelper.insertEvent(uri, values);
             }
             return uri;
@@ -122,8 +122,8 @@ public class SensorsDataContentProvider extends ContentProvider {
         Cursor cursor = null;
         try {
             int code = uriMatcher.match(uri);
-            if (code == SAProviderHelper.URI_CODE.EVENTS) {
-                cursor = mProviderHelper.queryByTable(DbParams.TABLE_EVENTS, projection, selection, selectionArgs, sortOrder);
+            if (code == PFProviderHelper.URI_CODE.EVENTS) {
+                cursor = mProviderHelper.queryByTable(PFDbParams.TABLE_EVENTS, projection, selection, selectionArgs, sortOrder);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

@@ -29,16 +29,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-abstract class DataOperation {
-    String TAG = "EventDataOperation";
+abstract class PFDataOperation {
+    String TAG = "PFEventDataOperation";
     ContentResolver contentResolver;
     private final File mDatabaseFile;
-    private Context mContext;
 
-    DataOperation(Context context) {
-        this.mContext = context;
+    PFDataOperation(Context context) {
         contentResolver = context.getContentResolver();
-        mDatabaseFile = context.getDatabasePath(DbParams.DATABASE_NAME);
+        mDatabaseFile = context.getDatabasePath(PFDbParams.DATABASE_NAME);
     }
 
     /**
@@ -87,7 +85,7 @@ abstract class DataOperation {
      */
     void deleteData(Uri uri, String id) {
         try {
-            if (DbParams.DB_DELETE_ALL.equals(id)) {
+            if (PFDbParams.DB_DELETE_ALL.equals(id)) {
                 contentResolver.delete(uri, null, null);
             } else {
                 contentResolver.delete(uri, "_id <= ?", new String[]{id});
@@ -127,13 +125,13 @@ abstract class DataOperation {
             SALog.i(TAG, "There is not enough space left on the device to store events, so will delete 100 oldest events");
             String[] eventsData = queryData(uri, 100);
             if (eventsData == null) {
-                return DbParams.DB_OUT_OF_MEMORY_ERROR;
+                return PFDbParams.DB_OUT_OF_MEMORY_ERROR;
             }
 
             final String lastId = eventsData[0];
             deleteData(uri, lastId);
             if (queryDataCount(uri) <= 0) {
-                return DbParams.DB_OUT_OF_MEMORY_ERROR;
+                return PFDbParams.DB_OUT_OF_MEMORY_ERROR;
             }
         }
         return 0;

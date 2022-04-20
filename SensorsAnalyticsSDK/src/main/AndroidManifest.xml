@@ -12,8 +12,8 @@
 
     <application>
         <provider
-            android:name="com.sensorsdata.analytics.android.sdk.data.SensorsDataContentProvider"
-            android:authorities="${applicationId}.SensorsDataContentProvider"
+            android:name="com.sensorsdata.analytics.android.sdk.data.PFDataContentProvider"
+            android:authorities="${applicationId}.PFDataContentProvider"
             android:enabled="true"
             android:exported="false" />
 

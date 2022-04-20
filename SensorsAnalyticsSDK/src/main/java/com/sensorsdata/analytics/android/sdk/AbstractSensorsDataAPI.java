@@ -30,7 +30,7 @@ import com.sensorsdata.analytics.android.sdk.autotrack.ActivityPageLeaveCallback
 import com.sensorsdata.analytics.android.sdk.autotrack.FragmentPageLeaveCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
-import com.sensorsdata.analytics.android.sdk.data.DbAdapter;
+import com.sensorsdata.analytics.android.sdk.data.PFDbManager;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
@@ -304,7 +304,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             this.mSDKConfigInit = true;
         }
 
-        DbAdapter.getInstance(mContext, packageName);
+        PFDbManager.getInstance(mContext, packageName);
 
         if (mSAConfigOptions.mInvokeLog) {
             enableLog(mSAConfigOptions.mLogEnabled);
