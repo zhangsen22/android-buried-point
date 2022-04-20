@@ -188,24 +188,6 @@ public abstract class AbstractStoreManager {
         }
     }
 
-    protected boolean isRegisterPlugin(Context context, String name) {
-        try {
-            File SPFile = new File("data/data/" + context.getPackageName() + "/shared_prefs", name + ".xml");
-            if (!SPFile.exists()) {
-                return false;
-            }
-            SharedPreferences storeSp = SASpUtils.getSharedPreferences(context, name, Context.MODE_PRIVATE);
-            Map<String, ?> stringMap = storeSp.getAll();
-            if (stringMap.size() == 0) {
-                SALog.i(TAG, "delete sp: " + name);
-                return !SPFile.delete();
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return true;
-    }
-
     private void removeUselessValue(String key) {
         for (StorePlugin plugin : mStorePluginList) {
             if (plugin != mMaxPriorityPlugin) {
