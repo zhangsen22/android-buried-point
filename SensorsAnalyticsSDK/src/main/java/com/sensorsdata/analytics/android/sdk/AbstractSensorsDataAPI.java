@@ -67,7 +67,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     // Maps each token to a singleton SensorsDataAPI instance
     protected static final Map<Context, SensorsDataAPI> sInstanceMap = new HashMap<>();
     static boolean mIsMainProcess = false;
-    static boolean SHOW_DEBUG_INFO_VIEW = true;
     /* 远程配置 */
     protected static SAConfigOptions mSAConfigOptions;
     protected final Context mContext;
@@ -355,8 +354,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             mSAConfigOptions.setMaxCacheSize(32 * 1024 * 1024L);
         }
 
-        SHOW_DEBUG_INFO_VIEW = configBundle.getBoolean("com.sensorsdata.analytics.android.ShowDebugInfoView",
-                true);
         mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
     }
 

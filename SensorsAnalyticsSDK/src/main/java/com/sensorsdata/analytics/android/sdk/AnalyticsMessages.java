@@ -244,14 +244,6 @@ class AnalyticsMessages {
                 errorMessage = "Exception: " + e.getMessage();
             } finally {
                 boolean isDebugMode = mSensorsDataAPI.isDebugMode();
-                if (!TextUtils.isEmpty(errorMessage)) {
-                    if (isDebugMode || SALog.isLogEnabled()) {
-                        SALog.i(TAG, errorMessage);
-                        if (isDebugMode && SensorsDataAPI.SHOW_DEBUG_INFO_VIEW) {
-                            ToastUtil.showShort(mContext, errorMessage);
-                        }
-                    }
-                }
                 if (deleteEvents || isDebugMode) {
                     count = mDbAdapter.cleanupEvents(lastId);
                     SALog.i(TAG, String.format(Locale.CHINA, "Events flushed. [left = %d]", count));
