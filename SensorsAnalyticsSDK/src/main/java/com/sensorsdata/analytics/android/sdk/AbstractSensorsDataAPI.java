@@ -17,11 +17,19 @@
 
 package com.sensorsdata.analytics.android.sdk;
 
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.text.TextUtils;
 
+import com.sensorsdata.analytics.android.sdk.autotrack.ActivityLifecycleCallbacks;
+import com.sensorsdata.analytics.android.sdk.autotrack.ActivityPageLeaveCallbacks;
+import com.sensorsdata.analytics.android.sdk.autotrack.FragmentPageLeaveCallbacks;
+import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbacks;
+import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.PFDbManager;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
@@ -56,6 +64,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     static boolean mIsMainProcess = false;
     protected static SAConfigOptions mSAConfigOptions;
     protected final Context mContext;
+    protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
@@ -88,6 +97,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             initSAConfig(mSAConfigOptions.mServerUrl, packageName);
             mMessages = AnalyticsMessages.getInstance(mContext, (SensorsDataAPI) this);
 
+            registerLifecycleCallbacks();
             if (SALog.isLogEnabled()) {
                 SALog.i(TAG, String.format(Locale.CHINA, "Initialized the instance of Sensors Analytics SDK with server"
                         + " url '%s', flush interval %d ms, debugMode: %s", mServerUrl, debugMode));
@@ -151,6 +161,20 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mMessages = null;
     }
 
+    /**
+     * 延迟初始化处理逻辑
+     *
+     * @param activity 延迟初始化 Activity 补充执行
+     */
+    protected void delayExecution(Activity activity) {
+        if (mActivityLifecycleCallbacks != null) {
+            mActivityLifecycleCallbacks.onActivityCreated(activity, null);   //延迟初始化处理唤起逻辑
+            mActivityLifecycleCallbacks.onActivityStarted(activity);                 //延迟初始化补发应用启动逻辑
+        }
+        if (SALog.isLogEnabled()) {
+            SALog.i(TAG, "SDK init success by：" + activity.getClass().getName());
+        }
+    }
 
     public Context getContext() {
         return mContext;
@@ -476,4 +500,37 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
         return null;
     }
+
+    /**
+     * 注册 ActivityLifecycleCallbacks
+     */
+    private void registerLifecycleCallbacks() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                final Application app = (Application) mContext.getApplicationContext();
+                final SensorsDataActivityLifecycleCallbacks lifecycleCallbacks = new SensorsDataActivityLifecycleCallbacks();
+                mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks((SensorsDataAPI) this);
+                lifecycleCallbacks.addActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
+                SensorsDataExceptionHandler.addExceptionListener(mActivityLifecycleCallbacks);
+                FragmentTrackHelper.addFragmentCallbacks(new FragmentViewScreenCallbacks());
+
+                if (mSAConfigOptions.isTrackPageLeave()) {
+                    ActivityPageLeaveCallbacks pageLeaveCallbacks = new ActivityPageLeaveCallbacks();
+                    lifecycleCallbacks.addActivityLifecycleCallbacks(pageLeaveCallbacks);
+                    SensorsDataExceptionHandler.addExceptionListener(pageLeaveCallbacks);
+                    if (mSAConfigOptions.isTrackFragmentPageLeave()) {
+                        FragmentPageLeaveCallbacks fragmentPageLeaveCallbacks = new FragmentPageLeaveCallbacks();
+                        FragmentTrackHelper.addFragmentCallbacks(fragmentPageLeaveCallbacks);
+                        SensorsDataExceptionHandler.addExceptionListener(fragmentPageLeaveCallbacks);
+                    }
+                }
+
+                /** 防止并发问题注册一定要在 {@link SensorsDataActivityLifecycleCallbacks#addActivityLifecycleCallbacks(SensorsDataActivityLifecycleCallbacks.SAActivityLifecycleCallbacks)} 之后执行 */
+                app.registerActivityLifecycleCallbacks(lifecycleCallbacks);
+            }
+        } catch (Exception e) {
+            SALog.printStackTrace(e);
+        }
+    }
+
 }
