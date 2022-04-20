@@ -19,7 +19,6 @@ package com.sensorsdata.analytics.android.sdk.internal.beans;
 
 public enum EventType {
     TRACK("track", true, false),
-    TRACK_SIGNUP("track_signup", true, false),
     TRACK_ID_BIND("track_id_bind", true, false),
     TRACK_ID_UNBIND("track_id_unbind", true, false),
     DEFAULT("default", false, false),

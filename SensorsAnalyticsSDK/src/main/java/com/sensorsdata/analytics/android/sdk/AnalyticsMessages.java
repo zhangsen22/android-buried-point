@@ -136,7 +136,7 @@ class AnalyticsMessages {
                     mWorker.runMessage(m);
                 } else {
                     // track_signup 立即发送
-                    if (type.equals("track_signup") || ret > mSensorsDataAPI
+                    if (ret > mSensorsDataAPI
                             .getFlushBulkSize()) {
                         mWorker.runMessage(m);
                     }

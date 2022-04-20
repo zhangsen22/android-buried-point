@@ -91,7 +91,6 @@ public final class SAPresetPropertyPlugin extends SAPropertyPlugin {
     @Override
     public void eventTypeFilter(Set<EventType> eventTypeFilter) {
         eventTypeFilter.add(EventType.TRACK);
-        eventTypeFilter.add(EventType.TRACK_SIGNUP);
         eventTypeFilter.add(EventType.TRACK_ID_BIND);
         eventTypeFilter.add(EventType.TRACK_ID_UNBIND);
     }

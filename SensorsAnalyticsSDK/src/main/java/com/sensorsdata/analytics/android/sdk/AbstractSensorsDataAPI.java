@@ -255,61 +255,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         return true;
     }
 
-    protected void trackItemEvent(String itemType, String itemId, String eventType, long time, JSONObject properties) {
-        try {
-            boolean isItemTypeValid = SADataHelper.assertPropertyKey(itemType);
-            SADataHelper.assertPropertyTypes(properties);
-            SADataHelper.assertItemId(itemId);
-            // 禁用采集事件时，先计算基本信息存储到缓存中
-            if (!mSAConfigOptions.isDataCollectEnable) {
-                transformItemTaskQueue(itemType, itemId, eventType, time, properties);
-                return;
-            }
-
-            String eventProject = null;
-            if (properties != null && properties.has("$project")) {
-                eventProject = (String) properties.get("$project");
-                properties.remove("$project");
-            }
-
-            JSONObject libProperties = new JSONObject();
-            libProperties.put("$lib", "Android");
-            libProperties.put("$lib_version", VERSION);
-            libProperties.put("$lib_method", "code");
-            addKeyIfExist(libProperties, "$app_version");
-
-
-            StackTraceElement[] trace = (new Exception()).getStackTrace();
-            if (trace.length > 1) {
-                StackTraceElement traceElement = trace[0];
-                String libDetail = String.format("%s##%s##%s##%s", traceElement
-                                .getClassName(), traceElement.getMethodName(), traceElement.getFileName(),
-                        traceElement.getLineNumber());
-                if (!TextUtils.isEmpty(libDetail)) {
-                    libProperties.put("$lib_detail", libDetail);
-                }
-            }
-
-            JSONObject eventProperties = new JSONObject();
-            if (isItemTypeValid) {
-                eventProperties.put("item_type", itemType);
-            }
-            eventProperties.put("item_id", itemId);
-            eventProperties.put("type", eventType);
-            eventProperties.put("time", time);
-            eventProperties.put("properties", TimeUtils.formatDate(properties));
-            eventProperties.put("lib", libProperties);
-
-            if (!TextUtils.isEmpty(eventProject)) {
-                eventProperties.put("project", eventProject);
-            }
-            mMessages.enqueueEventMessage(eventType, eventProperties);
-            SALog.i(TAG, "track event:\n" + JSONUtils.formatJson(eventProperties.toString()));
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-        }
-    }
-
     protected void trackEvent(final EventType eventType, String eventName, final JSONObject properties) {
         try {
             if (!TextUtils.isEmpty(eventName)) {
@@ -343,15 +288,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                     }
                 }
 
-                // 禁用采集事件时，先计算基本信息存储到缓存中
-                if (!mSAConfigOptions.isDataCollectEnable) {
-                    if (SALog.isLogEnabled()) {
-                        SALog.i(TAG, "track event, isDataCollectEnable = false, eventName = " + eventName + ",property = " + JSONUtils.formatJson(sendProperties.toString()));
-                    }
-
-                    transformEventTaskQueue(eventType, eventName, properties, sendProperties);
-                    return;
-                }
                 trackEventInternal(eventType, eventName, properties, sendProperties);
             } catch (JSONException e) {
                 throw new InvalidDataException("Unexpected property");
@@ -359,26 +295,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
-    }
-
-    /**
-     * 在未同意合规时转换队列
-     *
-     * @param runnable 任务
-     */
-    public void transformTaskQueue(final Runnable runnable) {
-        // 禁用采集事件时，先计算基本信息存储到缓存中
-        if (!mSAConfigOptions.isDataCollectEnable) {
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    mTrackTaskManager.transformTaskQueue(runnable);
-                }
-            });
-            return;
-        }
-
-        mTrackTaskManager.addTrackEventTask(runnable);
     }
 
     protected void initSAConfig(String serverURL, String packageName) {
@@ -395,7 +311,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
 
         DbAdapter.getInstance(mContext, packageName, mSensorsDataEncrypt);
-        mTrackTaskManager.setDataCollectEnable(mSAConfigOptions.isDataCollectEnable);
 
         if (mSAConfigOptions.mInvokeLog) {
             enableLog(mSAConfigOptions.mLogEnabled);
@@ -420,10 +335,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         SHOW_DEBUG_INFO_VIEW = configBundle.getBoolean("com.sensorsdata.analytics.android.ShowDebugInfoView",
                 true);
-
-        if (mSAConfigOptions.isDataCollectEnable) {
-            mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
-        }
+        mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
     }
 
     protected void applySAConfigOptions() {
@@ -560,8 +472,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             dataObj.put("event", eventName);
             //是否首日访问
             sendProperties.put("$is_first_day", isFirstDay(eventTime));
-        } else if (eventType == EventType.TRACK_SIGNUP) {
-            dataObj.put("event", eventName);
         }
 
         if (TextUtils.isEmpty(libDetail)) {
@@ -645,28 +555,8 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                         JSONObject jsonObject = SensorsDataPropertyPluginManager.getInstance().properties(eventName, eventType, properties);
                         JSONUtils.mergeDistinctProperty(jsonObject, sendProperties);
                     }
+                    trackEventInternal(eventType, eventName, properties, sendProperties);
 
-                    if ("$SignUp".equals(eventName)) {// 如果是 "$SignUp" 则需要重新补上 originalId
-                        trackEventInternal(eventType, eventName, properties, sendProperties);
-                    } else {
-                        trackEventInternal(eventType, eventName, properties, sendProperties);
-                    }
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
-    private void transformItemTaskQueue(final String itemType, final String itemId, final String eventType, final long time, final JSONObject properties) {
-        if (SALog.isLogEnabled()) {
-            SALog.i(TAG, "track item, isDataCollectEnable = false, itemType = " + itemType + ",itemId = " + itemId);
-        }
-        mTrackTaskManager.transformTaskQueue(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    trackItemEvent(itemType, itemId, eventType, time, properties);
                 } catch (Exception e) {
                     SALog.printStackTrace(e);
                 }

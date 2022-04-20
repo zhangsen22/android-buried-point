@@ -77,11 +77,6 @@ abstract class AbstractSAConfigOptions {
     IPersistentSecretKey mPersistentSecretKey;
 
     /**
-     * 关闭数据采集，默认开启数据采集
-     */
-    boolean isDataCollectEnable = true;
-
-    /**
      * 自定义加密实现接口
      */
     List<SAEncryptListener> mEncryptors = new ArrayList<>();
