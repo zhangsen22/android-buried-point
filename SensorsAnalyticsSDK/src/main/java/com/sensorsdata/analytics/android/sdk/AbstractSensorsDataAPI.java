@@ -31,7 +31,6 @@ import com.sensorsdata.analytics.android.sdk.autotrack.FragmentPageLeaveCallback
 import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
 import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
@@ -101,7 +100,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mContext = context;
         setDebugMode(debugMode);
         final String packageName = context.getApplicationContext().getPackageName();
-        PersistentLoader.initLoader(context);
         try {
             mSAConfigOptions = configOptions.clone();
             mStoreManager = SAStoreManager.getInstance();

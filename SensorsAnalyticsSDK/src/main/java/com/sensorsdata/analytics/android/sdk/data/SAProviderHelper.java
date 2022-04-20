@@ -28,7 +28,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
 
 class SAProviderHelper {
     private SQLiteOpenHelper mDbHelper;
@@ -39,7 +38,6 @@ class SAProviderHelper {
         try {
             this.mDbHelper = dbHelper;
             this.mContext = context;
-            PersistentLoader.initLoader(context);
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
