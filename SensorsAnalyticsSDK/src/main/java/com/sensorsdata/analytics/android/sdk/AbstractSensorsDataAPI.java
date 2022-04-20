@@ -26,8 +26,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.autotrack.ActivityLifecycleCallbacks;
-import com.sensorsdata.analytics.android.sdk.autotrack.ActivityPageLeaveCallbacks;
-import com.sensorsdata.analytics.android.sdk.autotrack.FragmentPageLeaveCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbacks;
 import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.PFDbManager;
@@ -442,17 +440,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
                 lifecycleCallbacks.addActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
                 SensorsDataExceptionHandler.addExceptionListener(mActivityLifecycleCallbacks);
                 FragmentTrackHelper.addFragmentCallbacks(new FragmentViewScreenCallbacks());
-
-                if (mSAConfigOptions.isTrackPageLeave()) {
-                    ActivityPageLeaveCallbacks pageLeaveCallbacks = new ActivityPageLeaveCallbacks();
-                    lifecycleCallbacks.addActivityLifecycleCallbacks(pageLeaveCallbacks);
-                    SensorsDataExceptionHandler.addExceptionListener(pageLeaveCallbacks);
-                    if (mSAConfigOptions.isTrackFragmentPageLeave()) {
-                        FragmentPageLeaveCallbacks fragmentPageLeaveCallbacks = new FragmentPageLeaveCallbacks();
-                        FragmentTrackHelper.addFragmentCallbacks(fragmentPageLeaveCallbacks);
-                        SensorsDataExceptionHandler.addExceptionListener(fragmentPageLeaveCallbacks);
-                    }
-                }
 
                 /** 防止并发问题注册一定要在 {@link SensorsDataActivityLifecycleCallbacks#addActivityLifecycleCallbacks(SensorsDataActivityLifecycleCallbacks.SAActivityLifecycleCallbacks)} 之后执行 */
                 app.registerActivityLifecycleCallbacks(lifecycleCallbacks);

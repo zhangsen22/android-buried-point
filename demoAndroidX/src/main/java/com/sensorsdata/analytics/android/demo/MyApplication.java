@@ -40,7 +40,6 @@ public class MyApplication extends Application {
         SensorsDataAPI.startWithConfigOptions(this, new SAConfigOptions()
                 .setServerUrl(SA_SERVER_URL)
                 .enableLog(true)
-                .enableTrackPageLeave(true)
                 .enableTrackAppCrash());
     }
 }

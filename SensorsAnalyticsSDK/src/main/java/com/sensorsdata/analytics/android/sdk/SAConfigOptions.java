@@ -75,29 +75,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
         return this;
     }
 
-    /**
-     * 是否开启页面停留时长
-     *
-     * @param isTrackPageLeave 是否开启页面停留时长
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableTrackPageLeave(boolean isTrackPageLeave) {
-        return enableTrackPageLeave(isTrackPageLeave, false);
-    }
-
-    /**
-     * 是否开启页面停留时长
-     *
-     * @param isTrackPageLeave 是否开启页面停留时长
-     * @param isTrackFragmentPageLeave 是否采集 Fragment 页面停留时长，需开启页面停留时长采集
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableTrackPageLeave(boolean isTrackPageLeave, boolean isTrackFragmentPageLeave) {
-        this.mIsTrackPageLeave = isTrackPageLeave;
-        this.mIsTrackFragmentPageLeave = isTrackFragmentPageLeave;
-        return this;
-    }
-    
     @Override
     protected SAConfigOptions clone() {
         SAConfigOptions copyObject = this;
