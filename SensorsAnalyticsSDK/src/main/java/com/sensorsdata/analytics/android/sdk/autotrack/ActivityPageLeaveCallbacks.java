@@ -45,18 +45,8 @@ import java.util.List;
 public class ActivityPageLeaveCallbacks implements SensorsDataActivityLifecycleCallbacks.SAActivityLifecycleCallbacks, SensorsDataExceptionHandler.SAExceptionListener {
     private static final String START_TIME = "sa_start_time";
     private final HashMap<Integer, JSONObject> mResumedActivities = new HashMap<>();
-    private List<Class<?>> mIgnoreList;
-    // 弹窗页面
-    private final String DIALOG_ACTIVITY = "com.sensorsdata.sf.ui.view.DialogActivity";
-    private final boolean mIsEmpty;
 
-    public ActivityPageLeaveCallbacks(List<Class<?>> ignoreList) {
-        if (ignoreList != null && !ignoreList.isEmpty()) {
-            mIgnoreList = ignoreList;
-            mIsEmpty = false;
-        } else {
-            mIsEmpty = true;
-        }
+    public ActivityPageLeaveCallbacks() {
     }
 
     @Override
@@ -71,9 +61,7 @@ public class ActivityPageLeaveCallbacks implements SensorsDataActivityLifecycleC
 
     @Override
     public void onActivityResumed(Activity activity) {
-        if (!ignorePage(activity)) {
-            trackActivityStart(activity);
-        }
+        trackActivityStart(activity);
     }
 
     @Override
@@ -139,9 +127,6 @@ public class ActivityPageLeaveCallbacks implements SensorsDataActivityLifecycleC
 
     private void trackActivityStart(Activity activity) {
         try {
-            if (DIALOG_ACTIVITY.equals(activity.getClass().getCanonicalName())) {
-                return;
-            }
             JSONObject properties = AopUtil.buildTitleAndScreenName(activity);
             String url = SensorsDataUtils.getScreenUrl(activity);
             properties.put("$url", url);
@@ -170,12 +155,5 @@ public class ActivityPageLeaveCallbacks implements SensorsDataActivityLifecycleC
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
-    }
-
-    private boolean ignorePage(Object fragment) {
-        if (!mIsEmpty) {
-            return mIgnoreList.contains(fragment.getClass());
-        }
-        return false;
     }
 }
