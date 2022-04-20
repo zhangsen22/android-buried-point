@@ -18,7 +18,7 @@
 package com.sensorsdata.analytics.android.sdk;
 
 
-import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
+import com.sensorsdata.analytics.android.sdk.util.EventType;
 
 import org.json.JSONObject;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.internal.beans;
+package com.sensorsdata.analytics.android.sdk.util;
 
 public enum EventType {
     TRACK("track", true),
