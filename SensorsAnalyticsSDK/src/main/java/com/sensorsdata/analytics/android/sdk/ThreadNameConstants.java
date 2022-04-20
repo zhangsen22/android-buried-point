@@ -20,5 +20,4 @@ package com.sensorsdata.analytics.android.sdk;
 public interface ThreadNameConstants {
     String THREAD_TASK_QUEUE = "SA.TaskQueueThread";
     String THREAD_TASK_EXECUTE = "SA.TaskExecuteThread";
-    String THREAD_DEEP_LINK_REQUEST = "SA.DeepLinkRequest";
 }

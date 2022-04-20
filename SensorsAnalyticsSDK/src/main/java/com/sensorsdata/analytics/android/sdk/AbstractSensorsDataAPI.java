@@ -62,7 +62,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     // Maps each token to a singleton SensorsDataAPI instance
     protected static final Map<Context, SensorsDataAPI> sInstanceMap = new HashMap<>();
     static boolean mIsMainProcess = false;
-    /* 远程配置 */
     protected static SAConfigOptions mSAConfigOptions;
     protected final Context mContext;
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
