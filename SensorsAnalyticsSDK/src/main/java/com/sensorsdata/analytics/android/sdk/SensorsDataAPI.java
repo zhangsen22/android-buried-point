@@ -44,12 +44,8 @@ import java.util.Set;
  * Sensors Analytics SDK
  */
 public class SensorsDataAPI extends AbstractSensorsDataAPI {
-    // 可视化埋点功能最低 API 版本
-    public static final int VTRACK_SUPPORTED_MIN_API = 16;
     // SDK 版本，此属性插件会进行访问，谨慎修改
     static final String VERSION = BuildConfig.SDK_VERSION;
-    // 此属性插件会进行访问，谨慎删除。当前 SDK 版本所需插件最低版本号，设为空，意为没有任何限制
-    static final String MIN_PLUGIN_VERSION = BuildConfig.MIN_PLUGIN_VERSION;
     /**
      * 插件版本号，插件会用到此属性，请谨慎修改
      */

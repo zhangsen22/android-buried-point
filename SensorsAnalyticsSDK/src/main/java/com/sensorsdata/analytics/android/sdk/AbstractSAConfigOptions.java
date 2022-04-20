@@ -17,13 +17,6 @@
 
 package com.sensorsdata.analytics.android.sdk;
 
-import com.sensorsdata.analytics.android.sdk.encrypt.IPersistentSecretKey;
-import com.sensorsdata.analytics.android.sdk.encrypt.SAEncryptListener;
-
-import java.util.ArrayList;
-import java.util.List;
-
-
 /**
  * SDK 配置抽象类
  */
@@ -60,21 +53,6 @@ abstract class AbstractSAConfigOptions {
     int mNetworkTypePolicy = SensorsNetworkType.TYPE_3G | SensorsNetworkType.TYPE_4G | SensorsNetworkType.TYPE_WIFI | SensorsNetworkType.TYPE_5G;
 
     /**
-     * 是否开启加密
-     */
-    boolean mEnableEncrypt = false;
-
-    /**
-     * 密钥存储相关接口
-     */
-    IPersistentSecretKey mPersistentSecretKey;
-
-    /**
-     * 自定义加密实现接口
-     */
-    List<SAEncryptListener> mEncryptors = new ArrayList<>();
-
-    /**
      * 开启采集页面停留时长
      */
     protected boolean mIsTrackPageLeave = false;
@@ -83,11 +61,6 @@ abstract class AbstractSAConfigOptions {
      * 是否采集 Fragment 页面停留时长
      */
     protected boolean mIsTrackFragmentPageLeave = false;
-
-    /**
-     * 自定义加密器
-     */
-    List<SAEncryptListener> mEncryptListeners;
 
     /**
      * 是否开启页面停留时长采集
@@ -105,15 +78,6 @@ abstract class AbstractSAConfigOptions {
      */
     public boolean isTrackFragmentPageLeave() {
         return mIsTrackPageLeave && mIsTrackFragmentPageLeave;
-    }
-
-    /**
-     * 获取注册的加密插件列表
-     *
-     * @return 注册的加密插件列表
-     */
-    public List<SAEncryptListener> getEncryptors() {
-        return mEncryptors;
     }
 
 }

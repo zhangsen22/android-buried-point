@@ -19,26 +19,20 @@ package com.sensorsdata.analytics.android.sdk.data.adapter;
 
 import android.content.Context;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
 import org.json.JSONObject;
 
 public class DbAdapter {
     private static DbAdapter instance;
     private final DbParams mDbParams;
     private DataOperation mTrackEventOperation;
-    private DbAdapter(Context context, String packageName, SensorsDataEncrypt sensorsDataEncrypt) {
+    private DbAdapter(Context context, String packageName) {
         mDbParams = DbParams.getInstance(packageName);
-        if (sensorsDataEncrypt != null) {
-            mTrackEventOperation = new EncryptDataOperation(context.getApplicationContext(), sensorsDataEncrypt);
-        } else {
-            mTrackEventOperation = new EventDataOperation(context.getApplicationContext());
-        }
+        mTrackEventOperation = new EventDataOperation(context.getApplicationContext());
     }
 
-    public static DbAdapter getInstance(Context context, String packageName,
-                                        SensorsDataEncrypt sensorsDataEncrypt) {
+    public static DbAdapter getInstance(Context context, String packageName) {
         if (instance == null) {
-            instance = new DbAdapter(context, packageName, sensorsDataEncrypt);
+            instance = new DbAdapter(context, packageName);
         }
         return instance;
     }

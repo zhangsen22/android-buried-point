@@ -32,8 +32,6 @@ import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbac
 import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
-import com.sensorsdata.analytics.android.sdk.encrypt.SAStoreManager;
-import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
@@ -85,8 +83,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
-    protected SAStoreManager mStoreManager;
-    SensorsDataEncrypt mSensorsDataEncrypt;
     /**
      * 标记是否已经采集了带有插件版本号的事件
      */
@@ -98,9 +94,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         final String packageName = context.getApplicationContext().getPackageName();
         try {
             mSAConfigOptions = configOptions.clone();
-            mStoreManager = SAStoreManager.getInstance();
-            mStoreManager.registerPlugins(mContext);
-            mStoreManager.upgrade();
             mTrackTaskManager = TrackTaskManager.getInstance();
             mTrackTaskManagerThread = new TrackTaskManagerThread();
             new Thread(mTrackTaskManagerThread, ThreadNameConstants.THREAD_TASK_QUEUE).start();
@@ -170,7 +163,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected AbstractSensorsDataAPI() {
         mContext = null;
         mMessages = null;
-        mSensorsDataEncrypt = null;
     }
 
     /**
@@ -319,11 +311,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             this.mSDKConfigInit = true;
         }
 
-        if (mSAConfigOptions.mEnableEncrypt) {
-            mSensorsDataEncrypt = new SensorsDataEncrypt(mContext, mSAConfigOptions.mPersistentSecretKey, mSAConfigOptions.getEncryptors());
-        }
-
-        DbAdapter.getInstance(mContext, packageName, mSensorsDataEncrypt);
+        DbAdapter.getInstance(mContext, packageName);
 
         if (mSAConfigOptions.mInvokeLog) {
             enableLog(mSAConfigOptions.mLogEnabled);

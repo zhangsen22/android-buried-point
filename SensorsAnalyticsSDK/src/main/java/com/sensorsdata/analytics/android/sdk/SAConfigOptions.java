@@ -16,11 +16,7 @@
  */
 
 package com.sensorsdata.analytics.android.sdk;
-
 import android.text.TextUtils;
-
-import com.sensorsdata.analytics.android.sdk.encrypt.IPersistentSecretKey;
-import com.sensorsdata.analytics.android.sdk.encrypt.SAEncryptListener;
 
 public final class SAConfigOptions extends AbstractSAConfigOptions implements Cloneable {
 
@@ -111,28 +107,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     }
 
     /**
-     * 是否开启加密
-     *
-     * @param enableEncrypt 是否开启加密
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions enableEncrypt(boolean enableEncrypt) {
-        this.mEnableEncrypt = enableEncrypt;
-        return this;
-    }
-
-    /**
-     * 密钥回调监听
-     *
-     * @param persistentSecretKey 密钥回调监听
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions persistentSecretKey(IPersistentSecretKey persistentSecretKey) {
-        mPersistentSecretKey = persistentSecretKey;
-        return this;
-    }
-
-    /**
      * 是否开启页面停留时长
      *
      * @param isTrackPageLeave 是否开启页面停留时长
@@ -155,25 +129,7 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
         this.mIsTrackFragmentPageLeave = isTrackFragmentPageLeave;
         return this;
     }
-
-    /**
-     * 注册自定义加密插件
-     *
-     * @param encryptListener 自定义加密实现接口
-     * @return SAConfigOptions
-     */
-    public SAConfigOptions registerEncryptor(SAEncryptListener encryptListener) {
-        if (encryptListener == null
-                || TextUtils.isEmpty(encryptListener.asymmetricEncryptType())
-                || TextUtils.isEmpty(encryptListener.symmetricEncryptType())) {
-            return this;
-        }
-        if (!mEncryptors.contains(encryptListener)) {
-            mEncryptors.add(0, encryptListener);
-        }
-        return this;
-    }
-
+    
     @Override
     protected SAConfigOptions clone() {
         SAConfigOptions copyObject = this;

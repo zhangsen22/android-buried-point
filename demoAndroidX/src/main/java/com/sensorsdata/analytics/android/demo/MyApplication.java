@@ -38,6 +38,6 @@ public class MyApplication extends Application {
      */
     private void initSensorsDataAPI() {
         SensorsDataAPI.startWithConfigOptions(this, new SAConfigOptions(SA_SERVER_URL)
-                .enableTrackAppCrash().enableEncrypt(true));
+                .enableTrackAppCrash());
     }
 }
