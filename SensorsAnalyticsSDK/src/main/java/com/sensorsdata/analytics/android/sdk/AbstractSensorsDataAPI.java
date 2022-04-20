@@ -83,10 +83,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SimpleDateFormat mIsFirstDayDateFormat;
     protected SensorsDataTrackEventCallBack mTrackEventCallBack;
-    /**
-     * 标记是否已经采集了带有插件版本号的事件
-     */
-    private boolean isTrackEventWithPluginVersion = false;
+
 
     public AbstractSensorsDataAPI(Context context, SAConfigOptions configOptions, SensorsDataAPI.DebugMode debugMode) {
         mContext = context;
@@ -178,10 +175,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         if (SALog.isLogEnabled()) {
             SALog.i(TAG, "SDK init success by：" + activity.getClass().getName());
         }
-    }
-
-    public static SAConfigOptions getConfigOptions() {
-        return mSAConfigOptions;
     }
 
     public Context getContext() {
