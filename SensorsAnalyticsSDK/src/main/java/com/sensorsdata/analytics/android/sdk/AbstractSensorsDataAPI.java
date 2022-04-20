@@ -299,7 +299,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         Bundle configBundle = AppInfoUtils.getAppInfoBundle(mContext);
         if (mSAConfigOptions == null) {
             this.mSDKConfigInit = false;
-            mSAConfigOptions = new SAConfigOptions(serverURL);
+            mSAConfigOptions = new SAConfigOptions();
         } else {
             this.mSDKConfigInit = true;
         }

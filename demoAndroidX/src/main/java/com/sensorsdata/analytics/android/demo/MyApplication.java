@@ -37,7 +37,10 @@ public class MyApplication extends Application {
      * 初始化 Sensors Analytics SDK
      */
     private void initSensorsDataAPI() {
-        SensorsDataAPI.startWithConfigOptions(this, new SAConfigOptions(SA_SERVER_URL)
+        SensorsDataAPI.startWithConfigOptions(this, new SAConfigOptions()
+                .setServerUrl(SA_SERVER_URL)
+                .enableLog(true)
+                .enableTrackPageLeave(true)
                 .enableTrackAppCrash());
     }
 }

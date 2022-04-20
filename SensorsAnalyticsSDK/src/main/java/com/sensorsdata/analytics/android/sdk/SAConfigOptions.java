@@ -25,18 +25,10 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
     boolean mInvokeLog;
 
     /**
-     * 私有构造函数
-     */
-    private SAConfigOptions() {
-    }
-
-    /**
      * 获取 SAOptionsConfig 实例
-     *
-     * @param serverUrl，数据上报服务器地址
      */
-    public SAConfigOptions(String serverUrl) {
-        this.mServerUrl = serverUrl;
+    public SAConfigOptions() {
+
     }
 
     /**
@@ -89,7 +81,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
      * @param isTrackPageLeave 是否开启页面停留时长
      * @return SAConfigOptions
      */
-    @Deprecated
     public SAConfigOptions enableTrackPageLeave(boolean isTrackPageLeave) {
         return enableTrackPageLeave(isTrackPageLeave, false);
     }
