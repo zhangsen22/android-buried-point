@@ -39,6 +39,7 @@ import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SAPresetPropertyPlugin;
 import com.sensorsdata.analytics.android.sdk.plugin.property.SensorsDataPropertyPluginManager;
 import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
+import com.sensorsdata.analytics.android.sdk.util.DeviceUtils;
 import com.sensorsdata.analytics.android.sdk.util.JSONUtils;
 import com.sensorsdata.analytics.android.sdk.util.NetworkUtils;
 import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
@@ -121,11 +122,48 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         } catch (Throwable ex) {
             SALog.d(TAG, ex.getMessage());
         }
-        registerDefaultPropertiesPlugin();
-    }
 
-    private void registerDefaultPropertiesPlugin() {
-        SensorsDataPropertyPluginManager.getInstance().registerPropertyPlugin(new SAPresetPropertyPlugin(mContext));
+
+        appendProperties(mProperties);
+
+
+    }
+    private final Map<String, Object> mProperties = new HashMap<>();
+
+    public void appendProperties(Map<String, Object> properties) {
+        String osVersion = DeviceUtils.getHarmonyOSVersion();
+        if (!TextUtils.isEmpty(osVersion)) {
+            properties.put("$os", "HarmonyOS");
+            properties.put("$os_version", osVersion);
+        } else {
+            properties.put("$os", "Android");
+            properties.put("$os_version", DeviceUtils.getOS());
+        }
+
+        properties.put("$lib", "Android");
+        properties.put("$lib_version", SensorsDataAPI.sharedInstance().getSDKVersion());
+        properties.put("$manufacturer", DeviceUtils.getManufacturer());
+        properties.put("$model", DeviceUtils.getModel());
+        properties.put("$brand", DeviceUtils.getBrand());
+        properties.put("$app_version", AppInfoUtils.getAppVersionName(mContext));
+        int[] size = DeviceUtils.getDeviceSize(mContext);
+        properties.put("$screen_width", size[0]);
+        properties.put("$screen_height", size[1]);
+
+        String carrier = SensorsDataUtils.getCarrier(mContext);
+        if (!TextUtils.isEmpty(carrier)) {
+            properties.put("$carrier", carrier);
+        }
+
+        Integer zone_offset = TimeUtils.getZoneOffset();
+        if (zone_offset != null) {
+            properties.put("$timezone_offset", zone_offset);
+        }
+
+        properties.put("$app_id", AppInfoUtils.getProcessName(mContext));
+        properties.put("$app_name", AppInfoUtils.getAppName(mContext));
+        String mAndroidId = SensorsDataUtils.getAndroidID(mContext);
+        properties.put("$device_id", mAndroidId);
     }
 
     protected AbstractSensorsDataAPI() {
@@ -205,10 +243,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    public SensorsDataEncrypt getSensorsDataEncrypt() {
-        return mSensorsDataEncrypt;
-    }
-
     /**
      * SDK 全埋点调用方法，支持可视化自定义属性
      *
@@ -255,7 +289,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
                 // 将属性插件的属性合并到 sendProperties
                 sendProperties = SensorsDataUtils.mergeSuperJSONObject(
-                        SensorsDataPropertyPluginManager.getInstance().properties(eventName, eventType, properties),
+                        new JSONObject(mProperties),
                         sendProperties);
 
                 if (eventType.isTrack()) {

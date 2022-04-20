@@ -53,27 +53,6 @@ public final class SensorsDataPropertyPluginManager {
     }
 
     /**
-     * 注册属性插件
-     *
-     * @param plugin 注册属性插件对象
-     */
-    public final void registerPropertyPlugin(SAPropertyPlugin plugin) {
-        try {
-            if (plugin == null) return;
-            String propertyType = getPluginType(plugin);
-            if (!plugins.containsKey(propertyType)) {
-                plugins.put(propertyType, plugin);
-                //插件注册成功后，立即开启插件的初始化
-                plugin.start();
-            } else {
-                SALog.i(TAG, String.format("plugin [ %s ] has exist!", propertyType));
-            }
-        } catch (Exception e) {
-            SALog.i(TAG, "register property plugin exception! " + e.toString());
-        }
-    }
-
-    /**
      * 根据事件的 eventName，eventType，properties 来匹配已注册的插件，获取当前事件能匹配上的属性
      *
      * @param eventName 事件名
