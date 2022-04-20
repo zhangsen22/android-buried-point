@@ -54,20 +54,6 @@ public class SAStoreManager extends AbstractStoreManager {
             registerAPIPlugin(context);
             /* 此 plugin storeKeys 返回值是 null，默认是使用最后注册的 plugin 保存，所以一定要在最后注册 */
             registerSensorsDataPlugin(context);
-        } else {
-            mDefaultState = false;
-            AESSecretManager.getInstance().initSecretKey(context);
-            if (isRegisterPlugin(context, SP_SENSORS_DATA_API)) {
-                registerAPIPlugin(context);
-            }
-            /* 此 plugin storeKeys 返回值是 null，默认是使用最后注册的 plugin 保存，所以一定要在最后注册 */
-            if (isRegisterPlugin(context, SP_SENSORS_DATA)) {
-                registerSensorsDataPlugin(context);
-            }
-            // 添加自定义的 plugin
-            for (StorePlugin plugin : configPlugins) {
-                registerPlugin(plugin);
-            }
         }
     }
 
