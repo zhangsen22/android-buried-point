@@ -18,27 +18,19 @@ package com.sensorsdata.analytics.android.sdk;
 
 import android.app.Activity;
 import android.content.Context;
-import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Build;
 import android.text.TextUtils;
-import android.view.View;
-import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
+
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;
-import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
-import com.sensorsdata.analytics.android.sdk.util.AppInfoUtils;
 import com.sensorsdata.analytics.android.sdk.util.JSONUtils;
-import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
-import com.sensorsdata.analytics.android.sdk.util.TimeUtils;
-import org.json.JSONArray;
+
 import org.json.JSONObject;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Sensors Analytics SDK

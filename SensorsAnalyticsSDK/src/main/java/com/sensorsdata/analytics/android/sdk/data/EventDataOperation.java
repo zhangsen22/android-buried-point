@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.data.adapter;
+package com.sensorsdata.analytics.android.sdk.data;
 
 import android.content.ContentValues;
 import android.content.Context;

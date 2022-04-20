@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.data.adapter;
+package com.sensorsdata.analytics.android.sdk.data;
 
 import android.content.Context;
 import com.sensorsdata.analytics.android.sdk.SALog;
+
 import org.json.JSONObject;
 
 public class DbAdapter {

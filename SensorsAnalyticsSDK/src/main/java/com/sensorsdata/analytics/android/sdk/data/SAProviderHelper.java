@@ -27,7 +27,6 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 
 class SAProviderHelper {
     private SQLiteOpenHelper mDbHelper;

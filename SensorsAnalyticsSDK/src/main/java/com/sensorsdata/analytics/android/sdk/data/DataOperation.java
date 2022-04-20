@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.data.adapter;
+package com.sensorsdata.analytics.android.sdk.data;
 
 import android.content.ContentResolver;
 import android.content.Context;
@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 
 import org.json.JSONObject;
 
