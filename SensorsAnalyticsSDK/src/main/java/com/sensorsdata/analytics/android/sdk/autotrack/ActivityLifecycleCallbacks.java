@@ -18,7 +18,6 @@
 package com.sensorsdata.analytics.android.sdk.autotrack;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,7 +29,6 @@ import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
 import com.sensorsdata.analytics.android.sdk.SensorsDataActivityLifecycleCallbacks;
 import com.sensorsdata.analytics.android.sdk.SensorsDataExceptionHandler;
-import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentFirstDay;
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
 import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
@@ -52,8 +50,7 @@ public class ActivityLifecycleCallbacks implements SensorsDataActivityLifecycleC
 
     private Set<Integer> hashSet = new HashSet<>();
 
-    public ActivityLifecycleCallbacks(SensorsDataAPI instance,
-                                      PersistentFirstDay firstDay, Context context) {
+    public ActivityLifecycleCallbacks(SensorsDataAPI instance) {
         this.mSensorsDataInstance = instance;
 
     }

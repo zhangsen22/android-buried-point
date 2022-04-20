@@ -681,27 +681,6 @@ public final class SensorsDataUtils {
     }
 
     /**
-     * 检查版本是否经过升级
-     *
-     * @param context     context
-     * @param currVersion 当前 SDK 版本
-     * @return true，老版本升级到新版本。false，当前已是最新版本
-     */
-    public static boolean checkVersionIsNew(Context context, String currVersion) {
-        try {
-            String localVersion = SAStoreManager.getInstance().getString(SHARED_PREF_APP_VERSION, "");
-            if (!TextUtils.isEmpty(currVersion) && !currVersion.equals(localVersion)) {
-                SAStoreManager.getInstance().setString(SHARED_PREF_APP_VERSION, currVersion);
-                return true;
-            }
-        } catch (Exception ex) {
-            SALog.printStackTrace(ex);
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * 是否是连续点击
      *
      * @param view view

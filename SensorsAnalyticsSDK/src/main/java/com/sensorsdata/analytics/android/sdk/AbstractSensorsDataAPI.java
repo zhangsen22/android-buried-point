@@ -217,16 +217,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     }
 
     /**
-     * SDK 内部调用方法
-     *
-     * @param eventName 事件名
-     * @param properties 事件属性
-     */
-    public void trackAutoEvent(final String eventName, final JSONObject properties) {
-        trackAutoEvent(eventName, properties, null);
-    }
-
-    /**
      * SDK 全埋点调用方法，支持可视化自定义属性
      *
      * @param eventName 事件名
@@ -536,34 +526,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    /**
-     * 如果没有授权时，需要将已执行的的缓存队列切换到真正的 TaskQueue 中
-     */
-    private void transformEventTaskQueue(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) {
-        try {
-            if (!sendProperties.has("$time") && !("$AppStart".equals(eventName) || "$AppEnd".equals(eventName))) {
-                sendProperties.put("$time", new Date(System.currentTimeMillis()));
-            }
-        } catch (JSONException e) {
-            SALog.printStackTrace(e);
-        }
-        mTrackTaskManager.transformTaskQueue(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (eventType.isTrack()) {
-                        JSONObject jsonObject = SensorsDataPropertyPluginManager.getInstance().properties(eventName, eventType, properties);
-                        JSONUtils.mergeDistinctProperty(jsonObject, sendProperties);
-                    }
-                    trackEventInternal(eventType, eventName, properties, sendProperties);
-
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-        });
-    }
-
     private JSONArray getPluginVersion() {
         try {
             if (!TextUtils.isEmpty(SensorsDataAPI.ANDROID_PLUGIN_VERSION)) {
@@ -586,7 +548,7 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 final Application app = (Application) mContext.getApplicationContext();
                 final SensorsDataActivityLifecycleCallbacks lifecycleCallbacks = new SensorsDataActivityLifecycleCallbacks();
-                mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks((SensorsDataAPI) this, mFirstDay, mContext);
+                mActivityLifecycleCallbacks = new ActivityLifecycleCallbacks((SensorsDataAPI) this);
                 lifecycleCallbacks.addActivityLifecycleCallbacks(mActivityLifecycleCallbacks);
                 SensorsDataExceptionHandler.addExceptionListener(mActivityLifecycleCallbacks);
                 FragmentTrackHelper.addFragmentCallbacks(new FragmentViewScreenCallbacks());

@@ -29,7 +29,6 @@ import android.net.Uri;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
 import com.sensorsdata.analytics.android.sdk.data.persistent.PersistentLoader;
-import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
 
 class SAProviderHelper {
     private SQLiteOpenHelper mDbHelper;
