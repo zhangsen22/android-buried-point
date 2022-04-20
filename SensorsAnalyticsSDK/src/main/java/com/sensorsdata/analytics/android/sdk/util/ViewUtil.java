@@ -65,24 +65,8 @@ public class ViewUtil {
         return ReflectUtil.isInstance(view, "android.support.v4.widget.SwipeRefreshLayout", "androidx.swiperefreshlayout.widget.SwipeRefreshLayout");
     }
 
-    static boolean instanceOfSupportListMenuItemView(Object view) {
-        return ReflectUtil.isInstance(view, "android.support.v7.view.menu.ListMenuItemView");
-    }
-
-    static boolean instanceOfAndroidXListMenuItemView(Object view) {
-        return ReflectUtil.isInstance(view, "androidx.appcompat.view.menu.ListMenuItemView");
-    }
-
     static boolean instanceOfBottomNavigationItemView(Object view) {
         return ReflectUtil.isInstance(view, "com.google.android.material.bottomnavigation.BottomNavigationItemView", "android.support.design.internal.NavigationMenuItemView");
-    }
-
-    static boolean instanceOfActionMenuItem(Object view) {
-        return ReflectUtil.isInstance(view, "androidx.appcompat.view.menu.ActionMenuItem");
-    }
-
-    static boolean instanceOfToolbar(Object view) {
-        return ReflectUtil.isInstance(view, "androidx.appcompat.widget.Toolbar", "android.support.v7.widget.Toolbar", "android.widget.Toolbar");
     }
 
     private static boolean instanceOfNavigationView(Object view) {
@@ -95,18 +79,6 @@ public class ViewUtil {
 
     private static boolean instanceOfAndroidXViewPager(Object view) {
         return ReflectUtil.isInstance(view, "androidx.viewpager.widget.ViewPager");
-    }
-
-    public static boolean instanceOfWebView(Object view) {
-        return view instanceof WebView || instanceOfX5WebView(view) || instanceOfUCWebView(view);
-    }
-
-    public static boolean instanceOfX5WebView(Object view) {
-        return ReflectUtil.isInstance(view, "com.tencent.smtt.sdk.WebView");
-    }
-
-    private static boolean instanceOfUCWebView(Object view) {
-        return ReflectUtil.isInstance(view, "com.alipay.mobile.nebulauc.impl.UCWebView$WebViewEx");
     }
 
     public static boolean instanceOfRecyclerView(Object view) {
@@ -282,10 +254,6 @@ public class ViewUtil {
         return -1;
     }
 
-    private static boolean isListView(View view) {
-        return (view instanceof AdapterView) || ViewUtil.instanceOfRecyclerView(view) || ViewUtil.instanceOfAndroidXViewPager(view) || ViewUtil.instanceOfSupportViewPager(view);
-    }
-
     public static boolean isViewSelfVisible(View view) {
         if (view == null || view.getWindowVisibility() == View.GONE) {
             return false;
@@ -309,60 +277,6 @@ public class ViewUtil {
         }
         return true;
     }
-
-    private static boolean viewVisibilityInParents(View view) {
-        if (view == null) {
-            return false;
-        }
-        if (!ViewUtil.isViewSelfVisible(view)) {
-            return false;
-        }
-        ViewParent viewParent = view.getParent();
-        while (viewParent instanceof View) {
-            if (!ViewUtil.isViewSelfVisible((View) viewParent)) {
-                return false;
-            }
-            viewParent = viewParent.getParent();
-            if (viewParent == null) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static void invalidateLayerTypeView(View[] views) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            for (View view : views) {
-                if (ViewUtil.viewVisibilityInParents(view) && view.isHardwareAccelerated()) {
-                    checkAndInvalidate(view);
-                    if (view instanceof ViewGroup) {
-                        invalidateViewGroup((ViewGroup) view);
-                    }
-                }
-            }
-        }
-    }
-
-    private static void checkAndInvalidate(View view) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (view.getLayerType() != View.LAYER_TYPE_NONE) {
-                view.invalidate();
-            }
-        }
-    }
-
-    private static void invalidateViewGroup(ViewGroup viewGroup) {
-        for (int index = 0; index < viewGroup.getChildCount(); index++) {
-            View child = viewGroup.getChildAt(index);
-            if (ViewUtil.isViewSelfVisible(child)) {
-                checkAndInvalidate(child);
-                if (child instanceof ViewGroup) {
-                    invalidateViewGroup((ViewGroup) child);
-                }
-            }
-        }
-    }
-
 
     public static ViewNode getViewPathAndPosition(View clickView, boolean fromVisual) {
         ArrayList<View> arrayList = new ArrayList<View>(8);
@@ -476,11 +390,6 @@ public class ViewUtil {
                         opx.append("/ELF[").append(footerIndex).append("]/").append(viewName).append("[0]");
                         px.append("/ELF[").append(footerIndex).append("]/").append(viewName).append("[0]");
                     }
-                } else if (ViewUtil.isListView(parentView)) {
-                    isListView = true;
-                    listPos = String.format(Locale.CHINA, "%d", viewPosition);
-                    px.append(opx).append("/").append(viewName).append("[-]");
-                    opx.append("/").append(viewName).append("[").append(listPos).append("]");
                 } else if (ViewUtil.instanceOfSupportSwipeRefreshLayout(parentView)) {
                     opx.append("/").append(viewName).append("[0]");
                     px.append("/").append(viewName).append("[0]");
@@ -501,12 +410,6 @@ public class ViewUtil {
             }
         }
         return null;
-    }
-
-    public static void clear() {
-        if (sViewCache != null) {
-            sViewCache.clear();
-        }
     }
 
     static boolean isTrackEvent(View view, boolean isFromUser) {
@@ -548,18 +451,7 @@ public class ViewUtil {
         Object tab = null;
         if (cacheViewType == null || cacheViewText == null) {
             viewType = SnapCache.getInstance().getCanonicalName(view.getClass());
-            if (view instanceof CheckBox) { // CheckBox
-                viewType = AopUtil.getViewType(viewType, "CheckBox");
-                CheckBox checkBox = (CheckBox) view;
-                viewText = checkBox.getText();
-            } else if (view instanceof RadioButton) { // RadioButton
-                viewType = AopUtil.getViewType(viewType, "RadioButton");
-                RadioButton radioButton = (RadioButton) view;
-                viewText = radioButton.getText();
-            } else if (view instanceof ToggleButton) { // ToggleButton
-                viewType = AopUtil.getViewType(viewType, "ToggleButton");
-                viewText = AopUtil.getCompoundButtonText(view);
-            } else if (view instanceof CompoundButton) {
+            if (view instanceof CompoundButton) {
                 viewType = AopUtil.getViewTypeByReflect(view);
                 viewText = AopUtil.getCompoundButtonText(view);
             } else if (view instanceof Button) { // Button
@@ -574,32 +466,7 @@ public class ViewUtil {
                 viewType = AopUtil.getViewType(viewType, "TextView");
                 TextView textView = (TextView) view;
                 viewText = textView.getText();
-            } else if (view instanceof ImageView) { // ImageView
-                viewType = AopUtil.getViewType(viewType, "ImageView");
-                ImageView imageView = (ImageView) view;
-                if (!TextUtils.isEmpty(imageView.getContentDescription())) {
-                    viewText = imageView.getContentDescription().toString();
-                }
-            } else if (view instanceof RatingBar) {
-                viewType = AopUtil.getViewType(viewType, "RatingBar");
-                RatingBar ratingBar = (RatingBar) view;
-                viewText = String.valueOf(ratingBar.getRating());
-            } else if (view instanceof SeekBar) {
-                viewType = AopUtil.getViewType(viewType, "SeekBar");
-                SeekBar seekBar = (SeekBar) view;
-                viewText = String.valueOf(seekBar.getProgress());
-            } else if (view instanceof Spinner) {
-                viewType = AopUtil.getViewType(viewType, "Spinner");
-                try {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    viewText = AopUtil.traverseView(stringBuilder, (ViewGroup) view);
-                    if (!TextUtils.isEmpty(viewText)) {
-                        viewText = viewText.toString().substring(0, viewText.length() - 1);
-                    }
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            } else if ((tab = instanceOfTabView(view)) != null) {
+            }  else if ((tab = instanceOfTabView(view)) != null) {
                 viewText = getTabLayoutContent(tab);
                 viewType = AopUtil.getViewType(viewType, "TabLayout");
             } else if (ViewUtil.instanceOfBottomNavigationItemView(view)) {
@@ -612,23 +479,6 @@ public class ViewUtil {
                             if (!TextUtils.isEmpty(title)) {
                                 viewText = title;
                             }
-                        }
-                    } catch (Exception e) {
-                        //ignored
-                    }
-                }
-            } else if (ViewUtil.instanceOfNavigationView(view)) {
-                viewText = ViewUtil.isViewSelfVisible(view) ? "Open" : "Close";
-                viewType = AopUtil.getViewType(viewType, "NavigationView");
-            } else if (view instanceof ViewGroup) {
-                viewType = AopUtil.getViewGroupTypeByReflect(view);
-                viewText = view.getContentDescription();
-                if (TextUtils.isEmpty(viewText)) {
-                    try {
-                        StringBuilder stringBuilder = new StringBuilder();
-                        viewText = AopUtil.traverseView(stringBuilder, (ViewGroup) view);
-                        if (!TextUtils.isEmpty(viewText)) {
-                            viewText = viewText.toString().substring(0, viewText.length() - 1);
                         }
                     } catch (Exception e) {
                         //ignored
