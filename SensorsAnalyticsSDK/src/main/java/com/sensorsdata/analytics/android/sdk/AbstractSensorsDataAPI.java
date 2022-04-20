@@ -81,8 +81,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
     protected TrackTaskManager mTrackTaskManager;
     protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SimpleDateFormat mIsFirstDayDateFormat;
-    protected SensorsDataTrackEventCallBack mTrackEventCallBack;
-
 
     public AbstractSensorsDataAPI(Context context, SAConfigOptions configOptions, SensorsDataAPI.DebugMode debugMode) {
         mContext = context;
@@ -330,40 +328,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    /**
-     * @param eventName 事件名
-     * @param eventProperties 事件属性
-     * @return 该事件是否入库
-     */
-    private boolean isEnterDb(String eventName, JSONObject eventProperties) {
-        boolean enterDb = true;
-        if (mTrackEventCallBack != null) {
-            SALog.i(TAG, "SDK have set trackEvent callBack");
-            try {
-                enterDb = mTrackEventCallBack.onTrackEvent(eventName, eventProperties);
-            } catch (Exception e) {
-                SALog.printStackTrace(e);
-            }
-            if (enterDb) {
-                try {
-                    Iterator<String> it = eventProperties.keys();
-                    while (it.hasNext()) {
-                        String key = it.next();
-                        Object value = eventProperties.opt(key);
-                        if (value instanceof Date) {
-                            eventProperties.put(key, TimeUtils.formatDate((Date) value, Locale.CHINA));
-                        } else {
-                            eventProperties.put(key, value);
-                        }
-                    }
-                } catch (Exception e) {
-                    SALog.printStackTrace(e);
-                }
-            }
-        }
-        return enterDb;
-    }
-
     private void trackEventInternal(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) throws JSONException, InvalidDataException {
         String libDetail = null;
         String lib_version = VERSION;
@@ -462,14 +426,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
 
         libProperties.put("$lib_detail", libDetail);
 
-        if (eventType.isTrack()) {
-
-            boolean isEnterDb = isEnterDb(eventName, sendProperties);
-            if (!isEnterDb) {
-                SALog.d(TAG, eventName + " event can not enter database");
-                return;
-            }
-        }
         SADataHelper.assertPropertyTypes(sendProperties);
         dataObj.put("properties", sendProperties);
 

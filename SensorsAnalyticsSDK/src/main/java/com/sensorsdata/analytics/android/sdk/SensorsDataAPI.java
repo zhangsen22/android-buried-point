@@ -320,11 +320,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
     }
 
     @Override
-    public void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack) {
-        mTrackEventCallBack = trackEventCallBack;
-    }
-
-    @Override
     public void deleteAll() {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override

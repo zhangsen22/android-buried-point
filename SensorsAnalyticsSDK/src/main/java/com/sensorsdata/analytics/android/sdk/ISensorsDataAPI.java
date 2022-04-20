@@ -145,13 +145,6 @@ public interface ISensorsDataAPI{
     void flushSync();
 
     /**
-     * 设置 track 事件回调
-     *
-     * @param trackEventCallBack track 事件回调接口
-     */
-    void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack);
-
-    /**
      * 删除本地缓存的全部事件
      */
     void deleteAll();

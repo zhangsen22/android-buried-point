@@ -96,12 +96,6 @@ public class SensorsDataAPIEmptyImplementation extends SensorsDataAPI {
 
     }
 
-
-    @Override
-    public void setTrackEventCallBack(SensorsDataTrackEventCallBack trackEventCallBack) {
-
-    }
-
     @Override
     public void deleteAll() {
 
