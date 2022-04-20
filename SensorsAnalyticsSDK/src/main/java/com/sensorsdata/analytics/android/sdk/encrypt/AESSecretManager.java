@@ -22,7 +22,6 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
 import com.sensorsdata.analytics.android.sdk.util.Base64Coder;
 
 import javax.crypto.Cipher;

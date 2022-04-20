@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.plugin.encrypt;
+package com.sensorsdata.analytics.android.sdk.encrypt;
 
 public interface StorePlugin {
 

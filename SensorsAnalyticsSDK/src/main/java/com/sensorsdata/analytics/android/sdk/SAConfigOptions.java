@@ -19,14 +19,8 @@ package com.sensorsdata.analytics.android.sdk;
 
 import android.text.TextUtils;
 
-import com.sensorsdata.analytics.android.sdk.plugin.encrypt.StorePlugin;
 import com.sensorsdata.analytics.android.sdk.encrypt.IPersistentSecretKey;
 import com.sensorsdata.analytics.android.sdk.encrypt.SAEncryptListener;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.net.ssl.SSLSocketFactory;
 
 public final class SAConfigOptions extends AbstractSAConfigOptions implements Cloneable {
 

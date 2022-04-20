@@ -15,15 +15,10 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.plugin.encrypt;
+package com.sensorsdata.analytics.android.sdk.encrypt;
 
 import android.content.Context;
 
-import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.data.adapter.DbParams;
-import com.sensorsdata.analytics.android.sdk.encrypt.AESSecretManager;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 

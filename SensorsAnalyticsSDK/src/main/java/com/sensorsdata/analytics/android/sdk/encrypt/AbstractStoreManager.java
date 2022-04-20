@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package com.sensorsdata.analytics.android.sdk.plugin.encrypt;
+package com.sensorsdata.analytics.android.sdk.encrypt;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
 import android.util.LruCache;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.util.SASpUtils;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

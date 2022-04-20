@@ -32,7 +32,7 @@ import com.sensorsdata.analytics.android.sdk.autotrack.FragmentViewScreenCallbac
 import com.sensorsdata.analytics.android.sdk.autotrack.aop.FragmentTrackHelper;
 import com.sensorsdata.analytics.android.sdk.data.adapter.DbAdapter;
 import com.sensorsdata.analytics.android.sdk.monitor.TrackMonitor;
-import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
+import com.sensorsdata.analytics.android.sdk.encrypt.SAStoreManager;
 import com.sensorsdata.analytics.android.sdk.encrypt.SensorsDataEncrypt;
 import com.sensorsdata.analytics.android.sdk.exceptions.InvalidDataException;
 import com.sensorsdata.analytics.android.sdk.internal.beans.EventType;

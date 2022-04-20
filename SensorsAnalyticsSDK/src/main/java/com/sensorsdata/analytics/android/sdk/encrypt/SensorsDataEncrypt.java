@@ -21,7 +21,6 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.sensorsdata.analytics.android.sdk.SALog;
-import com.sensorsdata.analytics.android.sdk.plugin.encrypt.SAStoreManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
