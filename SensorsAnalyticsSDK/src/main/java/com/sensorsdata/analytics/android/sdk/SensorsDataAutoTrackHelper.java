@@ -25,7 +25,6 @@ import android.text.TextUtils;
 import android.view.View;
 
 import com.sensorsdata.analytics.android.sdk.util.AopUtil;
-import com.sensorsdata.analytics.android.sdk.util.KeyboardViewUtil;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 
 import org.json.JSONObject;
@@ -76,14 +75,14 @@ public class SensorsDataAutoTrackHelper {
                 return;
             }
 
-            if (KeyboardViewUtil.isKeyboardView(view)) {
-                return;
-            }
+//            if (KeyboardViewUtil.isKeyboardView(view)) {
+//                return;
+//            }
 
             JSONObject properties = new JSONObject();
 
             if (AopUtil.injectClickInfo(view, properties, isFromUser)) {
-                SensorsDataAPI.sharedInstance().trackAutoEvent(null, properties, AopUtil.addViewPathProperties(activity, view, properties));
+                SensorsDataAPI.sharedInstance().trackAutoEvent(null, properties);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);

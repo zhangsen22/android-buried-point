@@ -40,7 +40,6 @@ import com.sensorsdata.analytics.android.sdk.util.NetworkUtils;
 import com.sensorsdata.analytics.android.sdk.util.SADataHelper;
 import com.sensorsdata.analytics.android.sdk.util.SensorsDataUtils;
 import com.sensorsdata.analytics.android.sdk.util.TimeUtils;
-import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -177,7 +176,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         return mContext;
     }
 
-
     /**
      * SDK 内部用来调用触发事件
      *
@@ -185,17 +183,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
      * @param properties 事件属性
      */
     public void trackInternal(final String eventName, final JSONObject properties) {
-        trackInternal(eventName, properties, null);
-    }
-
-    /**
-     * SDK 内部用来调用触发事件
-     *
-     * @param eventName 事件名称
-     * @param properties 事件属性
-     * @param viewNode ViewTree 中的 View 节点
-     */
-    public void trackInternal(final String eventName, final JSONObject properties, final ViewNode viewNode) {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
             public void run() {
@@ -231,10 +218,10 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
      * @param eventName 事件名
      * @param properties 事件属性
      */
-    void trackAutoEvent(final String eventName, final JSONObject properties, final ViewNode viewNode) {
+    void trackAutoEvent(final String eventName, final JSONObject properties) {
         //添加 $lib_method 属性
         JSONObject eventProperties = SADataHelper.appendLibMethodAutoTrack(properties);
-        trackInternal(eventName, eventProperties, viewNode);
+        trackInternal(eventName, eventProperties);
     }
 
     protected boolean isFirstDay(long eventTime) {

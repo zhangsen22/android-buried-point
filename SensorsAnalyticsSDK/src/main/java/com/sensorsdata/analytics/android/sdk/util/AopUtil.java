@@ -42,8 +42,6 @@ import com.sensorsdata.analytics.android.sdk.AopConstants;
 import com.sensorsdata.analytics.android.sdk.R;
 import com.sensorsdata.analytics.android.sdk.SALog;
 import com.sensorsdata.analytics.android.sdk.SensorsDataAPI;
-import com.sensorsdata.analytics.android.sdk.visual.ViewTreeStatusObservable;
-import com.sensorsdata.analytics.android.sdk.visual.model.ViewNode;
 import com.sensorsdata.analytics.android.sdk.visual.snap.SnapCache;
 
 import org.json.JSONException;
@@ -506,9 +504,7 @@ public class AopUtil {
     }
 
     /**
-     * properties 注入点击事件信息
-     * {@link SensorsDataAPI#trackViewAppClick(View, JSONObject)}
-     *
+     * properties 注入点击事件信息*
      * @param view 点击的 view
      * @param properties 事件属性
      * @param isFromUser 是否由用户触发
@@ -526,15 +522,6 @@ public class AopUtil {
             JSONObject eventJson = new JSONObject();
             Activity activity = AopUtil.getActivityFromContext(context, view);
 
-            ViewNode viewNode = ViewUtil.getViewContentAndType(view);
-            String viewText = viewNode.getViewContent();
-            //$element_content
-            if (!TextUtils.isEmpty(viewText)) {
-                eventJson.put(AopConstants.ELEMENT_CONTENT, viewText);
-            }
-            //$element_type
-            eventJson.put(AopConstants.ELEMENT_TYPE, viewNode.getViewType());
-
             //2.获取 Activity 页面信息及 ScreenAutoTracker 定义的属性
             if (activity != null) {
                 SensorsDataUtils.mergeJSONObject(AopUtil.buildTitleAndScreenName(activity), eventJson);
@@ -548,7 +535,7 @@ public class AopUtil {
             //4.事件传入的自定义属性
             JSONUtils.mergeDistinctProperty(eventJson, properties);
             return true;
-        } catch (JSONException e) {
+        } catch (Exception e) {
             SALog.printStackTrace(e);
         }
         return false;
@@ -595,31 +582,6 @@ public class AopUtil {
                 return FragmentCacheUtil.getFragmentFromCache(fragmentName);
             }
         } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
-        return null;
-    }
-
-    public static ViewNode addViewPathProperties(Activity activity, View view, JSONObject properties) {
-        try {
-            if (view == null) {
-                return null;
-            }
-            if (activity == null) {
-                return null;
-            }
-            if (properties == null) {
-                properties = new JSONObject();
-            }
-
-            ViewNode viewNode = ViewTreeStatusObservable.getInstance().getViewNode(view);
-            if (viewNode != null) {
-                if (!TextUtils.isEmpty(viewNode.getViewPosition())) {
-                    properties.put(AopConstants.ELEMENT_POSITION, viewNode.getViewPosition());
-                }
-                return viewNode;
-            }
-        } catch (JSONException e) {
             SALog.printStackTrace(e);
         }
         return null;
