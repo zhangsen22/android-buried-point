@@ -319,9 +319,9 @@ class AnalyticsMessages {
                 // 状态码 200 - 300 间都认为正确
                 if (responseCode >= HttpURLConnection.HTTP_OK &&
                         responseCode < HttpURLConnection.HTTP_MULT_CHOICE) {
-                    SALog.i(TAG, "valid message: \n" + jsonMessage);
+                    SALog.i(TAG, "valid message: 上报成功");
                 } else {
-                    SALog.i(TAG, "invalid message: \n" + jsonMessage);
+                    SALog.i(TAG, "invalid message: 上报失败");
                     SALog.i(TAG, String.format(Locale.CHINA, "ret_code: %d", responseCode));
                     SALog.i(TAG, String.format(Locale.CHINA, "ret_content: %s", response));
                 }
