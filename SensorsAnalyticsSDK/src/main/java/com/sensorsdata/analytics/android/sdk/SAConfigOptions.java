@@ -1,6 +1,26 @@
 package com.sensorsdata.analytics.android.sdk;
 
-public final class SAConfigOptions extends AbstractSAConfigOptions implements Cloneable {
+public class SAConfigOptions implements Cloneable {
+
+    /**
+     * 数据上报服务器地址
+     */
+    String mServerUrl;
+
+    /**
+     * 是否开启 TrackAppCrash
+     */
+    boolean mEnableTrackAppCrash;
+
+    /**
+     * 本地缓存日志的最大条目数
+     */
+    int mFlushBulkSize = 100;
+
+    /**
+     * 网络上传策略
+     */
+    int mNetworkTypePolicy = SensorsNetworkType.TYPE_3G | SensorsNetworkType.TYPE_4G | SensorsNetworkType.TYPE_WIFI | SensorsNetworkType.TYPE_5G;
 
     /**
      * 获取 SAOptionsConfig 实例
