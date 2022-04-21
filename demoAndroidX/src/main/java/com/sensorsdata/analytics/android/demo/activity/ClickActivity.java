@@ -63,7 +63,7 @@ public class ClickActivity extends BaseActivity{
         findViewById(R.id.track_view_screen).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SensorsDataAPI.sharedInstance().trackViewScreen(ClickActivity.this);
+                SensorsDataAPI.getInstance().trackViewScreen(ClickActivity.this);
             }
         });
     }
@@ -75,7 +75,7 @@ public class ClickActivity extends BaseActivity{
         findViewById(R.id.track_a_event).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SensorsDataAPI.sharedInstance(ClickActivity.this).track("你好",
+                SensorsDataAPI.getInstance().track("你好",
                         PropertyBuilder.newInstance()
                                 .append("Pricevvv", 100)
                                 .append("Namevvv", "Apple").toJSONObject());

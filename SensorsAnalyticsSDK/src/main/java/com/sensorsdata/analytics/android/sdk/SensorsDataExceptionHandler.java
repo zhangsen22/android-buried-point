@@ -74,7 +74,7 @@ public class SensorsDataExceptionHandler implements Thread.UncaughtExceptionHand
                     } catch (Exception ex) {
                         SALog.printStackTrace(ex);
                     }
-                    SensorsDataAPI.sharedInstance().trackEvent(EventType.TRACK, "AppCrashed", messageProp);
+                    SensorsDataAPI.getInstance().trackEvent(EventType.TRACK, "AppCrashed", messageProp);
                 } catch (Exception ex) {
                     SALog.printStackTrace(ex);
                 }
@@ -87,7 +87,7 @@ public class SensorsDataExceptionHandler implements Thread.UncaughtExceptionHand
                     SALog.printStackTrace(e1);
                 }
             }
-            SensorsDataAPI.sharedInstance().flush();
+            SensorsDataAPI.getInstance().flush();
             try {
                 Thread.sleep(SLEEP_TIMEOUT_MS);
             } catch (InterruptedException e1) {

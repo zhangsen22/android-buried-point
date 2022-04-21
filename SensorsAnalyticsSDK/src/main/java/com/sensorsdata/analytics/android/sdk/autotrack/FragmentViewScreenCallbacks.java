@@ -160,7 +160,7 @@ public class FragmentViewScreenCallbacks implements SAFragmentLifecycleCallbacks
             JSONObject properties = new JSONObject();
             AopUtil.getScreenNameAndTitleFromFragment(properties, fragment, null);
             JSONObject eventProperties = SADataHelper.appendLibMethodAutoTrack(properties);
-            SensorsDataAPI.sharedInstance().trackViewScreen(SensorsDataUtils.getScreenUrl(fragment), eventProperties);
+            SensorsDataAPI.getInstance().trackViewScreen(SensorsDataUtils.getScreenUrl(fragment), eventProperties);
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }

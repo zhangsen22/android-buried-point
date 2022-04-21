@@ -82,7 +82,7 @@ public class SensorsDataAutoTrackHelper {
             JSONObject properties = new JSONObject();
 
             if (AopUtil.injectClickInfo(view, properties, isFromUser)) {
-                SensorsDataAPI.sharedInstance().trackAutoEvent(null, properties);
+                SensorsDataAPI.getInstance().trackAutoEvent(null, properties);
             }
         } catch (Exception e) {
             SALog.printStackTrace(e);
@@ -102,7 +102,7 @@ public class SensorsDataAutoTrackHelper {
                     SALog.printStackTrace(e);
                 }
             }
-            SensorsDataAPI.sharedInstance().trackInternal(eventName, pro);
+            SensorsDataAPI.getInstance().trackInternal(eventName, pro);
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
