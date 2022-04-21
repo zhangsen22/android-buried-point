@@ -53,7 +53,7 @@ import java.util.Map;
 /**
  * Sensors Analytics SDK
  */
-public class SensorsDataAPI implements ISensorsDataAPI {
+public class SensorsDataAPI{
     // SDK 版本，此属性插件会进行访问，谨慎修改
     static final String VERSION = BuildConfig.SDK_VERSION;
     /**
@@ -80,7 +80,7 @@ public class SensorsDataAPI implements ISensorsDataAPI {
     private final Map<String, Object> mProperties = new HashMap<>();
 
     //private
-    SensorsDataAPI() {
+    private SensorsDataAPI() {
 
     }
 
@@ -130,7 +130,11 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         appendProperties(mProperties);
     }
 
-    @Override
+    /**
+     * 设置 flush 时网络发送策略，默认 3G、4G、5G、WI-FI 环境下都会尝试 flush
+     *
+     * @param networkType int 网络类型
+     */
     public void setFlushNetworkPolicy(int networkType) {
         mSAConfigOptions.setNetworkTypePolicy(networkType);
     }
@@ -139,12 +143,42 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         return mSAConfigOptions.mNetworkTypePolicy;
     }
 
-    @Override
+    /**
+     * 以判断是否向服务器上传数据:
+     * 1. 是否是 WIFI/3G/4G 网络条件
+     * 2. 是否满足发送条件之一:
+     * 1) 与上次发送的时间间隔是否大于 flushInterval
+     * 2) 本地缓存日志数目是否大于 flushBulkSize
+     * 如果满足这两个条件，则向服务器发送一次数据；如果不满足，则把数据加入到队列中，等待下次检查时把整个队列的内
+     * 容一并发送。需要注意的是，为了避免占用过多存储，队列最多只缓存 20MB 数据。
+     *
+     * @return 返回时间间隔，单位毫秒
+     */
+
+
+    /**
+     * 返回本地缓存日志的最大条目数
+     * 默认值为 100 条
+     * 在每次调用 track、signUp 以及 profileSet 等接口的时候，都会检查如下条件，以判断是否向服务器上传数据:
+     * 1. 是否是 WIFI/3G/4G 网络条件
+     * 2. 是否满足发送条件之一:
+     * 1) 与上次发送的时间间隔是否大于 flushInterval
+     * 2) 本地缓存日志数目是否大于 flushBulkSize
+     * 如果满足这两个条件，则向服务器发送一次数据；如果不满足，则把数据加入到队列中，等待下次检查时把整个队列的内
+     * 容一并发送。需要注意的是，为了避免占用过多存储，队列最多只缓存 32MB 数据。
+     *
+     * @return 返回本地缓存日志的最大条目数
+     */
     public int getFlushBulkSize() {
         return mSAConfigOptions.mFlushBulkSize;
     }
 
-    @Override
+    /**
+     * 调用 track 接口，追踪一个带有属性的事件
+     *
+     * @param eventName 事件的名称
+     * @param properties 事件的属性
+     */
     public void track(final String eventName, final JSONObject properties) {
         try {
             final JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);
@@ -159,8 +193,12 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    @Override
-    @Deprecated
+    /**
+     * Track 进入页面事件 ($AppViewScreen)，该接口需要在 properties 中手动设置 $screen_name 和 $title 属性。
+     *
+     * @param url String
+     * @param properties JSONObject
+     */
     public void trackViewScreen(final String url, final JSONObject properties) {
         try {
             final JSONObject cloneProperties = JSONUtils.cloneJsonObject(properties);
@@ -198,8 +236,11 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    @Override
-    public void trackViewScreen(final Activity activity) {
+    /**
+     * Track Activity 进入页面事件($AppViewScreen)
+     *
+     * @param activity activity Activity，当前 Activity
+     */    public void trackViewScreen(final Activity activity) {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
             public void run() {
@@ -216,7 +257,11 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         });
     }
 
-    @Override
+    /**
+     * Track  Fragment 进入页面事件 ($AppViewScreen)
+     *
+     * @param fragment Fragment
+     */
     public void trackViewScreen(final Object fragment) {
         if (fragment == null) {
             return;
@@ -293,7 +338,9 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         });
     }
 
-    @Override
+    /**
+     * 将所有本地缓存的日志发送到 Sensors Analytics.
+     */
     public void flush() {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
@@ -308,14 +355,8 @@ public class SensorsDataAPI implements ISensorsDataAPI {
     }
 
     /**
-     * 将所有本地缓存的日志发送到 Sensors Analytics.
+     * 删除本地缓存的全部事件
      */
-    @Override
-    public void flushSync() {
-        flush();
-    }
-
-    @Override
     public void deleteAll() {
         mTrackTaskManager.addTrackEventTask(new Runnable() {
             @Override
@@ -325,22 +366,29 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         });
     }
 
-    @Override
+    /**
+     * 是否是开启 debug 模式
+     *
+     * @return true：是，false：不是
+     */
     public boolean isDebugMode() {
         return true;
     }
 
-    @Override
+    /**
+     * 设置当前 serverUrl
+     *
+     * @param serverUrl 当前 serverUrl
+     */
     public void setServerUrl(final String serverUrl) {
         mServerUrl = serverUrl;
     }
 
     /**
-     * 不能动位置，因为 SF 反射获取使用
+     * 获取当前 serverUrl
      *
-     * @return ServerUrl
+     * @return 当前 serverUrl
      */
-    @Override
     public String getServerUrl() {
         return mServerUrl;
     }
@@ -365,48 +413,6 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         public static final int TYPE_WIFI = 1 << 3;//WIFI
         public static final int TYPE_5G = 1 << 4;//5G
         public static final int TYPE_ALL = 0xFF;//ALL
-    }
-
-    public void appendProperties(Map<String, Object> properties) {
-        String osVersion = DeviceUtils.getHarmonyOSVersion();
-        if (!TextUtils.isEmpty(osVersion)) {
-            properties.put("$os", "HarmonyOS");
-            properties.put("$os_version", osVersion);
-        } else {
-            properties.put("$os", "Android");
-            properties.put("$os_version", DeviceUtils.getOS());
-        }
-
-        properties.put("$lib", "Android");
-        properties.put("$lib_version", SensorsDataAPI.getInstance().getSDKVersion());
-        properties.put("$manufacturer", DeviceUtils.getManufacturer());
-        properties.put("$model", DeviceUtils.getModel());
-        properties.put("$brand", DeviceUtils.getBrand());
-        properties.put("$app_version", AppInfoUtils.getAppVersionName(mContext));
-        int[] size = DeviceUtils.getDeviceSize(mContext);
-        properties.put("$screen_width", size[0]);
-        properties.put("$screen_height", size[1]);
-
-        String carrier = SensorsDataUtils.getCarrier(mContext);
-        if (!TextUtils.isEmpty(carrier)) {
-            properties.put("$carrier", carrier);
-        }
-
-        Integer zone_offset = TimeUtils.getZoneOffset();
-        if (zone_offset != null) {
-            properties.put("$timezone_offset", zone_offset);
-        }
-
-        properties.put("$app_id", AppInfoUtils.getProcessName(mContext));
-        properties.put("$app_name", AppInfoUtils.getAppName(mContext));
-        String mAndroidId = SensorsDataUtils.getAndroidID(mContext);
-        properties.put("$device_id", mAndroidId);
-        JSONArray libPluginVersion = getPluginVersion();
-        if(libPluginVersion != null)
-            properties.put("$lib_plugin_version", libPluginVersion);
-        //$anonymization_id 防止用户自定义事件以及公共属性可能会加 $device_id 属性，导致覆盖 sdk 原始的 $device_id 属性值
-        properties.put("$anonymization_id", "$anonymization_id");
-
     }
 
     public Context getContext() {
@@ -644,4 +650,47 @@ public class SensorsDataAPI implements ISensorsDataAPI {
     public boolean ismIsMainProcess() {
         return mIsMainProcess;
     }
+
+    private void appendProperties(Map<String, Object> properties) {
+        String osVersion = DeviceUtils.getHarmonyOSVersion();
+        if (!TextUtils.isEmpty(osVersion)) {
+            properties.put("$os", "HarmonyOS");
+            properties.put("$os_version", osVersion);
+        } else {
+            properties.put("$os", "Android");
+            properties.put("$os_version", DeviceUtils.getOS());
+        }
+
+        properties.put("$lib", "Android");
+        properties.put("$lib_version", SensorsDataAPI.getInstance().getSDKVersion());
+        properties.put("$manufacturer", DeviceUtils.getManufacturer());
+        properties.put("$model", DeviceUtils.getModel());
+        properties.put("$brand", DeviceUtils.getBrand());
+        properties.put("$app_version", AppInfoUtils.getAppVersionName(mContext));
+        int[] size = DeviceUtils.getDeviceSize(mContext);
+        properties.put("$screen_width", size[0]);
+        properties.put("$screen_height", size[1]);
+
+        String carrier = SensorsDataUtils.getCarrier(mContext);
+        if (!TextUtils.isEmpty(carrier)) {
+            properties.put("$carrier", carrier);
+        }
+
+        Integer zone_offset = TimeUtils.getZoneOffset();
+        if (zone_offset != null) {
+            properties.put("$timezone_offset", zone_offset);
+        }
+
+        properties.put("$app_id", AppInfoUtils.getProcessName(mContext));
+        properties.put("$app_name", AppInfoUtils.getAppName(mContext));
+        String mAndroidId = SensorsDataUtils.getAndroidID(mContext);
+        properties.put("$device_id", mAndroidId);
+        JSONArray libPluginVersion = getPluginVersion();
+        if(libPluginVersion != null)
+            properties.put("$lib_plugin_version", libPluginVersion);
+        //$anonymization_id 防止用户自定义事件以及公共属性可能会加 $device_id 属性，导致覆盖 sdk 原始的 $device_id 属性值
+        properties.put("$anonymization_id", "$anonymization_id");
+
+    }
+
 }
