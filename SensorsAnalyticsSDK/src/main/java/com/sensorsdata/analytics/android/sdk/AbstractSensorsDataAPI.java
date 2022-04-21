@@ -154,21 +154,6 @@ abstract class AbstractSensorsDataAPI implements ISensorsDataAPI {
         mMessages = null;
     }
 
-    /**
-     * 延迟初始化处理逻辑
-     *
-     * @param activity 延迟初始化 Activity 补充执行
-     */
-    protected void delayExecution(Activity activity) {
-        if (mActivityLifecycleCallbacks != null) {
-            mActivityLifecycleCallbacks.onActivityCreated(activity, null);   //延迟初始化处理唤起逻辑
-            mActivityLifecycleCallbacks.onActivityStarted(activity);                 //延迟初始化补发应用启动逻辑
-        }
-        if (SALog.isLogEnabled()) {
-            SALog.i(TAG, "SDK init success by：" + activity.getClass().getName());
-        }
-    }
-
     public Context getContext() {
         return mContext;
     }

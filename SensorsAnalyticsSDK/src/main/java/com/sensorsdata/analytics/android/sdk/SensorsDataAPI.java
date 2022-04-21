@@ -104,9 +104,6 @@ public class SensorsDataAPI extends AbstractSensorsDataAPI {
             if (null == instance) {
                 instance = new SensorsDataAPI(appContext, saConfigOptions, debugMode);
                 sInstanceMap.put(appContext, instance);
-                if (context instanceof Activity) {
-                    instance.delayExecution((Activity) context);
-                }
             }
             return instance;
         }
