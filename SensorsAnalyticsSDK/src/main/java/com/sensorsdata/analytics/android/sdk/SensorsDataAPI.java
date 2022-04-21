@@ -63,21 +63,18 @@ public class SensorsDataAPI implements ISensorsDataAPI {
 
     protected static final String TAG = "SA.SensorsDataAPI";
 
-    // Maps each token to a singleton SensorsDataAPI instance
-    static boolean mIsMainProcess = false;
     protected static SAConfigOptions mSAConfigOptions;
     protected Context mContext;
     protected ActivityLifecycleCallbacks mActivityLifecycleCallbacks;
     protected AnalyticsMessages mMessages;
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
-    /* SDK 配置是否初始化 */
-    protected boolean mSDKConfigInit;
     /* 当前页面的 Title */
     protected String mCurrentScreenTitle;
     protected TrackTaskManager mTrackTaskManager;
     protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SimpleDateFormat mIsFirstDayDateFormat;
+    private boolean mIsMainProcess = false;
 
 
     private final Map<String, Object> mProperties = new HashMap<>();
@@ -115,21 +112,22 @@ public class SensorsDataAPI implements ISensorsDataAPI {
             mTrackTaskManagerThread = new TrackTaskManagerThread();
             new Thread(mTrackTaskManagerThread, ThreadNameConstants.THREAD_TASK_QUEUE).start();
             SensorsDataExceptionHandler.init();
-            initSAConfig(mSAConfigOptions.mServerUrl, packageName);
+            PFDbManager.getInstance(mContext, packageName);
+            setServerUrl(mSAConfigOptions.mServerUrl);
             mMessages = AnalyticsMessages.getInstance(mContext, (SensorsDataAPI) this);
-
             registerLifecycleCallbacks();
-            SensorsDataUtils.initUniAppStatus();
+
+            Bundle configBundle = AppInfoUtils.getAppInfoBundle(mContext);
+            mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
+
+
+            if (mSAConfigOptions.mEnableTrackAppCrash) {
+                SensorsDataExceptionHandler.enableAppCrash();
+            }
         } catch (Throwable ex) {
             SALog.d(TAG, ex.getMessage());
         }
         appendProperties(mProperties);
-
-        if (!mSDKConfigInit) {
-            if (mSAConfigOptions.mEnableTrackAppCrash) {
-                SensorsDataExceptionHandler.enableAppCrash();
-            }
-        }
     }
 
     @Override
@@ -501,24 +499,6 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         }
     }
 
-    protected void initSAConfig(String serverURL, String packageName) {
-        Bundle configBundle = AppInfoUtils.getAppInfoBundle(mContext);
-        if (mSAConfigOptions == null) {
-            this.mSDKConfigInit = false;
-            mSAConfigOptions = new SAConfigOptions();
-        } else {
-            this.mSDKConfigInit = true;
-        }
-
-        PFDbManager.getInstance(mContext, packageName);
-        setServerUrl(serverURL);
-        if (mSAConfigOptions.mEnableTrackAppCrash) {
-            SensorsDataExceptionHandler.enableAppCrash();
-        }
-
-        mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
-    }
-
     private void trackEventInternal(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) throws JSONException, InvalidDataException {
         String libDetail = null;
         String lib_version = VERSION;
@@ -659,5 +639,9 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         } catch (Exception e) {
             SALog.printStackTrace(e);
         }
+    }
+
+    public boolean ismIsMainProcess() {
+        return mIsMainProcess;
     }
 }

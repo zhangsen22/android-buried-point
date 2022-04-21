@@ -188,7 +188,7 @@ class AnalyticsMessages {
                 return;
             }
 
-            if (!SensorsDataAPI.mIsMainProcess) {//不是主进程
+            if (!SensorsDataAPI.getInstance().ismIsMainProcess()) {//不是主进程
                 return;
             }
         } catch (Exception e) {
