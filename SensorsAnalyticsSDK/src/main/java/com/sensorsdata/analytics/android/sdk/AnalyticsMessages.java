@@ -170,10 +170,6 @@ class AnalyticsMessages {
 
     private void sendData() {
         try {
-            if (!mSensorsDataAPI.isNetworkRequestEnable()) {
-                SALog.i(TAG, "NetworkRequest 已关闭，不发送数据！");
-                return;
-            }
 
             if (TextUtils.isEmpty(mSensorsDataAPI.getServerUrl())) {
                 SALog.i(TAG, "Server url is null or empty.");
@@ -268,9 +264,9 @@ class AnalyticsMessages {
             }
 
             connection.setInstanceFollowRedirects(false);
-            if (mSensorsDataAPI.getDebugMode() == SensorsDataAPI.DebugMode.DEBUG_ONLY) {
-                connection.addRequestProperty("Dry-Run", "true");
-            }
+//            if (mSensorsDataAPI.getDebugMode() == SensorsDataAPI.DebugMode.DEBUG_ONLY) {
+//                connection.addRequestProperty("Dry-Run", "true");
+//            }
 
             Uri.Builder builder = new Uri.Builder();
             //先校验crc

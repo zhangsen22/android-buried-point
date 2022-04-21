@@ -1,28 +1,6 @@
-/*
- * Created by dengshiwei on 2019/03/11.
- * Copyright 2015－2022 Sensors Data Inc.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package com.sensorsdata.analytics.android.sdk;
 
 public final class SAConfigOptions extends AbstractSAConfigOptions implements Cloneable {
-
-    /**
-     * 是否设置打印日志
-     */
-    boolean mInvokeLog;
 
     /**
      * 获取 SAOptionsConfig 实例
@@ -49,18 +27,6 @@ public final class SAConfigOptions extends AbstractSAConfigOptions implements Cl
      */
     public SAConfigOptions enableTrackAppCrash() {
         this.mEnableTrackAppCrash = true;
-        return this;
-    }
-
-    /**
-     * 是否打印日志
-     *
-     * @param enableLog 是否开启打印日志
-     * @return SAOptionsConfig
-     */
-    public SAConfigOptions enableLog(boolean enableLog) {
-        this.mLogEnabled = enableLog;
-        this.mInvokeLog = true;
         return this;
     }
 

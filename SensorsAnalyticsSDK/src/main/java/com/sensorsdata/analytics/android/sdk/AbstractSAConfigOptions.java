@@ -38,11 +38,6 @@ abstract class AbstractSAConfigOptions {
     int mFlushBulkSize = 100;
 
     /**
-     * 是否开启打印日志
-     */
-    boolean mLogEnabled;
-
-    /**
      * 网络上传策略
      */
     int mNetworkTypePolicy = SensorsNetworkType.TYPE_3G | SensorsNetworkType.TYPE_4G | SensorsNetworkType.TYPE_WIFI | SensorsNetworkType.TYPE_5G;

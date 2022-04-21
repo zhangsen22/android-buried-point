@@ -39,7 +39,6 @@ public class MyApplication extends Application {
     private void initSensorsDataAPI() {
         SensorsDataAPI.getInstance().buildConfig(this, new SAConfigOptions()
                 .setServerUrl(SA_SERVER_URL)
-                .enableLog(true)
                 .enableTrackAppCrash());
     }
 }

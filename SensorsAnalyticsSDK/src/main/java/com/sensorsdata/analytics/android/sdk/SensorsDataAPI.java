@@ -71,16 +71,10 @@ public class SensorsDataAPI implements ISensorsDataAPI {
     protected AnalyticsMessages mMessages;
     /* SensorsAnalytics 地址 */
     protected String mServerUrl;
-    protected String mOriginServerUrl;
     /* SDK 配置是否初始化 */
     protected boolean mSDKConfigInit;
-    /* Debug 模式选项 */
-    protected SensorsDataAPI.DebugMode mDebugMode = SensorsDataAPI.DebugMode.DEBUG_OFF;
     /* 当前页面的 Title */
     protected String mCurrentScreenTitle;
-    /* 是否请求网络 */
-    protected boolean mEnableNetworkRequest = true;
-    // Session 时长
     protected TrackTaskManager mTrackTaskManager;
     protected TrackTaskManagerThread mTrackTaskManagerThread;
     protected SimpleDateFormat mIsFirstDayDateFormat;
@@ -113,7 +107,7 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         }
         this.mContext = context;
 
-        setDebugMode(DebugMode.DEBUG_OFF);
+        setDebug(true);
         final String packageName = context.getApplicationContext().getPackageName();
         try {
             mSAConfigOptions = saConfigOptions.clone();
@@ -132,13 +126,10 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         appendProperties(mProperties);
 
         if (!mSDKConfigInit) {
-            applySAConfigOptions();
+            if (mSAConfigOptions.mEnableTrackAppCrash) {
+                SensorsDataExceptionHandler.enableAppCrash();
+            }
         }
-    }
-
-    @Override
-    public void enableLog(boolean enable) {
-        SALog.setEnableLog(enable);
     }
 
     @Override
@@ -338,59 +329,12 @@ public class SensorsDataAPI implements ISensorsDataAPI {
 
     @Override
     public boolean isDebugMode() {
-        return mDebugMode.isDebugMode();
-    }
-
-    @Override
-    public boolean isNetworkRequestEnable() {
-        return mEnableNetworkRequest;
-    }
-
-    @Override
-    public void enableNetworkRequest(boolean isRequest) {
-        this.mEnableNetworkRequest = isRequest;
+        return true;
     }
 
     @Override
     public void setServerUrl(final String serverUrl) {
-        try {
-            mOriginServerUrl = serverUrl;
-            if (TextUtils.isEmpty(serverUrl)) {
-                mServerUrl = serverUrl;
-                SALog.i(TAG, "Server url is null or empty.");
-                return;
-            }
-
-            final Uri serverURI = Uri.parse(serverUrl);
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-                    String hostServer = serverURI.getHost();
-                    if (!TextUtils.isEmpty(hostServer) && hostServer.contains("_")) {
-                        SALog.i(TAG, "Server url " + serverUrl + " contains '_' is not recommend，" +
-                                "see details: https://en.wikipedia.org/wiki/Hostname");
-                    }
-                }
-            });
-
-            if (mDebugMode != DebugMode.DEBUG_OFF) {
-                String uriPath = serverURI.getPath();
-                if (TextUtils.isEmpty(uriPath)) {
-                    return;
-                }
-
-                int pathPrefix = uriPath.lastIndexOf('/');
-                if (pathPrefix != -1) {
-                    String newPath = uriPath.substring(0, pathPrefix) + "/debug";
-                    // 将 URI Path 中末尾的部分替换成 '/debug'
-                    mServerUrl = serverURI.buildUpon().path(newPath).build().toString();
-                }
-            } else {
-                mServerUrl = serverUrl;
-            }
-        } catch (Exception e) {
-            SALog.printStackTrace(e);
-        }
+        mServerUrl = serverUrl;
     }
 
     /**
@@ -411,40 +355,6 @@ public class SensorsDataAPI implements ISensorsDataAPI {
     public String getSDKVersion() {
         return VERSION;
     }
-
-
-    /**
-     * Debug 模式，用于检验数据导入是否正确。该模式下，事件会逐条实时发送到 Sensors Analytics，并根据返回值检查
-     * 数据导入是否正确。
-     * Debug 模式的具体使用方式，请参考:
-     * http://www.sensorsdata.cn/manual/debug_mode.html
-     * Debug 模式有三种：
-     * DEBUG_OFF - 关闭DEBUG模式
-     * DEBUG_ONLY - 打开DEBUG模式，但该模式下发送的数据仅用于调试，不进行数据导入
-     * DEBUG_AND_TRACK - 打开DEBUG模式，并将数据导入到SensorsAnalytics中
-     */
-    public enum DebugMode {
-        DEBUG_OFF(false, false),
-        DEBUG_ONLY(true, false),
-        DEBUG_AND_TRACK(true, true);
-
-        private final boolean debugMode;
-        private final boolean debugWriteData;
-
-        DebugMode(boolean debugMode, boolean debugWriteData) {
-            this.debugMode = debugMode;
-            this.debugWriteData = debugWriteData;
-        }
-
-        boolean isDebugMode() {
-            return debugMode;
-        }
-
-        boolean isDebugWriteData() {
-            return debugWriteData;
-        }
-    }
-
 
     /**
      * 网络类型
@@ -524,21 +434,9 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         });
     }
 
-    public SensorsDataAPI.DebugMode getDebugMode() {
-        return mDebugMode;
-    }
-
-    public void setDebugMode(SensorsDataAPI.DebugMode debugMode) {
-        mDebugMode = debugMode;
-        if (debugMode == SensorsDataAPI.DebugMode.DEBUG_OFF) {
-            enableLog(false);
-            SALog.setDebug(false);
-            mServerUrl = mOriginServerUrl;
-        } else {
-            enableLog(true);
-            SALog.setDebug(true);
-            setServerUrl(mOriginServerUrl);
-        }
+    public void setDebug(boolean debug) {
+        SALog.setEnableLog(debug);
+        SALog.setDebug(debug);
     }
 
     /**
@@ -613,30 +511,12 @@ public class SensorsDataAPI implements ISensorsDataAPI {
         }
 
         PFDbManager.getInstance(mContext, packageName);
-
-        if (mSAConfigOptions.mInvokeLog) {
-            enableLog(mSAConfigOptions.mLogEnabled);
-        } else {
-            enableLog(configBundle.getBoolean("com.sensorsdata.analytics.android.EnableLogging",
-                    this.mDebugMode != SensorsDataAPI.DebugMode.DEBUG_OFF));
-        }
-
         setServerUrl(serverURL);
         if (mSAConfigOptions.mEnableTrackAppCrash) {
             SensorsDataExceptionHandler.enableAppCrash();
         }
 
         mIsMainProcess = AppInfoUtils.isMainProcess(mContext, configBundle);
-    }
-
-    protected void applySAConfigOptions() {
-        if (mSAConfigOptions.mEnableTrackAppCrash) {
-            SensorsDataExceptionHandler.enableAppCrash();
-        }
-
-        if (mSAConfigOptions.mInvokeLog) {
-            enableLog(mSAConfigOptions.mLogEnabled);
-        }
     }
 
     private void trackEventInternal(final EventType eventType, final String eventName, final JSONObject properties, final JSONObject sendProperties) throws JSONException, InvalidDataException {

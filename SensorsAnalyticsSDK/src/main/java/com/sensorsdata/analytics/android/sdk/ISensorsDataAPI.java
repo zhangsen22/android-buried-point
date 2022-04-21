@@ -41,32 +41,11 @@ public interface ISensorsDataAPI{
     void setServerUrl(String serverUrl);
 
     /**
-     * 设置是否开启 log
-     *
-     * @param enable boolean
-     */
-    void enableLog(boolean enable);
-
-    /**
      * 是否是开启 debug 模式
      *
      * @return true：是，false：不是
      */
     boolean isDebugMode();
-
-    /**
-     * 是否请求网络，默认是 true
-     *
-     * @return 是否请求网络
-     */
-    boolean isNetworkRequestEnable();
-
-    /**
-     * 设置是否允许请求网络，默认是 true
-     *
-     * @param isRequest boolean
-     */
-    void enableNetworkRequest(boolean isRequest);
 
     /**
      * 设置 flush 时网络发送策略，默认 3G、4G、5G、WI-FI 环境下都会尝试 flush
