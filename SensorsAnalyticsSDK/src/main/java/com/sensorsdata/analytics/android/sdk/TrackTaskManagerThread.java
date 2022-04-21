@@ -75,21 +75,4 @@ public class TrackTaskManagerThread implements Runnable {
             SALog.printStackTrace(e);
         }
     }
-
-    void stop() {
-        isStop = true;
-        //解决队列阻塞时,停止队列还会触发一次事件
-        if (mTrackTaskManager.isEmpty()) {
-            mTrackTaskManager.addTrackEventTask(new Runnable() {
-                @Override
-                public void run() {
-
-                }
-            });
-        }
-    }
-
-    boolean isStopped() {
-        return isStop;
-    }
 }
